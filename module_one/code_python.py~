@@ -58,8 +58,8 @@ def getDateforYahoo(startD, endD):
         return result
 
 def doRequestData(BBG, startD, endD):
-        from yahoo_finance import Share
-        from datetime import date
+        #from yahoo_finance import Share
+	from datetime import date
         flag = 'close'
 
         if endD > date.today(): endD = date.today()
