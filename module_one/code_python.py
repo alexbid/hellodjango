@@ -3,12 +3,6 @@ import sqlite3
 import calendar
 import pdb
 
-import sys
-sys.path.append('/hellodjango/module_yahoo/yahoo_finance')
-from yahoo_finance import Share
-#from yahoo_finance import get_historical
-print "Share imported"
-
 calendar.setfirstweekday(calendar.MONDAY)
 
 import os
@@ -17,6 +11,14 @@ if not output: portfolioDB  = 'portfolio.db'
 else: 
 	portfolioDB = output + '/portfolio.db'
 	output += "/"
+
+##########################################################
+#import sys
+#sys.path.append('~/module_yahoo/yahoo_finance')
+from module_yahoo.yahoo_finance import Share
+#from yahoo_finance import get_historical
+#print "Share imported totototototo"
+##########################################################
 
 #print portfolioDB
 
@@ -73,8 +75,7 @@ def getDateforYahoo(startD, endD):
 
 def doRequestData(BBG, startD, endD):
         #from yahoo_finance import Share
-
-	yahoo4 = Share(BBG)
+	#yahoo4 = Share(BBG)
 
 	from datetime import date
         flag = 'close'
