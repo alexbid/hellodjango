@@ -48,7 +48,6 @@ def isTradingDay(tDate):
 #print isTradingDay(q)
 
 def vTradingDates(stDate, endDate, cdr):
-	#print portfolioDB
         conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
         c = conn.cursor()
         c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
@@ -74,14 +73,10 @@ def getDateforYahoo(startD, endD):
         return result
 
 def doRequestData(BBG, startD, endD):
-        #from yahoo_finance import Share
-	#yahoo4 = Share(BBG)
-
 	from datetime import date
         flag = 'close'
 
         if endD > date.today(): endD = date.today()
-
 	conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 	c = conn.cursor()
         tDate = vTradingDates(startD, endD, 'FR')
@@ -108,18 +103,13 @@ def doRequestData(BBG, startD, endD):
 			print lDate[0], lDate[-1]
 			if lDate[0] == lDate[-1]:
 				print "here"
-				print yahoo.get_historical(lDate[i], lDate[i+1])
-				try: rslt = yahoo.get_historical(lDate[i], lDate[i+1])
-                                except: print "yahoo request failed 1:", BBG, lDate[i], lDate[i+1]
+				print yahoo.get_historical(lDate[0], lDate[-1])
+				try: rslt.append(yahoo.get_historical(lDate[0], lDate[-1]))
+                                except: print "yahoo request failed 1:", BBG, lDate[0], lDate[-1]
 			else:
                         	for i in range(0,  len(lDate)-1):
-					#print  len(lDate)-1
-                                	#print lDate[i], lDate[i+1]
-					#print yahoo.get_historical(lDate[i], lDate[i+1])
-					#print rslt
                                 	try: rslt = rslt + yahoo.get_historical(lDate[i], lDate[i+1])
                                 	except: print "yahoo request failed 2:", BBG, lDate[i], lDate[i+1]
-                       
                         for line in rslt: 
                                 if 'Close' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Close']), 'close'))
                                 if 'Open' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Open']), 'open'))
@@ -208,7 +198,6 @@ class Portfolio:
                 return self.cash + stockValue 
 
         def load(self, stDate, endDate):
-		#print portfolioDB
                 conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
                 c = conn.cursor()
                 c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))

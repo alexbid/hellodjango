@@ -75,7 +75,9 @@ def getDateforYahoo(startD, endD):
 
 def doRequestData(BBG, startD, endD):
         #from yahoo_finance import Share
-	yahoo4 = Share(BBG)
+	#yahoo4 = Share(BBG)
+	#print yahoo4.get_historical(datetime.date(2014, 9, 30), datetime.date(2014, 9, 30))
+	#print yahoo4.get_historical(datetime.date(2014, 9, 29), datetime.date(2014, 9, 30))
 
 	from datetime import date
         flag = 'close'
@@ -108,9 +110,9 @@ def doRequestData(BBG, startD, endD):
 			print lDate[0], lDate[-1]
 			if lDate[0] == lDate[-1]:
 				print "here"
-				print yahoo.get_historical(lDate[i], lDate[i+1])
-				try: rslt = yahoo.get_historical(lDate[i], lDate[i+1])
-                                except: print "yahoo request failed 1:", BBG, lDate[i], lDate[i+1]
+				print yahoo.get_historical(lDate[0], lDate[-1])
+				try: rslt.append(yahoo.get_historical(lDate[0], lDate[-1]))
+                                except: print "yahoo request failed 1:", BBG, lDate[0], lDate[-1]
 			else:
                         	for i in range(0,  len(lDate)-1):
 					#print  len(lDate)-1
@@ -119,7 +121,7 @@ def doRequestData(BBG, startD, endD):
 					#print rslt
                                 	try: rslt = rslt + yahoo.get_historical(lDate[i], lDate[i+1])
                                 	except: print "yahoo request failed 2:", BBG, lDate[i], lDate[i+1]
-                       
+                        print "here here!!", rslt
                         for line in rslt: 
                                 if 'Close' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Close']), 'close'))
                                 if 'Open' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Open']), 'open'))
