@@ -1,1 +1,1 @@
-from yahoo_finance import Share as Share
+import yahoo_finance

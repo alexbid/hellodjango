@@ -2,10 +2,23 @@ import datetime
 import sqlite3
 import calendar
 import pdb
-#from yahoo_finance import Share
+
+import sys
+sys.path.append('/hellodjango/module_yahoo/yahoo_finance')
+from yahoo_finance import Share
+from yahoo_finance import get_historical
+print "Share imported"
 
 calendar.setfirstweekday(calendar.MONDAY)
-portfolioDB = 'module_one/portfolio.db'
+
+import os
+output = os.path.dirname(__file__)
+if not output: portfolioDB  = 'portfolio.db'
+else: 
+	portfolioDB = output + '/portfolio.db'
+	output += "/"
+
+#print portfolioDB
 
 def isWeekEnd(tDate):
         if tDate.weekday() == 5 or tDate.weekday() == 6: return True
@@ -33,6 +46,7 @@ def isTradingDay(tDate):
 #print isTradingDay(q)
 
 def vTradingDates(stDate, endDate, cdr):
+	#print portfolioDB
         conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
         c = conn.cursor()
         c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
@@ -59,6 +73,9 @@ def getDateforYahoo(startD, endD):
 
 def doRequestData(BBG, startD, endD):
         #from yahoo_finance import Share
+
+	yahoo4 = Share(BBG)
+
 	from datetime import date
         flag = 'close'
 
@@ -75,7 +92,7 @@ def doRequestData(BBG, startD, endD):
         print "missing Dates", mDate
 
         if mDate:
-                mfile = open("missingdates.csv", "w")
+                mfile = open(output + "missingdates.csv", "w")
                 convert_generator = (str(w)+';FR' for w in mDate)
                 mfile.write('\n'.join(convert_generator))
                 mfile.close()
@@ -87,10 +104,20 @@ def doRequestData(BBG, startD, endD):
                         print "ldate:", lDate, len(lDate)
                         
                         rslt = []
-                        for i in range(0,  len(lDate)-1):
-                                print lDate[i], lDate[i+1]
-                                try: rslt = rslt + yahoo.get_historical(lDate[i], lDate[i+1])
-                                except: print "yahoo request failed:", BBG, lDate[i], lDate[i+1]
+			print lDate[0], lDate[-1]
+			if lDate[0] == lDate[-1]:
+				print "here"
+				print yahoo.get_historical(lDate[i], lDate[i+1])
+				try: rslt = yahoo.get_historical(lDate[i], lDate[i+1])
+                                except: print "yahoo request failed 1:", BBG, lDate[i], lDate[i+1]
+			else:
+                        	for i in range(0,  len(lDate)-1):
+					#print  len(lDate)-1
+                                	#print lDate[i], lDate[i+1]
+					#print yahoo.get_historical(lDate[i], lDate[i+1])
+					#print rslt
+                                	try: rslt = rslt + yahoo.get_historical(lDate[i], lDate[i+1])
+                                	except: print "yahoo request failed 2:", BBG, lDate[i], lDate[i+1]
                        
                         for line in rslt: 
                                 if 'Close' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Close']), 'close'))
@@ -165,25 +192,6 @@ class Portfolio:
         fees = 0.0
         
 	def __init__(self): self.cash = 0
-
-        def load(self, stDate, endDate):
-                conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-                c = conn.cursor()
-                c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
-                holidays = []
-                for row in c: 
-                        print row[0], row[1], row[2], row[3], row[4], row[5] 
-                        if row[1] == "BUY": portfolio.trade(row[0], Stock(row[2]), row[3], row[4], row[5])
-                        elif row[1] == "SELL": portfolio.trade(row[0], Stock(row[2]), -row[3], row[4], row[5])
-                        else: print "error in transaction side: ", row[1]
-
-                toto = 0
-                for lStock, qty in self.equity.iteritems():
-                        lStock.load()
-                        toto += 1
-                print "toto:", toto
-                c.close
-
         def mDeposit(self, amount): self.cash += amount
         def mWithdraw(self, amount): self.cash -= amount
         def getFees(self): return self.fees
@@ -198,11 +206,32 @@ class Portfolio:
                         stockValue += qty * lStock.getClose(gValue)
                 return self.cash + stockValue 
 
-dt = datetime.date(1990, 03, 01)
-end = datetime.date(2014, 12, 30)
+        def load(self, stDate, endDate):
+		#print portfolioDB
+                conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
+                c = conn.cursor()
+                c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
+                holidays = []
+                for row in c: 
+                        print row[0], row[1], row[2], row[3], row[4], row[5] 
+                        if row[1] == "BUY": self.trade(row[0], Stock(row[2]), row[3], row[4], row[5])
+                        elif row[1] == "SELL": self.trade(row[0], Stock(row[2]), -row[3], row[4], row[5])
+                        else: print "error in transaction side: ", row[1]
+
+                toto = 0
+                for lStock, qty in self.equity.iteritems():
+                        lStock.load()
+                        toto += 1
+                print "toto:", toto
+                c.close
 	
 if __name__=='__main__':
 	import sys
+#	try:	print int(sys.argv[1])
+#	except: self = None
+	dt = datetime.date(1990, 03, 01)
+	end = datetime.date(2014, 12, 30)
+
         from timeit import Timer
         t = Timer(lambda: vTradingDates(dt, end, 'FR'))
         #print t.timeit(number=1)
@@ -226,5 +255,4 @@ if __name__=='__main__':
         portfolio.load(datetime.date(2000, 01, 26), evalDate)
         print "portfolio values:", portfolio.getValue(evalDate,'close')
         print "total fees:", portfolio.getFees()
-	#print int(sys.argv[1])
 
