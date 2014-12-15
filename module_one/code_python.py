@@ -100,10 +100,10 @@ def doRequestData(BBG, startD, endD):
                         print "ldate:", lDate, len(lDate)
                         
                         rslt = []
-			print lDate[0], lDate[-1]
+			#print lDate[0], lDate[-1]
 			if lDate[0] == lDate[-1]:
-				print "here"
-				print yahoo.get_historical(lDate[0], lDate[-1])
+				#print "here"
+				#print yahoo.get_historical(lDate[0], lDate[-1])
 				try: rslt.append(yahoo.get_historical(lDate[0], lDate[-1]))
                                 except: print "yahoo request failed 1:", BBG, lDate[0], lDate[-1]
 			else:
