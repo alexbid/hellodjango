@@ -5,12 +5,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 # from .models import Greeting
-import os
-output = os.path.dirname(__file__)
-if not output: portfolioDB  = 'portfolio.db'
-else:
-        portfolioDB = output + '/portfolio.db'
-        output += "/"
+from hellodjango.module_one 
+portfolioDB = ~\hellodjango\module_one\portfolio.db
+
+print portfolioDB
 
 # request data here
 def getLastClose():
