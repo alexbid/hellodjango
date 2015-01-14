@@ -5,8 +5,16 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 # from .models import Greeting
-from hellodjango.module_one 
-portfolioDB = ~\hellodjango\module_one\portfolio.db
+# from hellodjango.module_one 
+
+import os
+output = os.path.dirname(__file__)
+if not output: portfolioDB  = 'portfolio.db'
+else:
+        portfolioDB = output + '/module_one/portfolio.db'
+        output += "/"
+
+#portfolioDB = "\hellodjango\module_one\portfolio.db"
 
 print portfolioDB
 
