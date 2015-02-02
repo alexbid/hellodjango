@@ -22,6 +22,7 @@ print portfolioDB
 def getLastClose():
 	BBG = '^FCHI'
 	flag = 'close'
+	
 	conn = sqlite3.connect(portfolioDB)
 	c = conn.cursor()
 	c.execute('SELECT spot FROM (SELECT  MAX(date), spot FROM spots WHERE BBG = ? and flag = ?)', (BBG, flag))
@@ -37,7 +38,7 @@ def getLastClose():
 # Create your views here.
 def index(request):
     #r = requests.get('http://httpbin.org/status/418')
-    r = "Salut Alex" + getLastClose()
+    r = "Salut Alex" + getLastClose() + portfolioDB
     #print r.text
     #return HttpResponse('<pre>' + r.text + '</pre>')
     print r
