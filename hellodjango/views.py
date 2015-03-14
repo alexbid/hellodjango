@@ -48,14 +48,13 @@ def index(request):
 	from worker import conn
 	q = Queue(connection=conn)
 	
-	#And enqueue the function call:
+	# And enqueue the function call
 	from utils import count_words_at_url
 	result = q.enqueue(count_words_at_url, 'http://heroku.com')
 	r = str(getLastClose())
-    #print r
-    return HttpResponse('<pre>' + r + result + '</pre>')
-
-
+	print r
+	return HttpResponse('<pre>' + r + result + '</pre>')
+	
 def db(request):
     greeting = Greeting()
     greeting.save()
