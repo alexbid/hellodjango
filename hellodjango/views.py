@@ -50,12 +50,12 @@ def index(request):
 	
 	# And enqueue the function call
 	from utils import count_words_at_url
-	#result = q.enqueue(count_words_at_url, 'http://heroku.com')
-	result = q.enqueue(count_words_at_url('http://heroku.com'))
+	result = q.enqueue(count_words_at_url, 'http://heroku.com')
+	#result = q.enqueue(return "toto")
 
 	r = str(getLastClose())
-	print r
-	return HttpResponse('<pre>' + r + '</pre>')
+	#print r
+	return HttpResponse('<pre>' + r + str(result) + '</pre>')
 	
 def db(request):
     greeting = Greeting()
