@@ -4,7 +4,7 @@ def count_words_at_url(url):
     resp = requests.get(url)
     return len(resp.text.split())
     
-def update()
+def update():
 	import sys
 	import datetime
 	from module_one.code_python import Portfolio
