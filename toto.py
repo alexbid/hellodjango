@@ -19,6 +19,10 @@ evalDate = datetime.date(2006, 1, 6)
 portfolio.load(datetime.date(2000, 01, 26), evalDate)
 print "portfolio values:", portfolio.getValue(evalDate,'close')
 print "total fees:", portfolio.getFees()
+print ""
+
+from hellodjango.views import getLastClose
+print str(getLastClose())
 
 	
 
