@@ -51,6 +51,8 @@ def index(request):
 	# And enqueue the function call
 	from utils import count_words_at_url
 	#result = q.enqueue(count_words_at_url, 'http://heroku.com')
+	result = q.enqueue(count_words_at_url('http://heroku.com'))
+
 	r = str(getLastClose())
 	print r
 	return HttpResponse('<pre>' + r + '</pre>')
