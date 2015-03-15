@@ -50,6 +50,8 @@ def index(request):
 	
 	# And enqueue the function call
 	from utils import count_words_at_url
+	from utils import update
+	result = q.enqueue(update)
 	#result = q.enqueue(count_words_at_url, 'http://heroku.com')
 	#result = q.enqueue(return "toto")
 
