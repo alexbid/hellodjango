@@ -1,22 +1,16 @@
 import datetime
-#import sqlite3
+import sqlite3
 import calendar
 import pdb
 
-#
-import os
-import psycopg2
-import urlparse
-#
-
 calendar.setfirstweekday(calendar.MONDAY)
 
-#import os
-#output = os.path.dirname(__file__)
-#if not output: portfolioDB  = 'portfolio.db'
-#else: 
-#	portfolioDB = output + '/portfolio.db'
-#	output += "/"
+import os
+output = os.path.dirname(__file__)
+if not output: portfolioDB  = 'portfolio.db'
+else: 
+	portfolioDB = output + '/portfolio.db'
+	output += "/"
 
 ##########################################################
 #import sys
@@ -36,16 +30,7 @@ def isTradingDay(tDate):
 	if isWeekEnd(tDate):
                 return False
 	else:	
-		urlparse.uses_netloc.append("postgres")
-		url = urlparse.urlparse(os.environ["DATABASE_URL"])
-		conn = psycopg2.connect(
-    		database=url.path[1:],
-    		user=url.username,
-    		password=url.password,
-    		host=url.hostname,
-    		port=url.port
-		)
-		#conn = sqlite3.connect(portfolioDB)
+		conn = sqlite3.connect(portfolioDB)
 		c = conn.cursor()
 		c.execute('SELECT COUNT(*) FROM calendar WHERE date = ?', (tDate.strftime("%Y-%m-%d"),))
 
@@ -63,16 +48,7 @@ def isTradingDay(tDate):
 #print isTradingDay(q)
 
 def vTradingDates(stDate, endDate, cdr):
-        #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-        urlparse.uses_netloc.append("postgres")
-		url = urlparse.urlparse(os.environ["DATABASE_URL"])
-		conn = psycopg2.connect(
-    		database=url.path[1:],
-    		user=url.username,
-    		password=url.password,
-    		host=url.hostname,
-    		port=url.port
-		)
+        conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
         c = conn.cursor()
         c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
         holidays = []
@@ -101,17 +77,7 @@ def doRequestData(BBG, startD, endD):
         flag = 'close'
 
         if endD > date.today(): endD = date.today()
-	#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-	urlparse.uses_netloc.append("postgres")
-	url = urlparse.urlparse(os.environ["DATABASE_URL"])
-	conn = psycopg2.connect(
-    	database=url.path[1:],
-    	user=url.username,
-    	password=url.password,
-    	host=url.hostname,
-    	port=url.port
-	)
-	
+	conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 	c = conn.cursor()
         tDate = vTradingDates(startD, endD, 'FR')
         c.execute('SELECT date FROM spots WHERE (date BETWEEN ? AND ?) AND (BBG=?) AND (flag=?)', (startD , endD, BBG, flag))
@@ -173,16 +139,7 @@ class Stock(object):
         def load(self):
                 if self.loaded == False:
                         print "initializing new Stock... " + self.mnemo
-                        #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-                        urlparse.uses_netloc.append("postgres")
-						url = urlparse.urlparse(os.environ["DATABASE_URL"])
-						conn = psycopg2.connect(
-    						database=url.path[1:],
-				    		user=url.username,
-				    		password=url.password,
-				    		host=url.hostname,
-				    		port=url.port
-						)
+                        conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
                         c = conn.cursor()
                         try:
                                 c.execute("SELECT spot FROM spots WHERE BBG=? AND flag='close' AND date = (SELECT MAX(date) FROM spots WHERE BBG=? AND flag='close')", (self.mnemo, self.mnemo) )
@@ -196,16 +153,7 @@ class Stock(object):
                         self.loaded = True
 
         def saveQuote(self, dDate, quote):
-                #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-        		urlparse.uses_netloc.append("postgres")
-				url = urlparse.urlparse(os.environ["DATABASE_URL"])
-				conn = psycopg2.connect(
-    				database=url.path[1:],
-    				user=url.username,
-    				password=url.password,
-    				host=url.hostname,
-    				port=url.port
-				)
+                conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
                 c = conn.cursor()
                 try: 
                         c.execute("INSERT INTO spot(BBG, date, spot, flag) VALUES(?,?,?,?)",(self.mnemo, dDate, quote, self.flag))
@@ -250,16 +198,7 @@ class Portfolio:
                 return self.cash + stockValue 
 
         def load(self, stDate, endDate):
-                #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-                urlparse.uses_netloc.append("postgres")
-				url = urlparse.urlparse(os.environ["DATABASE_URL"])
-				conn = psycopg2.connect(
-    				database=url.path[1:],
-    				user=url.username,
-    				password=url.password,
-    				host=url.hostname,
-    				port=url.port
-				)
+                conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
                 c = conn.cursor()
                 c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
                 holidays = []
