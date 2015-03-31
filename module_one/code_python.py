@@ -5,8 +5,8 @@ import pdb
 import os
 
 class sqlConnector:
-	bSqlite3 = True
-	bPostgre = False
+	bSqlite3 = False
+	bPostgre = True
 	conn = 0
 	portfolioDB = ''
 
