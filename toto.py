@@ -21,8 +21,8 @@ print "portfolio values:", portfolio.getValue(evalDate,'close')
 print "total fees:", portfolio.getFees()
 print ""
 
-from hellodjango.views import getLastClose
-print str(getLastClose())
+#from hellodjango.views import getLastClose
+#print str(getLastClose())
 
 	
 
