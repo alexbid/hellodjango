@@ -109,46 +109,45 @@ def doRequestData(BBG, startD, endD):
 	c = sqlConn.conn.cursor()
 #	conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 	c = sqlConn.conn.cursor()
-        tDate = vTradingDates(startD, endD, 'FR')
+	tDate = vTradingDates(startD, endD, 'FR')
         
-		if sqlConn.bSqlite3: c.execute('SELECT date FROM spots WHERE (date BETWEEN ? AND ?) AND (BBG=?) AND (flag=?)', (startD , endD, BBG, flag))
-		if sqlConn.bPostgre: c.execute('SELECT date FROM spots WHERE (date BETWEEN %s AND %s) AND (BBG=%s) AND (flag=%s)', (startD , endD, BBG, flag))
-        oDate = [i[0] for i in c.fetchall()]
+	if sqlConn.bSqlite3: c.execute('SELECT date FROM spots WHERE (date BETWEEN ? AND ?) AND (BBG=?) AND (flag=?)', (startD , endD, BBG, flag))
+	if sqlConn.bPostgre: c.execute('SELECT date FROM spots WHERE (date BETWEEN %s AND %s) AND (BBG=%s) AND (flag=%s)', (startD , endD, BBG, flag))
+	oDate = [i[0] for i in c.fetchall()]
+	
+	mDate = list(set(tDate) - set(oDate))
+	mDate.sort()
+	print "missing Dates", mDate
 
-        mDate = list(set(tDate) - set(oDate))
-        mDate.sort()
-        print "missing Dates", mDate
-
-        if mDate:
-                mfile = open(output + "missingdates.csv", "w")
-                convert_generator = (str(w)+';FR' for w in mDate)
-                mfile.write('\n'.join(convert_generator))
-                mfile.close()
-                try: 
-                        try: yahoo = Share(BBG)
-                        except: print "yahoo = Share(?) failed... check your BBG or Internet Connection", BBG 
+	if mDate:
+		mfile = open(output + "missingdates.csv", "w")
+		convert_generator = (str(w)+';FR' for w in mDate)
+		mfile.write('\n'.join(convert_generator))
+		mfile.close()
+		try: 
+			try: yahoo = Share(BBG)
+			except: print "yahoo = Share(?) failed... check your BBG or Internet Connection", BBG 
 			
-                        lDate = getDateforYahoo(mDate[0], mDate[-1])
-                        print "ldate:", lDate, len(lDate)
-                        
-                        rslt = []
+			lDate = getDateforYahoo(mDate[0], mDate[-1])
+			print "ldate:", lDate, len(lDate)
+			rslt = []
 			#print lDate[0], lDate[-1]
 			if lDate[0] == lDate[-1]:
 				#print "here"
 				#print yahoo.get_historical(lDate[0], lDate[-1])
 				try: rslt.append(yahoo.get_historical(lDate[0], lDate[-1]))
-                                except: print "yahoo request failed 1:", BBG, lDate[0], lDate[-1]
+				except: print "yahoo request failed 1:", BBG, lDate[0], lDate[-1]
 			else:
-                        	for i in range(0,  len(lDate)-1):
-                                	try: rslt = rslt + yahoo.get_historical(lDate[i], lDate[i+1])
-                                	except: print "yahoo request failed 2:", BBG, lDate[i], lDate[i+1]
-                        for line in rslt: 
-                                if 'Close' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Close']), 'close'))
-                                if 'Open' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Open']), 'open'))
-                                if 'High' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['High']), 'high'))
-                                if 'Low' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Low']), 'low'))
-                                if 'Volume' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Volume']), 'volume'))
-                except: print "Ops!! your request failed!"
+				for i in range(0,  len(lDate)-1):
+					try: rslt = rslt + yahoo.get_historical(lDate[i], lDate[i+1])
+					except: print "yahoo request failed 2:", BBG, lDate[i], lDate[i+1]
+					for line in rslt: 
+						if 'Close' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Close']), 'close'))
+						if 'Open' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Open']), 'open'))
+						if 'High' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['High']), 'high'))
+						if 'Low' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Low']), 'low'))
+						if 'Volume' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Volume']), 'volume'))
+		except: print "Ops!! your request failed!"
         sqlConn.conn.commit()
         sqlConn.conn.close()
 
