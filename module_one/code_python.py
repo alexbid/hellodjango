@@ -79,7 +79,7 @@ def vTradingDates(stDate, endDate, cdr):
 	sqlConn = sqlConnector()
 	c = sqlConn.conn.cursor()
 	if sqlConn.bSqlite3: c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
-	if sqlConn.bPostgre: c.execute('SELECT * FROM calendar WHERE (CDR=?)', (cdr))	
+	if sqlConn.bPostgre: c.execute('SELECT * FROM calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s)', (cdr, stDate, endDate))	
 	holidays = []
 	for row in list(c): holidays.append(row[0])
 	
