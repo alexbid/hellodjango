@@ -110,7 +110,9 @@ def doRequestData(BBG, startD, endD):
 #	conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 	c = sqlConn.conn.cursor()
         tDate = vTradingDates(startD, endD, 'FR')
-        c.execute('SELECT date FROM spots WHERE (date BETWEEN ? AND ?) AND (BBG=?) AND (flag=?)', (startD , endD, BBG, flag))
+        
+		if sqlConn.bSqlite3: c.execute('SELECT date FROM spots WHERE (date BETWEEN ? AND ?) AND (BBG=?) AND (flag=?)', (startD , endD, BBG, flag))
+		if sqlConn.bPostgre: c.execute('SELECT date FROM spots WHERE (date BETWEEN %s AND %s) AND (BBG=%s) AND (flag=%s)', (startD , endD, BBG, flag))
         oDate = [i[0] for i in c.fetchall()]
 
         mDate = list(set(tDate) - set(oDate))
