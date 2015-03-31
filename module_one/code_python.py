@@ -233,27 +233,27 @@ class Portfolio:
                         stockValue += qty * lStock.getClose(gValue)
                 return self.cash + stockValue 
 
-        def load(self, stDate, endDate):
-			#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-			sqlConn = sqlConnector()
-			c = sqlConn.conn.cursor()
-			#c = conn.cursor()
+	def load(self, stDate, endDate):
+		#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
+		sqlConn = sqlConnector()
+		c = sqlConn.conn.cursor()
+		#c = conn.cursor()
 
-			if sqlConn.bSqlite3: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
-			if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)',(stDate, endDate))
+		if sqlConn.bSqlite3: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
+		if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate, endDate))
 
-			holidays = []
-			for row in c: 
-				print row[0], row[1], row[2], row[3], row[4], row[5] 
-				if row[1] == "BUY": self.trade(row[0], Stock(row[2]), row[3], row[4], row[5])
-				elif row[1] == "SELL": self.trade(row[0], Stock(row[2]), -row[3], row[4], row[5])
-				else: print "error in transaction side: ", row[1]
-				toto = 0
-				for lStock, qty in self.equity.iteritems():
-					lStock.load()
-					toto += 1
-					print "toto:", toto
-			sqlConn.conn.close
+		holidays = []
+		for row in c: 
+			#print row[0], row[1], row[2], row[3], row[4], row[5] 
+			#if row[1] == "BUY": self.trade(row[0], Stock(row[2]), row[3], row[4], row[5])
+			#elif row[1] == "SELL": self.trade(row[0], Stock(row[2]), -row[3], row[4], row[5])
+			#else: print "error in transaction side: ", row[1]
+			#toto = 0
+			#for lStock, qty in self.equity.iteritems():
+			#	lStock.load()
+			#	toto += 1
+			#	print "toto:", toto
+		sqlConn.conn.close
 	
 if __name__=='__main__':
 	import sys
