@@ -238,8 +238,8 @@ class Portfolio:
 		sqlConn = sqlConnector()
 		c = sqlConn.conn.cursor()
 		#c = conn.cursor()
-		print stDate
-		print endDate
+		print stDate, type(stDate)
+		print endDate, type(endDate)
 		if sqlConn.bSqlite3: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
 		if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate.date(), endDate.date()))
 		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades')
