@@ -9,15 +9,16 @@ class sqlConnector:
 	bPostgre = True
 	conn = 0
 	portfolioDB = ''
+	output = ''
 
 	def __init__(self):
 		if self.bSqlite3: 
 			import sqlite3
-			output = os.path.dirname(__file__)
-			if not output: self.portfolioDB  = 'portfolio.db'
+			self.output = os.path.dirname(__file__)
+			if not self.output: self.portfolioDB  = 'portfolio.db'
 			else:
-				self.portfolioDB = output + '/portfolio.db'
-				output += "/"
+				self.portfolioDB = self.output + '/portfolio.db'
+				self.output += "/"
 			#conn = sqlite3.connect(portfolioDB)
 			self.conn = sqlite3.connect(self.portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 			
@@ -120,7 +121,7 @@ def doRequestData(BBG, startD, endD):
 	print "missing Dates", mDate
 
 	if mDate:
-		mfile = open(output + "missingdates.csv", "w")
+		mfile = open(sqlConn.output + "missingdates.csv", "w")
 		convert_generator = (str(w)+';FR' for w in mDate)
 		mfile.write('\n'.join(convert_generator))
 		mfile.close()
