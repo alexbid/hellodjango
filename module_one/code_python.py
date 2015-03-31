@@ -63,8 +63,8 @@ def isTradingDay(tDate):
 #print isTradingDay(q)
 
 def vTradingDates(stDate, endDate, cdr):
-        #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-    urlparse.uses_netloc.append("postgres")
+	#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
+	urlparse.uses_netloc.append("postgres")
 	url = urlparse.urlparse(os.environ["DATABASE_URL"])
 	conn = psycopg2.connect(
     	database=url.path[1:],
@@ -73,19 +73,19 @@ def vTradingDates(stDate, endDate, cdr):
     	host=url.hostname,
     	port=url.port
 	)
-    c = conn.cursor()
-    c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
-    holidays = []
-    for row in list(c): holidays.append(row[0])
+	c = conn.cursor()
+	c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
+	holidays = []
+	for row in list(c): holidays.append(row[0])
 
 	step = datetime.timedelta(days=1)
 	result = []
 	while stDate < endDate:
-                if not isWeekEnd(stDate):                       
-                        if not stDate in holidays:
-                                result.append(stDate)
-                stDate += step
-        conn.close()
+		if not isWeekEnd(stDate):
+			if not stDate in holidays:
+				result.append(stDate)
+		stDate += step
+	conn.close()
 	return result
 
 def getDateforYahoo(startD, endD):
@@ -175,8 +175,8 @@ class Stock(object):
                         print "initializing new Stock... " + self.mnemo
                         #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
                         urlparse.uses_netloc.append("postgres")
-						url = urlparse.urlparse(os.environ["DATABASE_URL"])
-						conn = psycopg2.connect(
+                        url = urlparse.urlparse(os.environ["DATABASE_URL"])
+                        conn = psycopg2.connect(
     						database=url.path[1:],
 				    		user=url.username,
 				    		password=url.password,
@@ -195,38 +195,40 @@ class Stock(object):
                         except: self.spot = 0
                         self.loaded = True
 
-        def saveQuote(self, dDate, quote):
-                #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-        		urlparse.uses_netloc.append("postgres")
-				url = urlparse.urlparse(os.environ["DATABASE_URL"])
-				conn = psycopg2.connect(
-    				database=url.path[1:],
-    				user=url.username,
-    				password=url.password,
-    				host=url.hostname,
-    				port=url.port
-				)
-                c = conn.cursor()
-                try: 
-                        c.execute("INSERT INTO spot(BBG, date, spot, flag) VALUES(?,?,?,?)",(self.mnemo, dDate, quote, self.flag))
-                        c.commit()
-                except: print "error in saving historic prices for " + self.mnemo
+def saveQuote(self, dDate, quote):
+	#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
+    urlparse.uses_netloc.append("postgres")
+    url = urlparse.urlparse(os.environ["DATABASE_URL"])
+    conn = psycopg2.connect(
+    	database=url.path[1:],
+    	user=url.username,
+    	password=url.password,
+    	host=url.hostname,
+    	port=url.port
+    )
+    c = conn.cursor()
+    try:
+    	c.execute("INSERT INTO spot(BBG, date, spot, flag) VALUES(?,?,?,?)",(self.mnemo, dDate, quote, self.flag))
+    	c.commit()
+    except:
+		print "error in saving historic prices for " + self.mnemo
 
-        def __hash__(self): return hash(str(self))
-	def __cmp__(self, other): return cmp(str(self), str(other))
-	def __str__(self): return self.mnemo
+def __hash__(self): return hash(str(self))
+def __cmp__(self, other): return cmp(str(self), str(other))
+def __str__(self): return self.mnemo
         #def __eq__(self, other):
         #        #return (self.mnemo, self.location) == (other.mnemo, other.location)
         #        return (self.mnemo) == (other.mnemo)
 	#def __ne__(self, other ):
         #	return self.mnemo != other.mnemo
-        def getMnemo(self): return self.mnemo
-        def getClose(self, dDate):
-                try : return self.spots[dDate]
-                except : print "no close available for this stock at this date: "+ self.mnemo+" as of "+dDate.strftime("%Y-%m-%d")
-                return 0
-        def getSpot(self): return self.spot
-        def setSpot(self, spot): self.spot = spot
+def getMnemo(self): return self.mnemo
+def getClose(self, dDate):
+	try : return self.spots[dDate]
+	except : print "no close available for this stock at this date: "+ self.mnemo+" as of "+dDate.strftime("%Y-%m-%d")
+	return 0
+
+def getSpot(self): return self.spot
+def setSpot(self, spot): self.spot = spot
 
 class Portfolio:
         equity = {}
@@ -249,32 +251,32 @@ class Portfolio:
                         stockValue += qty * lStock.getClose(gValue)
                 return self.cash + stockValue 
 
-        def load(self, stDate, endDate):
-                #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-                urlparse.uses_netloc.append("postgres")
-				url = urlparse.urlparse(os.environ["DATABASE_URL"])
-				conn = psycopg2.connect(
-    				database=url.path[1:],
-    				user=url.username,
-    				password=url.password,
-    				host=url.hostname,
-    				port=url.port
-				)
-                c = conn.cursor()
-                c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
-                holidays = []
-                for row in c: 
-                        print row[0], row[1], row[2], row[3], row[4], row[5] 
-                        if row[1] == "BUY": self.trade(row[0], Stock(row[2]), row[3], row[4], row[5])
-                        elif row[1] == "SELL": self.trade(row[0], Stock(row[2]), -row[3], row[4], row[5])
-                        else: print "error in transaction side: ", row[1]
+	def load(self, stDate, endDate):
+		#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
+		urlparse.uses_netloc.append("postgres")
+		url = urlparse.urlparse(os.environ["DATABASE_URL"])
+		conn = psycopg2.connect(
+			database=url.path[1:],
+			user=url.username,
+			password=url.password,
+			host=url.hostname,
+			port=url.port
+		)
+		c = conn.cursor()
+		c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
+		holidays = []
+		for row in c: 
+			print row[0], row[1], row[2], row[3], row[4], row[5] 
+			if row[1] == "BUY": self.trade(row[0], Stock(row[2]), row[3], row[4], row[5])
+			elif row[1] == "SELL": self.trade(row[0], Stock(row[2]), -row[3], row[4], row[5])
+			else: print "error in transaction side: ", row[1]
 
-                toto = 0
-                for lStock, qty in self.equity.iteritems():
-                        lStock.load()
-                        toto += 1
-                print "toto:", toto
-                c.close
+			toto = 0
+			for lStock, qty in self.equity.iteritems():
+				lStock.load()
+				toto += 1
+           		print "toto:", toto
+		c.close
 	
 if __name__=='__main__':
 	import sys
