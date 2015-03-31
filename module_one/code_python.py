@@ -248,7 +248,7 @@ class Portfolio:
 			#if row[1] == "BUY": self.trade(row[0], Stock(row[2]), row[3], row[4], row[5])
 			#elif row[1] == "SELL": self.trade(row[0], Stock(row[2]), -row[3], row[4], row[5])
 			#else: print "error in transaction side: ", row[1]
-			#toto = 0
+			toto = 0
 			#for lStock, qty in self.equity.iteritems():
 			#	lStock.load()
 			#	toto += 1
