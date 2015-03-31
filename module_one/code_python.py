@@ -64,19 +64,19 @@ def isTradingDay(tDate):
 
 def vTradingDates(stDate, endDate, cdr):
         #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-        urlparse.uses_netloc.append("postgres")
-		url = urlparse.urlparse(os.environ["DATABASE_URL"])
-		conn = psycopg2.connect(
-    		database=url.path[1:],
-    		user=url.username,
-    		password=url.password,
-    		host=url.hostname,
-    		port=url.port
-		)
-        c = conn.cursor()
-        c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
-        holidays = []
-        for row in list(c): holidays.append(row[0])
+    urlparse.uses_netloc.append("postgres")
+	url = urlparse.urlparse(os.environ["DATABASE_URL"])
+	conn = psycopg2.connect(
+    	database=url.path[1:],
+    	user=url.username,
+    	password=url.password,
+    	host=url.hostname,
+    	port=url.port
+	)
+    c = conn.cursor()
+    c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
+    holidays = []
+    for row in list(c): holidays.append(row[0])
 
 	step = datetime.timedelta(days=1)
 	result = []
