@@ -240,8 +240,8 @@ class Portfolio:
 		#c = conn.cursor()
 
 		if sqlConn.bSqlite3: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
-		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate, endDate))
-		if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades')
+		if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', [stDate, endDate])
+		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades')
 
 		holidays = []
 		for row in c: 
