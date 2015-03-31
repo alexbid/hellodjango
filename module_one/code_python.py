@@ -11,7 +11,6 @@ class sqlConnector:
 	portfolioDB = ''
 
 	def __init__(self):
-		#self.mnemo = mnemo
 		if self.bSqlite3: 
 			import sqlite3
 			output = os.path.dirname(__file__)
@@ -79,7 +78,8 @@ def vTradingDates(stDate, endDate, cdr):
     #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 	sqlConn = sqlConnector()
 	c = sqlConn.conn.cursor()
-	c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
+	if sqlConn.bSqlite3: c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
+	if sqlConn.bPostgre: c.execute('SELECT * FROM calendar WHERE (CDR=?)', (cdr))	
 	holidays = []
 	for row in list(c): holidays.append(row[0])
 	
