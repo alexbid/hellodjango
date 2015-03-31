@@ -238,7 +238,10 @@ class Portfolio:
 			sqlConn = sqlConnector()
 			c = sqlConn.conn.cursor()
 			#c = conn.cursor()
-			c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
+
+			if sqlConn.bSqlite3: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
+			if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s)',(stDate, endDate))
+
 			holidays = []
 			for row in c: 
 				print row[0], row[1], row[2], row[3], row[4], row[5] 
