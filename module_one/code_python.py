@@ -246,7 +246,7 @@ class Portfolio:
 		
 		
 		pypy = '^FCHI'
-		if sqlConn.bPostgre: c.execute("SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (BBG = %s);", pypy)
+		if sqlConn.bPostgre: c.execute("SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (BBG = %s);", (pypy,))
 
 		#if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s);""", {'date': stDate, 'date': endDate})
 		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate, endDate))
