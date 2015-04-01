@@ -250,7 +250,7 @@ class Portfolio:
 		pypy = date.today()
 		
 		
-		if sqlConn.bPostgre: c.execute("SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date = %s);", (pypy,))
+		if sqlConn.bPostgre: c.execute("SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s);", (pypy, pypy))
 
 		#if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s);""", {'date': stDate, 'date': endDate})
 		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate, endDate))
