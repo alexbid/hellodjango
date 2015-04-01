@@ -5,7 +5,7 @@ from module_one.code_python import Portfolio
 from module_one.code_python import vTradingDates
 from module_one.code_python import doRequestData
 
-dt = datetime.date(1990, 03, 01)
+dt = datetime.date(2014, 03, 01)
 end = datetime.date(2015, 12, 30)
 
 from timeit import Timer
