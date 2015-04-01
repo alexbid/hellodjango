@@ -1,5 +1,4 @@
 import datetime
-from datetime import date 
 import sqlite3
 import calendar
 import pdb
@@ -26,6 +25,7 @@ class sqlConnector:
 		if self.bPostgre: 
 			#import os
 			import psycopg2
+			from psycopg2 import Date 
 			import urlparse
 			urlparse.uses_netloc.append("postgres")
 			url = urlparse.urlparse(os.environ["DATABASE_URL"])
@@ -242,7 +242,7 @@ class Portfolio:
 		#print stDate, type(stDate)
 		#print endDate, type(endDate)
 		if sqlConn.bSqlite3: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
-		if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)""", [date(stDate), date(endDate)])
+		if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)""", [Date(stDate), Date(endDate)])
 		#if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s);""", {'date': stDate, 'date': endDate})
 		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate, endDate))
 		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate.date(), endDate.date()))
