@@ -9,8 +9,8 @@ dt = datetime.date(2014, 03, 01)
 end = datetime.date(2015, 12, 30)
 
 from timeit import Timer
-t = Timer(lambda: vTradingDates(dt, end, 'FR'))
-print t.repeat(3, 5)
+#t = Timer(lambda: vTradingDates(dt, end, 'FR'))
+#print t.repeat(3, 5)
 doRequestData('^FCHI', dt, end)
 portfolio = Portfolio()
 tDate = datetime.date(1999, 1, 5)

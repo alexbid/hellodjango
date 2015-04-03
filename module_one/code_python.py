@@ -3,10 +3,11 @@ import sqlite3
 import calendar
 import pdb
 import os
+#import settings
 
 class sqlConnector:
-	bSqlite3 = True
-	bPostgre = False
+	bSqlite3 = False
+	bPostgre = True
 	conn = 0
 	portfolioDB = ''
 	output = ''
@@ -28,7 +29,12 @@ class sqlConnector:
 			#from psycopg2 import Date 
 			import urlparse
 			urlparse.uses_netloc.append("postgres")
+			#print os.environ["DATABASE_URL"]
+			#
+			if not os.environ.has_key('DATABASE_URL'):
+				os.environ['DATABASE_URL'] = 'postgres://django_login:123456@localhost/django_db'
 			url = urlparse.urlparse(os.environ["DATABASE_URL"])
+			#
 			self.conn = psycopg2.connect(
 				database=url.path[1:],
 				user=url.username,

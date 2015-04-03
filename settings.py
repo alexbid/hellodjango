@@ -1,6 +1,15 @@
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
+#import os
 DATABASES['default'] =  dj_database_url.config()
+#DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
+#print os.environ.get('LOCAL_DEV', False), "Alex!!!!"
+#if bool(os.environ.get('LOCAL_DEV', False)):
+#if not os.environ.has_key('DATABASE_URL'):
+#    os.environ['DATABASE_URL'] = 'postgres://localhost'
+#DATABASES = {'default': dj_database_url.config(default=os.environ['DATABASE_URL'])}
+
+# Override DATABASES['default'] with your local database configuration
 
 #try:
 #  database_url = os.environ["DATABASE_URL"]
