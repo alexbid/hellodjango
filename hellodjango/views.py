@@ -46,7 +46,9 @@ def getLastClose():
 		)
 		#except: return "failed to connect to DB....."
 		c = conn.cursor()
-		c.execute('SELECT spot FROM (SELECT  MAX(date), spot FROM spots WHERE BBG = %s and flag = %s) AS FOO', (BBG, flag))
+		#c.execute('SELECT spot FROM (SELECT  MAX(date), spot FROM spots WHERE BBG = %s and flag = %s) AS FOO', (BBG, flag))
+		c.execute('SELECT spot FROM spots WHERE date=(SELECT MAX(date) FROM spots WHERE BBG = %s and flag = %s) AND BBG = $s and flag = %s', (BBG, flag, BBG, flag))
+		
 
 		data = c.fetchone()[0]
 		if data == 0:
