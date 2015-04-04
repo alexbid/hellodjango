@@ -31,18 +31,20 @@ def getLastClose():
 		urlparse.uses_netloc.append("postgres")
 		if not os.environ.has_key('DATABASE_URL'):
 			os.environ['DATABASE_URL'] = 'postgres://wcmikblybrgqbz:ZycOXg48gWJlRGR3MVFA9qGxvB@ec2-23-23-210-37.compute-1.amazonaws.com:5432/d3ibjjmjb9fqrm'
-			url = urlparse.urlparse(os.environ["DATABASE_URL"])
+		url = urlparse.urlparse(os.environ["DATABASE_URL"])
 		#return 'icici c est Paris'
-		try : 
+		#try : 
 			#conn = sqlite3.connect(DATABASE_NAME)
-			conn = psycopg2.connect(
-				database=url.path[1:],
-				user=url.username,
-				password=url.password,
-				host=url.hostname,
-				port=url.port
-			)
-		except: return "failed to connect to DB....."
+		conn = psycopg2.connect(
+			database=url.path[1:],
+			#user='wcmikblybrgqbz',
+			user=url.username,
+			password=url.password,
+			#password='ZycOXg48gWJlRGR3MVFA9qGxvB',
+			host=url.hostname,
+			port=url.port
+		)
+		#except: return "failed to connect to DB....."
 		c = conn.cursor()
 		c.execute('SELECT spot FROM (SELECT  MAX(date), spot FROM spots WHERE BBG = %s and flag = %s)', (BBG, flag))
 
