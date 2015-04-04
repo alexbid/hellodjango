@@ -6,22 +6,22 @@ import os
 #import settings
 
 class sqlConnector:
-	bSqlite3 = False
+	#bSqlite3 = False
 	bPostgre = True
 	conn = 0
 	portfolioDB = ''
 	output = ''
 
 	def __init__(self):
-		if self.bSqlite3: 
-			import sqlite3
-			self.output = os.path.dirname(__file__)
-			if not self.output: self.portfolioDB  = 'portfolio.db'
-			else:
-				self.portfolioDB = self.output + '/portfolio.db'
-				self.output += "/"
-			#conn = sqlite3.connect(portfolioDB)
-			self.conn = sqlite3.connect(self.portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
+		#if self.bSqlite3: 
+		#	import sqlite3
+		#	self.output = os.path.dirname(__file__)
+		#	if not self.output: self.portfolioDB  = 'portfolio.db'
+		#	else:
+		#		self.portfolioDB = self.output + '/portfolio.db'
+		#		self.output += "/"
+		#	#conn = sqlite3.connect(portfolioDB)
+		#	self.conn = sqlite3.connect(self.portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 			
 		if self.bPostgre: 
 			#import os
@@ -67,7 +67,7 @@ def isTradingDay(tDate):
 		#conn = sqlite3.connect(portfolioDB)
 		sqlConn = sqlConnector()
 		c = sqlConn.conn.cursor()
-		c.execute('SELECT COUNT(*) FROM calendar WHERE date = ?', (tDate.strftime("%Y-%m-%d"),))
+		c.execute('SELECT COUNT(*) FROM calendar WHERE date = %s', (tDate.strftime("%Y-%m-%d"),))
 
 		data = c.fetchone()[0]
 		if data == 0:
@@ -86,7 +86,7 @@ def vTradingDates(stDate, endDate, cdr):
     #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 	sqlConn = sqlConnector()
 	c = sqlConn.conn.cursor()
-	if sqlConn.bSqlite3:	c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
+	#if sqlConn.bSqlite3:	c.execute('SELECT * FROM calendar WHERE (CDR=?) AND (date BETWEEN ? AND ?)', (cdr, stDate, endDate))
 	if sqlConn.bPostgre:	c.execute('SELECT * FROM calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s)', (cdr, stDate, endDate))	
 	holidays = []
 	for row in list(c): holidays.append(row[0])
@@ -119,7 +119,7 @@ def doRequestData(BBG, startD, endD):
 	c = sqlConn.conn.cursor()
 	tDate = vTradingDates(startD, endD, 'FR')
         
-	if sqlConn.bSqlite3: c.execute('SELECT date FROM spots WHERE (date BETWEEN ? AND ?) AND (BBG=?) AND (flag=?)', (startD , endD, BBG, flag))
+	#if sqlConn.bSqlite3: c.execute('SELECT date FROM spots WHERE (date BETWEEN ? AND ?) AND (BBG=?) AND (flag=?)', (startD , endD, BBG, flag))
 	if sqlConn.bPostgre: c.execute('SELECT date FROM spots WHERE (date BETWEEN %s AND %s) AND (BBG=%s) AND (flag=%s)', (startD , endD, BBG, flag))
 	oDate = [i[0] for i in c.fetchall()]
 	
@@ -139,29 +139,19 @@ def doRequestData(BBG, startD, endD):
 			lDate = getDateforYahoo(mDate[0], mDate[-1])
 			print "ldate:", lDate, len(lDate)
 			rslt = []
-			#print lDate[0], lDate[-1], "icici c est Paris!!"
 			if lDate[0] == lDate[-1]:
-				#print "here"
-				#print yahoo.get_historical(lDate[0], lDate[-1])
 				try: rslt.append(yahoo.get_historical(lDate[0], lDate[-1]))
 				except: print "yahoo request failed 1:", BBG, lDate[0], lDate[-1]
 			else:
 				for i in range(0,  len(lDate)-1):
-					#print "icici c est Paris!!", len(lDate)-1, lDate[i], lDate[i+1]	
 					try: rslt = rslt + yahoo.get_historical(lDate[i], lDate[i+1])
 					except: print "yahoo request failed 2:", BBG, lDate[i], lDate[i+1]
 			for line in rslt: 
-				#print "icici c est Paris!!", line	
 				if 'Close' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Close']), 'close'))
 				if 'Open' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Open']), 'open'))
 				if 'High' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['High']), 'high'))
 				if 'Low' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Low']), 'low'))
 				if 'Volume' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Volume']), 'volume'))
-#				if 'Close' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Close']), 'close'))
-#				if 'Open' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Open']), 'open'))
-#				if 'High' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['High']), 'high'))
-#				if 'Low' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Low']), 'low'))
-#				if 'Volume' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Volume']), 'volume'))
 		except: print "Ops!! your request failed!"
 	sqlConn.conn.commit()
 	sqlConn.conn.close()
@@ -188,7 +178,6 @@ class Stock(object):
 			#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 			sqlConn = sqlConnector()
 			c = sqlConn.conn.cursor()
-			#c = conn.cursor()
 			try:
 #				c.execute("SELECT spot FROM spots WHERE BBG=? AND flag='close' AND date = (SELECT MAX(date) FROM spots WHERE BBG=? AND flag='close')", (self.mnemo, self.mnemo) )
 				c.execute("SELECT spot FROM spots WHERE BBG=%s AND flag='close' AND date = (SELECT MAX(date) FROM spots WHERE BBG=%s AND flag='close')", (self.mnemo, self.mnemo) )
@@ -198,19 +187,22 @@ class Stock(object):
 					d = sqlConn.conn.cursor()
 					#d = conn.cursor()
 					#d.execute("SELECT date, spot FROM spots WHERE BBG='" + self.mnemo + "' AND flag='close'" )
-					d.execute("SELECT date, spot FROM spots WHERE BBG='%s' AND flag='close'", self.mnemo )
+					d.execute("SELECT date, spot FROM spots WHERE BBG=%s AND flag='close'", self.mnemo )
 					self.spots =  dict(d.fetchall())
 				except: print "error in loading historic prices for " + self.mnemo
 			except: self.spot = 0
 		self.loaded = True
 
 	def saveQuote(self, dDate, quote):
-		conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-		c = conn.cursor()
+		#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
+		sqlConn = sqlConnector()
+		c = sqlConn.conn.cursor()
+		#c = conn.cursor()
 		try: 
 			c.execute("INSERT INTO spot(BBG, date, spot, flag) VALUES(%s,%s,%s,%s)",(self.mnemo, dDate, quote, self.flag))
 			c.commit()
 		except: print "error in saving historic prices for " + self.mnemo
+		#sqlConn.conn.close()
 
 	def __hash__(self): return hash(str(self))
 	def __cmp__(self, other): return cmp(str(self), str(other))
@@ -257,7 +249,7 @@ class Portfolio:
 		#c = conn.cursor()
 		#print stDate, type(stDate)
 		#print endDate, type(endDate)
-		if sqlConn.bSqlite3: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
+		#if sqlConn.bSqlite3: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
 
 		#if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)""", [datetime.date(stDate), datetime.date(endDate)])
 		from datetime import date
