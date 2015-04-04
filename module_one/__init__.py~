@@ -1,4 +1,0 @@
-import sys
-sys.path.append('/hellodjango/module_yahoo/yahoo_finance')
-from yahoo_finance import Share
-print "Share imported"
