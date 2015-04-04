@@ -8,19 +8,16 @@ from django.http import HttpResponse
 # from hellodjango.module_one 
 
 import os
-#output = os.path.realpath(os.path.dirname(__file__))
-#SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-#SITE_ROOT = SITE_ROOT[:-12]
+output = os.path.realpath(os.path.dirname(__file__))
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+SITE_ROOT = SITE_ROOT[:-12]
 #if not output: portfolioDB  = 'portfolio.db'
 #else:
 #        portfolioDB = output + '/module_one/portfolio.db'
 #        output += "/"
+
 #portfolioDB = "/module_one/portfolio.db"
-#DATABASE_NAME = os.path.join(SITE_ROOT, 'module_one') + '/portfolio.db'
-
-import psycopg2
-import urlparse
-
+DATABASE_NAME = os.path.join(SITE_ROOT, 'module_one') + '/portfolio.db'
 
 # request data here
 def getLastClose():
@@ -28,23 +25,11 @@ def getLastClose():
 	flag = 'close'
 
 	try: 
-		urlparse.uses_netloc.append("postgres")
-		if not os.environ.has_key('DATABASE_URL'):
-			os.environ['DATABASE_URL'] = 'postgres://wcmikblybrgqbz:ZycOXg48gWJlRGR3MVFA9qGxvB@ec2-23-23-210-37.compute-1.amazonaws.com:5432/d3ibjjmjb9fqrm'
-			url = urlparse.urlparse(os.environ["DATABASE_URL"])
-		#return 'icici c est Paris'
 		try : 
-			#conn = sqlite3.connect(DATABASE_NAME)
-			conn = psycopg2.connect(
-				database=url.path[1:],
-				user=url.username,
-				password=url.password,
-				host=url.hostname,
-				port=url.port
-			)
-		except: return "failed to connect to DB....."
+			conn = sqlite3.connect(DATABASE_NAME)
+		except: return "failed to connect to DB: " + DATABASE_NAME + "  pwd: " + output + "  SITE_ROOT: " + SITE_ROOT 
 		c = conn.cursor()
-		c.execute('SELECT spot FROM (SELECT  MAX(date), spot FROM spots WHERE BBG = %s and flag = %s)', (BBG, flag))
+		c.execute('SELECT spot FROM (SELECT  MAX(date), spot FROM spots WHERE BBG = ? and flag = ?)', (BBG, flag))
 
 		data = c.fetchone()[0]
 		if data == 0:
