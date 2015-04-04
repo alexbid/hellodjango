@@ -32,7 +32,7 @@ class sqlConnector:
 			#print os.environ["DATABASE_URL"]
 			#
 			if not os.environ.has_key('DATABASE_URL'):
-				os.environ['DATABASE_URL'] = 'postgres://django_login:123456@localhost/django_db'
+				os.environ['DATABASE_URL'] = 'postgres://wcmikblybrgqbz:ZycOXg48gWJlRGR3MVFA9qGxvB@ec2-23-23-210-37.compute-1.amazonaws.com:5432/d3ibjjmjb9fqrm'
 			url = urlparse.urlparse(os.environ["DATABASE_URL"])
 			#
 			self.conn = psycopg2.connect(
@@ -139,7 +139,7 @@ def doRequestData(BBG, startD, endD):
 			lDate = getDateforYahoo(mDate[0], mDate[-1])
 			print "ldate:", lDate, len(lDate)
 			rslt = []
-			#print lDate[0], lDate[-1]
+			#print lDate[0], lDate[-1], "icici c est Paris!!"
 			if lDate[0] == lDate[-1]:
 				#print "here"
 				#print yahoo.get_historical(lDate[0], lDate[-1])
@@ -147,17 +147,24 @@ def doRequestData(BBG, startD, endD):
 				except: print "yahoo request failed 1:", BBG, lDate[0], lDate[-1]
 			else:
 				for i in range(0,  len(lDate)-1):
+					#print "icici c est Paris!!", len(lDate)-1, lDate[i], lDate[i+1]	
 					try: rslt = rslt + yahoo.get_historical(lDate[i], lDate[i+1])
 					except: print "yahoo request failed 2:", BBG, lDate[i], lDate[i+1]
-					for line in rslt: 
-						if 'Close' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Close']), 'close'))
-						if 'Open' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Open']), 'open'))
-						if 'High' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['High']), 'high'))
-						if 'Low' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Low']), 'low'))
-						if 'Volume' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Volume']), 'volume'))
+			for line in rslt: 
+				#print "icici c est Paris!!", line	
+				if 'Close' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Close']), 'close'))
+				if 'Open' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Open']), 'open'))
+				if 'High' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['High']), 'high'))
+				if 'Low' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Low']), 'low'))
+				if 'Volume' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Volume']), 'volume'))
+#				if 'Close' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Close']), 'close'))
+#				if 'Open' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Open']), 'open'))
+#				if 'High' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['High']), 'high'))
+#				if 'Low' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Low']), 'low'))
+#				if 'Volume' in line: c.execute('INSERT INTO spots VALUES(?, ?, ?, ?)', (BBG, line['Date'], float(line['Volume']), 'volume'))
 		except: print "Ops!! your request failed!"
-        sqlConn.conn.commit()
-        sqlConn.conn.close()
+	sqlConn.conn.commit()
+	sqlConn.conn.close()
 
 def cTurbo(Fwd, strike, barrier, quot, margin):
 	if Fwd > strike: return (Fwd - strike)/quot + margin
@@ -183,13 +190,15 @@ class Stock(object):
 			c = sqlConn.conn.cursor()
 			#c = conn.cursor()
 			try:
-				c.execute("SELECT spot FROM spots WHERE BBG=? AND flag='close' AND date = (SELECT MAX(date) FROM spots WHERE BBG=? AND flag='close')", (self.mnemo, self.mnemo) )
+#				c.execute("SELECT spot FROM spots WHERE BBG=? AND flag='close' AND date = (SELECT MAX(date) FROM spots WHERE BBG=? AND flag='close')", (self.mnemo, self.mnemo) )
+				c.execute("SELECT spot FROM spots WHERE BBG=%s AND flag='close' AND date = (SELECT MAX(date) FROM spots WHERE BBG=%s AND flag='close')", (self.mnemo, self.mnemo) )
 				self.spot = c.fetchone()[0]
 				try:
 					sqlConn = sqlConnector()
 					d = sqlConn.conn.cursor()
 					#d = conn.cursor()
-					d.execute("SELECT date, spot FROM spots WHERE BBG='" + self.mnemo + "' AND flag='close'" )
+					#d.execute("SELECT date, spot FROM spots WHERE BBG='" + self.mnemo + "' AND flag='close'" )
+					d.execute("SELECT date, spot FROM spots WHERE BBG='%s' AND flag='close'", self.mnemo )
 					self.spots =  dict(d.fetchall())
 				except: print "error in loading historic prices for " + self.mnemo
 			except: self.spot = 0
@@ -199,18 +208,18 @@ class Stock(object):
 		conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 		c = conn.cursor()
 		try: 
-			c.execute("INSERT INTO spot(BBG, date, spot, flag) VALUES(?,?,?,?)",(self.mnemo, dDate, quote, self.flag))
+			c.execute("INSERT INTO spot(BBG, date, spot, flag) VALUES(%s,%s,%s,%s)",(self.mnemo, dDate, quote, self.flag))
 			c.commit()
 		except: print "error in saving historic prices for " + self.mnemo
 
 	def __hash__(self): return hash(str(self))
 	def __cmp__(self, other): return cmp(str(self), str(other))
 	def __str__(self): return self.mnemo
-        #def __eq__(self, other):
-        #        #return (self.mnemo, self.location) == (other.mnemo, other.location)
-        #        return (self.mnemo) == (other.mnemo)
+	#def __eq__(self, other):
+	#        #return (self.mnemo, self.location) == (other.mnemo, other.location)
+	#        return (self.mnemo) == (other.mnemo)
 	#def __ne__(self, other ):
-        #	return self.mnemo != other.mnemo
+	#	return self.mnemo != other.mnemo
 	def getMnemo(self): return self.mnemo
 	def getClose(self, dDate):
 		try : return self.spots[dDate]
@@ -226,21 +235,22 @@ class Portfolio:
         fees = 0.0
         
 	def __init__(self): self.cash = 0
-        def mDeposit(self, amount): self.cash += amount
-        def mWithdraw(self, amount): self.cash -= amount
-        def getFees(self): return self.fees
-        def trade(self, tDate, Stock, qt, price, fee):
+	def mDeposit(self, amount): self.cash += amount
+	def mWithdraw(self, amount): self.cash -= amount
+	def getFees(self): return self.fees
+	def trade(self, tDate, Stock, qt, price, fee):
 		if Stock in self.equity: self.equity[Stock] = self.equity[Stock] + qt
 		else : self.equity[Stock] = qt
                 self.cash = self.cash - qt*price - fee
                 self.fees += fee
 	def getValue(self, gValue, flag):
 		stockValue = 0.0
-                for lStock, qty in self.equity.iteritems():
-                        stockValue += qty * lStock.getClose(gValue)
-                return self.cash + stockValue 
+		for lStock, qty in self.equity.iteritems():
+			stockValue += qty * lStock.getClose(gValue)
+		return self.cash + stockValue 
 
 	def load(self, stDate, endDate):
+		#print stDate, endDate
 		#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 		sqlConn = sqlConnector()
 		c = sqlConn.conn.cursor()
@@ -248,20 +258,17 @@ class Portfolio:
 		#print stDate, type(stDate)
 		#print endDate, type(endDate)
 		if sqlConn.bSqlite3: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
-#		if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)""", [datetime.date(stDate), datetime.date(endDate)])
-		
-		
+
+		#if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)""", [datetime.date(stDate), datetime.date(endDate)])
 		from datetime import date
-		
-		pypy = date.today()
-		
-		
-		if sqlConn.bPostgre: c.execute("SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date IS %(date)s);", (pypy, ))
+		#print "icici c est Paris", stDate, endDate
+		if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s);', (stDate, endDate))
 
 		#if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s);""", {'date': stDate, 'date': endDate})
 		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate, endDate))
 		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate.date(), endDate.date()))
 		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades')
+
 
 		holidays = []
 		for row in c: 
@@ -283,27 +290,27 @@ if __name__=='__main__':
 	dt = datetime.date(1990, 03, 01)
 	end = datetime.date(2014, 12, 30)
 
-        from timeit import Timer
-        t = Timer(lambda: vTradingDates(dt, end, 'FR'))
-        #print t.timeit(number=1)
-        print t.repeat(3, 5)
-        doRequestData('^FCHI', dt, end)
-        #print vTradingDates(dt, end, 'FR')
+	from timeit import Timer
+	t = Timer(lambda: vTradingDates(dt, end, 'FR'))
+	#print t.timeit(number=1)
+	print t.repeat(3, 5)
+	doRequestData('^FCHI', dt, end)
+	#print vTradingDates(dt, end, 'FR')
 	#print cTurbo(4346, 3750, 3750, 100.0, 0.08)
 	#print pTurbo(4346, 4500, 4500, 100.0, 0.08)
 	#x = Stock("^FCHI")
-        #print x.spot
-        #print x.getClose(datetime.date(1999, 1, 5))
-        portfolio = Portfolio()
-        tDate = datetime.date(1999, 1, 5)
-        #portfolio.trade(tDate, x, 1, x.getClose(tDate), 10)
-        #portfolio.trade(tDate, x, 1, x.getClose(tDate), 10)
-        portfolio.mDeposit(10000)
-        #print "value at trade date:", portfolio.getValue(tDate,'close')
-        #print "value as of today: ", portfolio.getValue(datetime.date(2014, 11, 26),'close')
-        #print "gain: ", portfolio.getValue(datetime.date(2014, 11, 26),'close')-portfolio.getValue(tDate,'close')
-        evalDate = datetime.date(2006, 1, 6)
-        portfolio.load(datetime.date(2000, 01, 26), evalDate)
-        print "portfolio values:", portfolio.getValue(evalDate,'close')
-        print "total fees:", portfolio.getFees()
+	#print x.spot
+	#print x.getClose(datetime.date(1999, 1, 5))
+	portfolio = Portfolio()
+	#tDate = datetime.date(1999, 1, 5)
+	#portfolio.trade(tDate, x, 1, x.getClose(tDate), 10)
+	#portfolio.trade(tDate, x, 1, x.getClose(tDate), 10)
+	portfolio.mDeposit(10000)
+	#print "value at trade date:", portfolio.getValue(tDate,'close')
+	#print "value as of today: ", portfolio.getValue(datetime.date(2014, 11, 26),'close')
+	#print "gain: ", portfolio.getValue(datetime.date(2014, 11, 26),'close')-portfolio.getValue(tDate,'close')
+	evalDate = datetime.date(2015, 04, 04)
+	portfolio.load(datetime.date(2000, 01, 26), evalDate)
+	print "portfolio values:", portfolio.getValue(evalDate,'close')
+	print "total fees:", portfolio.getFees()
 
