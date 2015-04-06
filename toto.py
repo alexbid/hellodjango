@@ -16,7 +16,7 @@ doRequestData('^FCHI', dt, end)
 portfolio = Portfolio()
 
 portfolio.mDeposit(10000)
-evalDate = datetime.date(2015, 3, 13)
+evalDate = datetime.date(2015, 3, 31)
 portfolio.load(datetime.date(2000, 01, 26), evalDate)
 print "portfolio values:", portfolio.getValue(evalDate,'close')
 print "total fees:", portfolio.getFees()

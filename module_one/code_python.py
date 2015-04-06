@@ -165,10 +165,11 @@ def pTurbo(Fwd, strike, barrier, quot, margin):
 	else: 	return 0
 
 class Stock(object):
-        spot = 0.0
-        mnemo = ""
-        flag = "close"
-        loaded = False
+	spot = 0.0
+	spots = 0
+	mnemo = ""
+	flag = "close"
+	loaded = False
         
 	def __init__(self, mnemo): self.mnemo = mnemo
                 
@@ -179,18 +180,20 @@ class Stock(object):
 			sqlConn = sqlConnector()
 			c = sqlConn.conn.cursor()
 			try:
-#				c.execute("SELECT spot FROM spots WHERE BBG=? AND flag='close' AND date = (SELECT MAX(date) FROM spots WHERE BBG=? AND flag='close')", (self.mnemo, self.mnemo) )
-				c.execute("SELECT spot FROM spots WHERE BBG=%s AND flag='close' AND date = (SELECT MAX(date) FROM spots WHERE BBG=%s AND flag='close')", (self.mnemo, self.mnemo) )
+				c.execute("SELECT spot FROM spots WHERE (date=(SELECT MAX(date) FROM spots WHERE BBG = %s AND flag = 'close') AND BBG = %s AND flag = 'close')", (self.mnemo, self.mnemo))
 				self.spot = c.fetchone()[0]
+				sqlConn.conn.close()
 				try:
 					sqlConn = sqlConnector()
 					d = sqlConn.conn.cursor()
-					#d = conn.cursor()
-					#d.execute("SELECT date, spot FROM spots WHERE BBG='" + self.mnemo + "' AND flag='close'" )
-					d.execute("SELECT date, spot FROM spots WHERE BBG=%s AND flag='close'", self.mnemo )
+					d.execute("SELECT date, spot FROM spots WHERE BBG=%s AND flag='close'", (self.mnemo, ))
 					self.spots =  dict(d.fetchall())
-				except: print "error in loading historic prices for " + self.mnemo
-			except: self.spot = 0
+					sqlConn.conn.close()
+				except:
+					print "error in loading historic prices for " + self.mnemo
+			except:
+				print "error in loading Stock!"
+				self.spot = 0
 		self.loaded = True
 
 	def saveQuote(self, dDate, quote):
