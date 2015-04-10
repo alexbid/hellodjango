@@ -3,6 +3,7 @@ import datetime
 import calendar
 import pdb
 import os
+import numpy as np
 #import settings
 
 class sqlConnector:
@@ -43,7 +44,6 @@ class sqlConnector:
 				port=url.port
 			)
 		
-
 calendar.setfirstweekday(calendar.MONDAY)
 
 ##########################################################
@@ -125,7 +125,7 @@ def doRequestData(BBG, startD, endD):
 	
 	mDate = list(set(tDate) - set(oDate))
 	mDate.sort()
-	print "missing Dates", mDate
+	print "missing Dates", mDate, " for: ", BBG 
 
 	if mDate:
 		mfile = open(sqlConn.output + "missingdates.csv", "w")
@@ -167,12 +167,12 @@ def pTurbo(Fwd, strike, barrier, quot, margin):
 class Stock(object):
 	spot = 0.0
 	spots = 0
+	#mavg30 = 0
 	mnemo = ""
 	flag = "close"
 	loaded = False
         
 	def __init__(self, mnemo): self.mnemo = mnemo
-                
 	def load(self):
 		if self.loaded == False:
 			print "initializing new Stock... " + self.mnemo
@@ -189,24 +189,65 @@ class Stock(object):
 					d.execute("SELECT date, spot FROM spots WHERE BBG=%s AND flag='close'", (self.mnemo, ))
 					self.spots =  dict(d.fetchall())
 					sqlConn.conn.close()
+					self.loaded = True
 				except:
 					print "error in loading historic prices for " + self.mnemo
 			except:
 				print "error in loading Stock!"
 				self.spot = 0
-		self.loaded = True
 
+	def load(self, stDate, endDate, flag):
+		if self.loaded == False:
+			print "loading Stock... " + self.mnemo, stDate, endDate, flag
+			#try:
+			if self.spot == 0:
+				try:
+					sqlConn = sqlConnector()
+					c = sqlConn.conn.cursor()
+					c.execute("SELECT spot FROM spots WHERE (date=(SELECT MAX(date) FROM spots WHERE BBG = %s AND flag = 'close') AND BBG = %s AND flag = 'close')", (self.mnemo, self.mnemo))
+					self.spot = c.fetchone()[0]
+				except:
+					print "error in loading Stock!"
+			try:
+				c.execute("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s", (self.mnemo, stDate, endDate, flag))
+				self.spots =  np.array(c.fetchall())
+				self.loaded = True
+			except:
+				print "error in loading historic prices for " + self.mnemo
+			sqlConn.conn.close()
+
+	def load_pandas(self, stDate, endDate, flag):
+		#import pandas.io.sql as pds
+		import pandas as pds
+		if self.loaded == False:
+			print "loading Stock... " + self.mnemo, stDate, endDate, flag
+			if self.spot == 0:
+				try:
+					sqlConn = sqlConnector()
+					c = sqlConn.conn.cursor()
+					c.execute("SELECT spot FROM spots WHERE (date=(SELECT MAX(date) FROM spots WHERE BBG = %s AND flag = 'close') AND BBG = %s AND flag = 'close')", (self.mnemo, self.mnemo))
+					self.spot = c.fetchone()[0]
+				except:
+					print "error in loading Stock!"
+			try:
+				self.spots = pds.read_sql(("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s ORDER BY date ASC"), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
+				self.spots['mavg_30'] = pds.stats.moments.rolling_mean(self.spots['spot'], 30)
+				self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['spot'], 10)
+				self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['spot'], 20)
+				self.spots['ewma_50'] = pds.stats.moments.ewma(self.spots['spot'], 50)
+				self.spots['ewma_100'] = pds.stats.moments.ewma(self.spots['spot'], 100)
+			except:
+				print "error in loading historic prices for " + self.mnemo
+			sqlConn.conn.close()
+		
 	def saveQuote(self, dDate, quote):
-		#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 		sqlConn = sqlConnector()
 		c = sqlConn.conn.cursor()
-		#c = conn.cursor()
 		try: 
 			c.execute("INSERT INTO spot(BBG, date, spot, flag) VALUES(%s,%s,%s,%s)",(self.mnemo, dDate, quote, self.flag))
 			c.commit()
 		except: print "error in saving historic prices for " + self.mnemo
-		#sqlConn.conn.close()
-
+		sqlConn.conn.close()
 	def __hash__(self): return hash(str(self))
 	def __cmp__(self, other): return cmp(str(self), str(other))
 	def __str__(self): return self.mnemo
@@ -222,6 +263,7 @@ class Stock(object):
 		return 0
 	def getSpot(self): return self.spot
 	def setSpot(self, spot): self.spot = spot
+	def getMAVG30(self): return self.mavg30
 
 class Portfolio:
         equity = {}
