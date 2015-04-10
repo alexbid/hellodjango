@@ -196,7 +196,7 @@ class Stock(object):
 				print "error in loading Stock!"
 				self.spot = 0
 
-	def load(self, stDate, endDate, flag):
+	def load_numpy(self, stDate, endDate, flag):
 		if self.loaded == False:
 			print "loading Stock... " + self.mnemo, stDate, endDate, flag
 			#try:
