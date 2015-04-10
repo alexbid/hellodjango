@@ -34,5 +34,11 @@ if __name__=='__main__':
 	yhoo['ewma_20'].plot(label='ewma_20')
 	yhoo['ewma_50'].plot(label='ewma_50')
 	yhoo['ewma_100'].plot(label='ewma_100')
+	plt.xlabel(yhoo['date'])
+#	yhoo.plot.plot(style='r', lw = 2.)
+#	yhoo['spot'].plot(figsize =( 8, 5))
+
+
+
 	#plt.legend()
 	plt.show()
