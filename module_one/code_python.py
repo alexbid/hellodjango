@@ -109,7 +109,7 @@ def getDateforYahoo(startD, endD):
         result.append(endD)        
         return result
 
-def doRequestData(BBG, startD, endD):
+def doRequestData(BBG, CAL, startD, endD):
 	from datetime import date
 	flag = 'close'
 	if endD > date.today(): endD = date.today()
@@ -117,7 +117,7 @@ def doRequestData(BBG, startD, endD):
 	c = sqlConn.conn.cursor()
 #	conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 	c = sqlConn.conn.cursor()
-	tDate = vTradingDates(startD, endD, 'FR')
+	tDate = vTradingDates(startD, endD, CAL)
         
 	#if sqlConn.bSqlite3: c.execute('SELECT date FROM spots WHERE (date BETWEEN ? AND ?) AND (BBG=?) AND (flag=?)', (startD , endD, BBG, flag))
 	if sqlConn.bPostgre: c.execute('SELECT date FROM spots WHERE (date BETWEEN %s AND %s) AND (BBG=%s) AND (flag=%s)', (startD , endD, BBG, flag))
@@ -129,7 +129,7 @@ def doRequestData(BBG, startD, endD):
 
 	if mDate:
 		mfile = open(sqlConn.output + "missingdates.csv", "w")
-		convert_generator = (str(w)+';FR' for w in mDate)
+		convert_generator = (str(w)+';'+ CAL for w in mDate)
 		mfile.write('\n'.join(convert_generator))
 		mfile.close()
 		try: 
