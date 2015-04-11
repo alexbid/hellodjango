@@ -5,27 +5,29 @@ from module_one.code_python import Portfolio
 from module_one.code_python import vTradingDates
 from module_one.code_python import doRequestData
 
-dt = datetime.date(2015, 1, 1)
-end = datetime.date(2015, 12, 31)
+
+from dateutil.relativedelta import relativedelta
+
+endDate = datetime.date.today()
+stDate = endDate + relativedelta(months=-12)
+evalDate = datetime.date(2015, 3, 31)
+#windDate = endDate + relativedelta(days=-90)
 
 from timeit import Timer
-#t = Timer(lambda: vTradingDates(dt, end, 'FR'))
+#t = Timer(lambda: vTradingDates(stDate, endDate, 'FR'))
 #print t.repeat(3, 5)
 
-doRequestData('^FCHI', dt, end)
-doRequestData('^GDAXI', dt, end)
-doRequestData('^FTSE', dt, end)
+doRequestData('^FCHI', stDate, endDate)
+doRequestData('^GDAXI', stDate, endDate)
+doRequestData('^FTSE', stDate, endDate)
 portfolio = Portfolio()
 
 portfolio.mDeposit(10000)
-evalDate = datetime.date(2015, 3, 31)
-portfolio.load(datetime.date(2000, 01, 26), evalDate)
+portfolio.load(stDate, evalDate)
 print "portfolio values:", portfolio.getValue(evalDate,'close')
 print "total fees:", portfolio.getFees()
 print ""
 
-#from hellodjango.views import getLastClose
-#print str(getLastClose())
 
 	
 
