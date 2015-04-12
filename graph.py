@@ -13,8 +13,8 @@ if __name__=='__main__':
 	
 	#print windDate
 	
-	x = Stock('^FCHI')
+	x = Stock('^FTSE')
 	x.load_pandas(stDate, endDate, 'close')
-	x.draw2(windDate, endDate)
+	x.draw(windDate, endDate)
 
 #sp500[[' Close', '42d', '252d']]. plot( grid = True, figsize =( 8, 5))

@@ -33,7 +33,8 @@ class sqlConnector:
 			#print os.environ["DATABASE_URL"]
 			#
 			if not os.environ.has_key('DATABASE_URL'):
-				os.environ['DATABASE_URL'] = 'postgres://wcmikblybrgqbz:ZycOXg48gWJlRGR3MVFA9qGxvB@ec2-23-23-210-37.compute-1.amazonaws.com:5432/d3ibjjmjb9fqrm'
+##				os.environ['DATABASE_URL'] = 'postgres://wcmikblybrgqbz:ZycOXg48gWJlRGR3MVFA9qGxvB@ec2-23-23-210-37.compute-1.amazonaws.com:5432/d3ibjjmjb9fqrm'
+				os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb'
 			url = urlparse.urlparse(os.environ["DATABASE_URL"])
 			#
 			self.conn = psycopg2.connect(
@@ -78,9 +79,6 @@ def isTradingDay(tDate):
 			print('this is a HOLIDAY! ' + tDate.isoformat())
 			sqlConn.conn.close()			
 			return False
-
-#q = datetime.datetime(2005,12,26)
-#print isTradingDay(q)
 
 def vTradingDates(stDate, endDate, cdr):
     #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -266,7 +264,6 @@ class Stock(object):
 		return 0
 	def getSpot(self): return self.spot
 	def setSpot(self, spot): self.spot = spot
-	#def getMAVG30(self): return self.mavg30
 	def draw(self, stDate, endDate):
 		import matplotlib.pyplot as plt 
 		from pandas import DataFrame
@@ -320,26 +317,10 @@ class Portfolio:
 		return self.cash + stockValue 
 
 	def load(self, stDate, endDate):
-		#print stDate, endDate
-		#conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 		sqlConn = sqlConnector()
 		c = sqlConn.conn.cursor()
-		#c = conn.cursor()
-		#print stDate, type(stDate)
-		#print endDate, type(endDate)
-		#if sqlConn.bSqlite3: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN ? AND ?)',(stDate, endDate))
-
-		#if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)""", [datetime.date(stDate), datetime.date(endDate)])
 		from datetime import date
-		#print "icici c est Paris", stDate, endDate
 		if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s);', (stDate, endDate))
-
-		#if sqlConn.bPostgre: c.execute("""SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s);""", {'date': stDate, 'date': endDate})
-		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate, endDate))
-		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %(date)s AND %(date)s)', (stDate.date(), endDate.date()))
-		#if sqlConn.bPostgre: c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades')
-
-
 		holidays = []
 		for row in c: 
 			print row[0], row[1], row[2], row[3], row[4], row[5] 

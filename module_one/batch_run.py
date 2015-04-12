@@ -18,23 +18,13 @@ if __name__=='__main__':
 	from dateutil.relativedelta import relativedelta
 	stDate = endDate + relativedelta(months=-11)
 	windDate = endDate + relativedelta(days=-90)
-		
-	#try:
-		
-		#sqlConn = sqlConnector()
-		#c = sqlConn.conn.cursor()
-		#c.execute("SELECT * FROM batch_run")
-		#BBG = [i[0] for i in c.fetchall()]
-		#print BBG
+
 	x = Universe()
-	#except:
-	#	print "error in loading batch!"
 	for i in range(0, len(x.listUniverse)):
-	#for line in BBG:
 		try:
 			y = Share(x.listUniverse.BBG[i])
 			y.load_pandas(stDate, endDate, flag)
-			result1 = y.spots[(y.spots.date > windDate) & (y.spots.cv < 0.50/100 )]
+			result1 = y.spots[(y.spots.date > windDate) & (y.spots.cv < 0.60/100 )]
 			if len(result1.index) > 0: print result1
 		except:
 			print "error in loading historic prices in batch for " + x.listUniverse.BBG[i]
