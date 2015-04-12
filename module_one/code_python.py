@@ -266,7 +266,37 @@ class Stock(object):
 		return 0
 	def getSpot(self): return self.spot
 	def setSpot(self, spot): self.spot = spot
-	def getMAVG30(self): return self.mavg30
+	#def getMAVG30(self): return self.mavg30
+	def draw(self, stDate, endDate):
+		import matplotlib.pyplot as plt 
+		from pandas import DataFrame
+		
+		toPlot = self.spots[(self.spots.date > stDate)]		
+		lines = plt.plot(toPlot['date'], toPlot['spot'])
+
+		plt.plot(toPlot['date'], toPlot['ewma_10'])
+		plt.plot(toPlot['date'], toPlot['ewma_20'])
+		plt.plot(toPlot['date'], toPlot['ewma_50'])		
+		plt.plot(toPlot['date'], toPlot['ewma_100'])		
+		plt.setp(lines, 'color', 'r', 'linewidth', 2.0)
+
+		plt.setp(plt.gca().get_xticklabels(), rotation = 30)
+		
+		plt.show()
+		
+	def draw2(self, stDate, endDate):
+		import matplotlib.pyplot as plt 
+		from pandas import DataFrame
+		import pandas as pd
+		
+		toPlot = pd.DataFrame(self.spots[(self.spots.date > stDate)])
+		toPlot.index = toPlot['date']
+
+		df = DataFrame(toPlot[['spot', 'ewma_10', 'ewma_20', 'ewma_50', 'ewma_100']], index=toPlot.index)
+		#plt.setp(plt.gca().get_xticklabels(), rotation = 30)
+		#plt.figure(); 
+		df.plot();
+		plt.show()		
 
 class Portfolio:
         equity = {}
