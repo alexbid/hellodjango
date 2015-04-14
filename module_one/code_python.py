@@ -26,7 +26,10 @@ class sqlConnector:
 			urlparse.uses_netloc.append("postgres")
 			if not os.environ.has_key('DATABASE_URL'):
 ##				os.environ['DATABASE_URL'] = 'postgres://wcmikblybrgqbz:ZycOXg48gWJlRGR3MVFA9qGxvB@ec2-23-23-210-37.compute-1.amazonaws.com:5432/d3ibjjmjb9fqrm'
-				os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb'
+##				os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb'
+				os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=config/ca/rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
+
+				#heroku config:add DATABASE_URL='postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=config/ca/rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
 			url = urlparse.urlparse(os.environ["DATABASE_URL"])
 			#
 			self.conn = psycopg2.connect(
