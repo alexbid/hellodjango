@@ -1,13 +1,10 @@
 import datetime
-#import sqlite3
 import calendar
 import pdb
 import os
 import numpy as np
-#import settings
 
 class sqlConnector:
-	#bSqlite3 = False
 	bPostgre = True
 	conn = 0
 	portfolioDB = ''
@@ -23,15 +20,10 @@ class sqlConnector:
 		#		self.output += "/"
 		#	#conn = sqlite3.connect(portfolioDB)
 		#	self.conn = sqlite3.connect(self.portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-			
 		if self.bPostgre: 
-			#import os
 			import psycopg2
-			#from psycopg2 import Date 
 			import urlparse
 			urlparse.uses_netloc.append("postgres")
-			#print os.environ["DATABASE_URL"]
-			#
 			if not os.environ.has_key('DATABASE_URL'):
 ##				os.environ['DATABASE_URL'] = 'postgres://wcmikblybrgqbz:ZycOXg48gWJlRGR3MVFA9qGxvB@ec2-23-23-210-37.compute-1.amazonaws.com:5432/d3ibjjmjb9fqrm'
 				os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb'
@@ -55,8 +47,6 @@ from module_yahoo.yahoo_finance import Share
 #print "Share imported totototototo"
 ##########################################################
 
-#print portfolioDB
-
 def isWeekEnd(tDate):
         if tDate.weekday() == 5 or tDate.weekday() == 6: return True
 	else:	return False
@@ -65,11 +55,9 @@ def isTradingDay(tDate):
 	if isWeekEnd(tDate):
                 return False
 	else:	
-		#conn = sqlite3.connect(portfolioDB)
 		sqlConn = sqlConnector()
 		c = sqlConn.conn.cursor()
 		c.execute('SELECT COUNT(*) FROM calendar WHERE date = %s', (tDate.strftime("%Y-%m-%d"),))
-
 		data = c.fetchone()[0]
 		if data == 0:
 			print('this is a trading day ' + tDate.isoformat())
@@ -234,8 +222,9 @@ class Stock(object):
 				self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['spot'], 20)
 				self.spots['ewma_50'] = pds.stats.moments.ewma(self.spots['spot'], 50)
 				self.spots['ewma_100'] = pds.stats.moments.ewma(self.spots['spot'], 100)
-				self.spots['var'] = self.spots[['spot','ewma_20','ewma_50','ewma_100']].var(axis=1)
-				self.spots['mean'] = self.spots[['spot','ewma_20','ewma_50','ewma_100']].mean(axis=1)
+				self.spots['var'] = self.spots[['ewma_20','ewma_50','ewma_100']].var(axis=1)
+				#self.spots['var'] = self.spots[['spot','ewma_20','ewma_50','ewma_100']].var(axis=1)
+				self.spots['mean'] = self.spots[['ewma_20','ewma_50','ewma_100']].mean(axis=1)
 				self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
 			except:
 				print "error in loading historic prices for " + self.mnemo

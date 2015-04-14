@@ -17,13 +17,9 @@ class Universe(object):
 		try:
 			sqlConn = sqlConnector()			
 			self.listUniverse = pds.read_sql("SELECT * FROM batch_run", sqlConn.conn)
-			#c = sqlConn.conn.cursor()
-			#c.execute("SELECT * FROM batch_run")
-			#self.BBG = [i[0] for i in c.fetchall()]
-			#print self.listUniverse
 		except:
 			print "error in loading Universe!"
-		sqlConn.conn.close()
+#		sqlConn.conn.close()
 	
 	#def getUniverse(self):
 	#	return self.BBG()

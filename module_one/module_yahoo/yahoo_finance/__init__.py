@@ -100,8 +100,11 @@ class Share(object):
     @staticmethod
     def __request_historical(symbol, start_date, end_date):
         response = yql.YQLQuery().execute(
+#            'select * from yahoo.finance.historicaldata where symbol = "{0}" '
+#            'and startDate = "{1}" and endDate = "{2}"'.format(symbol, start_date, end_date)
             'select * from yahoo.finance.historicaldata where symbol = "{0}" '
-            'and startDate = "{1}" and endDate = "{2}"'.format(symbol, start_date, end_date)
+            'and startDate = "{1}" and endDate = "{2}"'.format(symbol, start_date, end_date)			
+			
         )
         try:
             return response['query']['results']

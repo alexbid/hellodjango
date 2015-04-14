@@ -13,7 +13,7 @@ if __name__=='__main__':
 	
 	#print windDate
 	
-	x = Stock('^FTSE')
+	x = Stock('FP.PA')
 	x.load_pandas(stDate, endDate, 'close')
 	x.draw(windDate, endDate)
 

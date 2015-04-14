@@ -6,6 +6,10 @@ import numpy as np
 import pandas as pds
 #from module_one.universe import Universe
 from universe import Universe
+from pandas import DataFrame
+from pandas import concat
+
+#import pandas.io.sql as pds
 
 class Share(Stock):
 	
@@ -17,17 +21,23 @@ if __name__=='__main__':
 	endDate = datetime.date.today()
 	from dateutil.relativedelta import relativedelta
 	stDate = endDate + relativedelta(months=-11)
-	windDate = endDate + relativedelta(days=-90)
+	windDate = endDate + relativedelta(days=-10)
 
 	x = Universe()
+	result0 = {}
 	for i in range(0, len(x.listUniverse)):
-		try:
-			y = Share(x.listUniverse.BBG[i])
-			y.load_pandas(stDate, endDate, flag)
-			result1 = y.spots[(y.spots.date > windDate) & (y.spots.cv < 0.60/100 )]
-			if len(result1.index) > 0: print result1
-		except:
-			print "error in loading historic prices in batch for " + x.listUniverse.BBG[i]
+		#try:
+		y = Share(x.listUniverse.BBG[i])
+		y.load_pandas(stDate, endDate, flag)
+		result1 = y.spots[(y.spots.date > windDate) & (y.spots.cv < 0.60/100 )]
+		if len(result1.index) > 0: 
+			
+			result0 = concat(result0, result1)
+#			result0 = DataFrame.merge(result0, result1)
+			
+		#except:
+		#	print "error in loading historic prices in batch for " + x.listUniverse.BBG[i]
+	result0.to_excel('result_batch.xls')
 	#sqlConn.conn.close()
 
 
