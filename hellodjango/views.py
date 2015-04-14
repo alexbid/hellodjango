@@ -31,19 +31,25 @@ def getLastClose():
 		urlparse.uses_netloc.append("postgres")
 		if not os.environ.has_key('DATABASE_URL'):
 #			os.environ['DATABASE_URL'] = 'postgres://wcmikblybrgqbz:ZycOXg48gWJlRGR3MVFA9qGxvB@ec2-23-23-210-37.compute-1.amazonaws.com:5432/d3ibjjmjb9fqrm'
-			os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb'
+#			os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb'
+			os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=config/ca/rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
+			
 		url = urlparse.urlparse(os.environ["DATABASE_URL"])
 		#return 'icici c est Paris'
 		#try : 
 			#conn = sqlite3.connect(DATABASE_NAME)
 		conn = psycopg2.connect(
-			database=url.path[1:],
+			database='marketdb',
+#			database=url.path[1:],
 			#user='wcmikblybrgqbz',
-			user=url.username,
-			password=url.password,
-			#password='ZycOXg48gWJlRGR3MVFA9qGxvB',
-			host=url.hostname,
-			port=url.port
+			user='awsuser',
+			#user=url.username,
+			#password=url.password,
+			password='Newyork2012',
+			host='awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com',
+#			host=url.hostname,
+#			port=url.port
+			port=5432
 		)
 		#except: return "failed to connect to DB....."
 		c = conn.cursor()
