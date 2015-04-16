@@ -225,9 +225,9 @@ class Stock(object):
 				self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['spot'], 20)
 				self.spots['ewma_50'] = pds.stats.moments.ewma(self.spots['spot'], 50)
 				self.spots['ewma_100'] = pds.stats.moments.ewma(self.spots['spot'], 100)
-				self.spots['var'] = self.spots[['ewma_20','ewma_50','ewma_100']].var(axis=1)
-				#self.spots['var'] = self.spots[['spot','ewma_20','ewma_50','ewma_100']].var(axis=1)
-				self.spots['mean'] = self.spots[['ewma_20','ewma_50','ewma_100']].mean(axis=1)
+				#self.spots['var'] = self.spots[['ewma_20','ewma_50','ewma_100']].var(axis=1)
+				self.spots['var'] = self.spots[['spot','ewma_20','ewma_50','ewma_100']].var(axis=1)
+				self.spots['mean'] = self.spots[['spot', 'ewma_20','ewma_50','ewma_100']].mean(axis=1)
 				self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
 			except:
 				print "error in loading historic prices for " + self.mnemo

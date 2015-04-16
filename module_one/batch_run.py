@@ -21,23 +21,27 @@ if __name__=='__main__':
 	endDate = datetime.date.today()
 	from dateutil.relativedelta import relativedelta
 	stDate = endDate + relativedelta(months=-11)
-	windDate = endDate + relativedelta(days=-10)
+	windDate = endDate + relativedelta(days=-5)
 
 	x = Universe()
-	result0 = {}
+	#result0 = pds.DataFrame()
 	for i in range(0, len(x.listUniverse)):
 		#try:
 		y = Share(x.listUniverse.BBG[i])
 		y.load_pandas(stDate, endDate, flag)
 		result1 = y.spots[(y.spots.date > windDate) & (y.spots.cv < 0.60/100 )]
 		if len(result1.index) > 0: 
-			
-			result0 = concat(result0, result1)
-#			result0 = DataFrame.merge(result0, result1)
-			
+			#print "signal"
+			#if len(result0.index) > 0: 
+			#	print result0
+			#	result0 = pds.merge(result0, result1) #, left_on='lkey', right_on='rkey', how='outer')
+			#else:
+			#	result0 = result1
+			print result1
+			result1.to_excel('results/result_batch_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
 		#except:
 		#	print "error in loading historic prices in batch for " + x.listUniverse.BBG[i]
-	result0.to_excel('result_batch.xls')
+	
 	#sqlConn.conn.close()
 
 
@@ -54,7 +58,6 @@ if __name__=='__main__':
 
 	#yhoo = res[['date', 'spot', 'mavg_30', 'ewma_10', 'ewma_20', 'ewma_50', 'ewma_100']]
 	#print yhoo
-	
 	#import matplotlib.pyplot as plt 
 	#plt.title('Graph: ' + x.getMnemo() )
 	#yhoo['spot'].plot(label='CAC40')
