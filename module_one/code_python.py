@@ -4,6 +4,12 @@ import pdb
 import os
 import numpy as np
 
+from datetime import datetime
+
+import pandas.io.data as web
+import pandas.io.sql as pd
+import pandas as pds
+
 class sqlConnector:
 	bPostgre = True
 	conn = 0
@@ -71,6 +77,24 @@ def isTradingDay(tDate):
 			sqlConn.conn.close()			
 			return False
 
+def calendar_clean(theDates, CAL):
+	theDates = theDates.to_datetime()
+	#print theDates.dtype
+	sqlConn = sqlConnector()
+	c = sqlConn.conn.cursor()
+	holi = pds.read_sql("SELECT date FROM calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s) ORDER BY date ASC", sqlConn.conn, params=(CAL, theDates[0], theDates[-1]))
+	holi = pds.to_datetime(holi['date'])
+	#print "result: ", np.setdiff1d(theDates, holi)
+	return np.setdiff1d(theDates, holi)									
+	
+#def countBD(stDate, endDate, cdr):
+#	import pandas as pd
+#	from pandas.tseries.offsets import BDay
+#	asfreq(BDay())
+#	# pd.datetime is an alias for datetime.datetime
+#	today = pd.datetime.today()
+#	print today - BDay(4)
+
 def vTradingDates(stDate, endDate, cdr):
     #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
 	sqlConn = sqlConnector()
@@ -105,7 +129,6 @@ def doRequestData(BBG, CAL, startD, endD):
 	sqlConn = sqlConnector()
 	c = sqlConn.conn.cursor()
 #	conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-	c = sqlConn.conn.cursor()
 	tDate = vTradingDates(startD, endD, CAL)
         
 	#if sqlConn.bSqlite3: c.execute('SELECT date FROM spots WHERE (date BETWEEN ? AND ?) AND (BBG=?) AND (flag=?)', (startD , endD, BBG, flag))
@@ -142,6 +165,32 @@ def doRequestData(BBG, CAL, startD, endD):
 				if 'Low' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Low']), 'low'))
 				if 'Volume' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Volume']), 'volume'))
 		except: print "Ops!! your request failed!"
+	sqlConn.conn.commit()
+	sqlConn.conn.close()
+
+def doRequestData_pandas(BBG, CAL, startD, endD):
+	
+	flag = 'close'	
+	from datetime import date
+	if endD > date.today(): endD = date.today()
+	
+	dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B'), CAL)	
+	sqlConn = sqlConnector()
+	
+	fromdb = pds.read_sql("SELECT DISTINCT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s ORDER BY date ASC", sqlConn.conn, index_col='date', params=(BBG, startD, endD, flag), parse_dates=True)
+
+	toto = pd.DataFrame(fromdb, index=pds.to_datetime(fromdb.index))
+	toto.index.name = 'Date'
+	print "toto: ", toto.tail()
+
+	fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=dates[0], end=dates[-1])
+	titi = pd.DataFrame(fromyahoo['Close'], index=pds.to_datetime(fromyahoo.index))
+	titi.index = pds.to_datetime(fromyahoo.index)
+	print "titi: ", titi.tail()
+	
+	result = np.setdiff1d(titi.index, toto.index)
+	resultf = pd.DataFrame(fromyahoo, index=result)
+	print "resultf", resultf
 	sqlConn.conn.commit()
 	sqlConn.conn.close()
 
@@ -285,7 +334,15 @@ class Stock(object):
 		#plt.setp(plt.gca().get_xticklabels(), rotation = 30)
 		#plt.figure(); 
 		df.plot();
-		plt.show()		
+		plt.show()	
+	def trade(side, qty, price, fee,transDate):
+		sqlConn = sqlConnector()
+		c = sqlConn.conn.cursor()
+		try: 
+			c.execute("INSERT INTO trades(trans, bbg, qty, price, broker, date) VALUES(%s,%s,%s,%s,%s,%s)",(side, self.mnemo, qty, price, fee, transDate))
+			c.commit()
+		except: print "error in saving the trade in portfolio" + self.mnemo
+		sqlConn.conn.close()
 
 class Portfolio:
         equity = {}
@@ -324,7 +381,7 @@ class Portfolio:
 				lStock.load()
 				toto += 1
 				print "toto:", toto
-		sqlConn.conn.close
+		sqlConn.conn.close		
 	
 if __name__=='__main__':
 	import sys

@@ -2,19 +2,30 @@ import datetime
 import numpy as np
 import pandas as pd
 from module_one.code_python import Stock
+from dateutil.relativedelta import relativedelta
 
+endDate = datetime.date.today()
+windDate = endDate + relativedelta(days=-300)
+stDate = endDate + relativedelta(months=-11)
 
-if __name__=='__main__':
-	from dateutil.relativedelta import relativedelta
-	#stDate = endDate + relativedelta(months=-11)
-	endDate = datetime.date.today()
-	windDate = endDate + relativedelta(days=-90)
-	stDate = endDate + relativedelta(months=-11)
+class graphy():
 	
-	#print windDate
+	def __init__(self, BBG):
+		x = Stock(BBG)
+		x.load_pandas(stDate, endDate, 'close')
+		x.draw(windDate, endDate)
 	
-	x = Stock('FP.PA')
-	x.load_pandas(stDate, endDate, 'close')
-	x.draw(windDate, endDate)
+	def toto(self):
+		return "toto"
+
+#if __name__=='__main__':
+#	#stDate = endDate + relativedelta(months=-11)
+#	endDate = datetime.date.today()
+#	windDate = endDate + relativedelta(days=-90)
+#	stDate = endDate + relativedelta(months=-11)
+#	#print windDate
+#	x = Stock('FP.PA')
+#	x.load_pandas(stDate, endDate, 'close')
+#	x.draw(windDate, endDate)
 
 #sp500[[' Close', '42d', '252d']]. plot( grid = True, figsize =( 8, 5))
