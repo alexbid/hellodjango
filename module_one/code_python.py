@@ -174,10 +174,9 @@ def getLastTrDay(endD):
 	sqlConn.conn.close()"""
 
 def doRequestData(BBG, CAL, startD, endD):
-	#flag = 'close'	
 	from datetime import date
 	endD = getLastTrDay(endD)
-	print BBG, endD #.strftime("%Y-%m-%d")
+	print BBG, endD
 #############################################################################################################################
 	dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B'), CAL)
 	sqlConn = sqlConnector()
@@ -186,11 +185,8 @@ def doRequestData(BBG, CAL, startD, endD):
 	flag = 'Close'
 	#fromdb = pds.read_sql("SELECT DISTINCT Date, %s FROM spots WHERE BBG=%s AND (Date BETWEEN %s AND %s) AND flag=%s ORDER BY Date ASC", sqlConn.conn, index_col='Date', params=(flag, BBG, startD, endD, flag), parse_dates=True)
 	fromdb = pds.read_sql("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s)""", sqlConn.conn, index_col="Date", params=(BBG, startD, endD), parse_dates=True)	
-	#print "fromdb Date: ", fromdb.tail()
 	toto = np.array(pds.to_datetime(fromdb.index))
-	#print "toto: ", toto
 	tempAlex = np.setdiff1d(dates, toto)
-	#print "missing spots in DB for: ", BBG, tempAlex, len(tempAlex)
 ### optimisation du nombre de requete Yahoo #################################################################################
 	toRequest = []
 	if len(tempAlex) > 0:
@@ -290,6 +286,7 @@ class Stock(object):
 			try:
 				#self.spots = pds.read_sql(("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s ORDER BY date ASC"), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
 				self.spots = pds.read_sql(("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), sqlConn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))					
+				#print "self.spots.tail(): ", self.spots.tail()
 				self.spots['mavg_30'] = pds.stats.moments.rolling_mean(self.spots['Close'], 30)
 				self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['Close'], 10)
 				self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['Close'], 20)
@@ -331,13 +328,14 @@ class Stock(object):
 		import matplotlib.pyplot as plt 
 		from pandas import DataFrame
 		
-		toPlot = self.spots[(self.spots.date > stDate)]		
-		lines = plt.plot(toPlot['date'], toPlot['spot'])
+		toPlot = self.spots[(self.spots.index > stDate)]	
+		print toPlot.head()	
+		lines = plt.plot(toPlot.index, toPlot['Close'])
 
-		plt.plot(toPlot['date'], toPlot['ewma_10'])
-		plt.plot(toPlot['date'], toPlot['ewma_20'])
-		plt.plot(toPlot['date'], toPlot['ewma_50'])		
-		plt.plot(toPlot['date'], toPlot['ewma_100'])		
+		plt.plot(toPlot.index, toPlot['ewma_10'])
+		plt.plot(toPlot.index, toPlot['ewma_20'])
+		plt.plot(toPlot.index, toPlot['ewma_50'])		
+		plt.plot(toPlot.index, toPlot['ewma_100'])		
 		plt.setp(lines, 'color', 'r', 'linewidth', 2.0)
 
 		plt.setp(plt.gca().get_xticklabels(), rotation = 30)
@@ -348,15 +346,24 @@ class Stock(object):
 		import matplotlib.pyplot as plt 
 		from pandas import DataFrame
 		import pandas as pd
-		
-		toPlot = pd.DataFrame(self.spots[(self.spots.date > stDate)])
-		toPlot.index = toPlot['date']
-
-		df = DataFrame(toPlot[['spot', 'ewma_10', 'ewma_20', 'ewma_50', 'ewma_100']], index=toPlot.index)
-		#plt.setp(plt.gca().get_xticklabels(), rotation = 30)
-		#plt.figure(); 
-		df.plot();
+		toPlot = pd.DataFrame(self.spots[(self.spots.index > stDate)])
+		df = DataFrame(toPlot[['Close', 'ewma_10', 'ewma_20', 'ewma_50', 'ewma_100']], index=toPlot.index)
+#		df.title = self.mnemo
+		df.plot(title = self.mnemo);
 		plt.show()	
+	
+	def draw3(self, stDate, endDate):
+		import math
+		import pandas as pd		
+		import matplotlib.pyplot as plt 
+		toPlot = pd.DataFrame(self.spots[(self.spots.index > stDate)])
+		toPlot['Return'] = np.log(toPlot['Close'] / toPlot['Close']. shift( 1))
+		toPlot['Mov_Vol'] = pd.rolling_std(toPlot['Return'], window = 20) * math.sqrt(252)
+		toPlot[['Close', 'Mov_Vol', 'Return']].plot(subplots = True, style ='b', figsize =(8, 7), title = self.mnemo)
+		#print toPlot.tail()
+		#plt.title = self.mnemo
+		plt.show()
+		
 	def trade(side, qty, price, fee,transDate):
 		sqlConn = sqlConnector()
 		c = sqlConn.conn.cursor()

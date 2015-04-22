@@ -13,18 +13,19 @@ class graphy():
 	def __init__(self, BBG):
 		x = Stock(BBG)
 		x.load_pandas(stDate, endDate, 'close')
-		x.draw(windDate, endDate)
+		x.draw3(windDate, endDate)
+		x.draw2(windDate, endDate)
 	
 	def toto(self):
 		return "toto"
 
-#if __name__=='__main__':
+if __name__=='__main__':
 #	#stDate = endDate + relativedelta(months=-11)
 #	endDate = datetime.date.today()
 #	windDate = endDate + relativedelta(days=-90)
 #	stDate = endDate + relativedelta(months=-11)
 #	#print windDate
-#	x = Stock('FP.PA')
+	x = graphy('FP.PA')
 #	x.load_pandas(stDate, endDate, 'close')
 #	x.draw(windDate, endDate)
 
