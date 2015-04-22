@@ -274,6 +274,7 @@ class Stock(object):
 	def load_pandas(self, stDate, endDate, flag):
 		#import pandas.io.sql as pds
 		import pandas as pds
+		endDate = getLastTrDay(endDate)
 		if self.loaded == False:
 			print "loading Stock... " + self.mnemo, stDate, endDate, flag
 			if self.spot == 0:
@@ -286,7 +287,7 @@ class Stock(object):
 					print "error in loading Stock!"
 			try:
 				#self.spots = pds.read_sql(("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s ORDER BY date ASC"), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
-				self.spots = pds.read_sql(("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
+				self.spots = pds.read_sql(("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), sqlConn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))					
 				self.spots['mavg_30'] = pds.stats.moments.rolling_mean(self.spots['Close'], 30)
 				self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['Close'], 10)
 				self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['Close'], 20)

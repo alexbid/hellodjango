@@ -29,7 +29,9 @@ if __name__=='__main__':
 		#try:
 		y = Share(x.listUniverse.BBG[i])
 		y.load_pandas(stDate, endDate, flag)
-		result1 = y.spots[(y.spots.date > windDate) & (y.spots.cv < 0.60/100 )]
+#		result1 = y.spots[(y.spots.date > windDate) & (y.spots.cv < 0.60/100 )]
+		#print "y.spots: ", y.spots
+		result1 = y.spots[(y.spots.index > windDate) & (y.spots.cv < 0.60/100 )]
 		if len(result1.index) > 0: 
 			#print "signal"
 			#if len(result0.index) > 0: 
