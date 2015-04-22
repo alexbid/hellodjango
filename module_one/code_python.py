@@ -83,21 +83,11 @@ def isTradingDay(tDate):
 
 def calendar_clean(theDates, CAL):
 	theDates = theDates.to_datetime()
-	#print theDates.dtype
 	sqlConn = sqlConnector()
 	c = sqlConn.conn.cursor()
 	holi = pds.read_sql("SELECT date FROM calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s) ORDER BY date ASC", sqlConn.conn, params=(CAL, theDates[0], theDates[-1]))
 	holi = pds.to_datetime(holi['date'])
-	#print "result: ", np.setdiff1d(theDates, holi)
-	return np.setdiff1d(theDates, holi)									
-	
-#def countBD(stDate, endDate, cdr):
-#	import pandas as pd
-#	from pandas.tseries.offsets import BDay
-#	asfreq(BDay())
-#	# pd.datetime is an alias for datetime.datetime
-#	today = pd.datetime.today()
-#	print today - BDay(4)
+	return np.setdiff1d(theDates, holi)
 
 def vTradingDates(stDate, endDate, cdr):
     #conn = sqlite3.connect(portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -125,8 +115,19 @@ def getDateforYahoo(startD, endD):
                 result.append(result[-1] + timedelta(days=365))
         result.append(endD)        
         return result
+		
+def getLastTrDay(endD):
+	from datetime import datetime
+	from datetime import date
+	import numpy as np
+	import pandas as pds
+	if endD >= date.today(): 
+		if datetime.utcnow().hour > 8: lstTDR = np.busday_offset(date.today(), -1, roll='backward')
+		else: lstTDR = np.busday_offset(endD, -2, roll='backward')
+	lstTDR = pds.to_datetime(lstTDR)
+	return lstTDR
 
-def doRequestData(BBG, CAL, startD, endD):
+"""def doRequestData(BBG, CAL, startD, endD):
 	from datetime import date
 	flag = 'close'
 	if endD > date.today(): endD = date.today()
@@ -170,12 +171,13 @@ def doRequestData(BBG, CAL, startD, endD):
 				if 'Volume' in line: c.execute('INSERT INTO spots VALUES(%s, %s, %s, %s)', (BBG, line['Date'], float(line['Volume']), 'volume'))
 		except: print "Ops!! your request failed!"
 	sqlConn.conn.commit()
-	sqlConn.conn.close()
+	sqlConn.conn.close()"""
 
-def doRequestData_pandas(BBG, CAL, startD, endD):
+def doRequestData(BBG, CAL, startD, endD):
 	#flag = 'close'	
 	from datetime import date
-	if endD > date.today(): endD = date.today()
+	endD = getLastTrDay(endD)
+	print endD #.strftime("%Y-%m-%d")
 #############################################################################################################################
 	dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B'), CAL)
 	sqlConn = sqlConnector()
@@ -183,36 +185,30 @@ def doRequestData_pandas(BBG, CAL, startD, endD):
 #############################################################################################################################	
 	flag = 'Close'
 	#fromdb = pds.read_sql("SELECT DISTINCT Date, %s FROM spots WHERE BBG=%s AND (Date BETWEEN %s AND %s) AND flag=%s ORDER BY Date ASC", sqlConn.conn, index_col='Date', params=(flag, BBG, startD, endD, flag), parse_dates=True)
-	fromdb = pds.read_sql("""SELECT * FROM spots WHERE BBG=%s AND (Date BETWEEN %s AND %s)""", sqlConn.conn, params=(BBG, startD, endD), parse_dates=True)
-	#toto = pd.DataFrame(fromdb['Date'], index=pds.to_datetime(fromdb.index))
-	#toto = pd.DataFrame(fromdb['Close'], index=pds.to_datetime(fromdb['Date']))
-	#toto.index.name = 'Date'
-	
-	#print "Date: ", fromdb['Date']
-	toto = np.array(fromdb['Date'])
-	print "toto: ", toto
-	#tempAlex = np.setdiff1d(dates, toto.index)
+	fromdb = pds.read_sql("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s)""", sqlConn.conn, index_col="Date", params=(BBG, startD, endD), parse_dates=True)	
+	#print "fromdb Date: ", fromdb.tail()
+	toto = np.array(pds.to_datetime(fromdb.index))
+	#print "toto: ", toto
 	tempAlex = np.setdiff1d(dates, toto)
-
+	print "missing spots in DB for: ", BBG, tempAlex, len(tempAlex)
 ### optimisation du nombre de requete Yahoo #################################################################################
 	toRequest = []
-	toRequest.append(pds.to_datetime(tempAlex[0]).date())
-	for i in range(1, len(tempAlex)):
-		print i, tempAlex[i - 1], tempAlex[i], np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()), len(tempAlex)
-		if i == len(tempAlex)-1: 
-			#print "icicici Paris!"	
-			toRequest.append(pds.to_datetime(tempAlex[i]).date())
-		elif np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()) > 1:
-			toRequest.append(pds.to_datetime(tempAlex[i]).date())
-	toRequest.sort()
-	
-	print "Period To Request for Stock: ", BBG, toRequest, len(toRequest)
-	engine = create_engine('postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb')
-	for row in range(1, len(toRequest)):
-		fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=toRequest[row-1], end=toRequest[row])
-		fromyahoo['bbg'] = BBG
-		#print fromyahoo
-		fromyahoo.to_sql('spots', engine, if_exists='append') # To investigate with the function to_sql 
+	if len(tempAlex) > 0:
+		toRequest.append(pds.to_datetime(tempAlex[0]).date())
+		for i in range(1, len(tempAlex)):
+			print i, tempAlex[i - 1], tempAlex[i], np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()), len(tempAlex)
+			if i == len(tempAlex)-1: 
+				toRequest.append(pds.to_datetime(tempAlex[i]).date())
+			elif np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()) > 1:
+				toRequest.append(pds.to_datetime(tempAlex[i]).date())
+		toRequest.sort()
+### save to DB ##############################################################################################################
+		print "Period To Request for Stock: ", BBG, toRequest, len(toRequest)
+		engine = create_engine('postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb')
+		for row in range(1, len(toRequest)):
+			fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=toRequest[row-1], end=toRequest[row])
+			fromyahoo['bbg'] = BBG
+			fromyahoo.to_sql('spots', engine, if_exists='append') 
 
 def cTurbo(Fwd, strike, barrier, quot, margin):
 	if Fwd > strike: return (Fwd - strike)/quot + margin
@@ -238,13 +234,14 @@ class Stock(object):
 			sqlConn = sqlConnector()
 			c = sqlConn.conn.cursor()
 			try:
-				c.execute("SELECT spot FROM spots WHERE (date=(SELECT MAX(date) FROM spots WHERE BBG = %s AND flag = 'close') AND BBG = %s AND flag = 'close')", (self.mnemo, self.mnemo))
+#				c.execute("SELECT spot FROM spots WHERE (date=(SELECT MAX(date) FROM spots WHERE BBG = %s AND flag = 'close') AND BBG = %s AND flag = 'close')", (self.mnemo, self.mnemo))
+				c.execute("""SELECT "Close" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG = %s) AND BBG = %s)""", (self.mnemo, self.mnemo))
 				self.spot = c.fetchone()[0]
 				sqlConn.conn.close()
 				try:
 					sqlConn = sqlConnector()
 					d = sqlConn.conn.cursor()
-					d.execute("SELECT date, spot FROM spots WHERE BBG=%s AND flag='close'", (self.mnemo, ))
+					d.execute("""SELECT "Date", "Close" FROM spots WHERE BBG=%s""", (self.mnemo, ))
 					self.spots =  dict(d.fetchall())
 					sqlConn.conn.close()
 					self.loaded = True
@@ -283,12 +280,13 @@ class Stock(object):
 				try:
 					sqlConn = sqlConnector()
 					c = sqlConn.conn.cursor()
-					c.execute("SELECT spot FROM spots WHERE (date=(SELECT MAX(date) FROM spots WHERE BBG = %s AND flag = 'close') AND BBG = %s AND flag = 'close')", (self.mnemo, self.mnemo))
+					c.execute("""SELECT "Close" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG=%s) AND BBG = %s)""", (self.mnemo, self.mnemo))
 					self.spot = c.fetchone()[0]
 				except:
 					print "error in loading Stock!"
 			try:
-				self.spots = pds.read_sql(("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s ORDER BY date ASC"), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
+				#self.spots = pds.read_sql(("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s ORDER BY date ASC"), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
+				self.spots = pds.read_sql(("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
 				self.spots['mavg_30'] = pds.stats.moments.rolling_mean(self.spots['spot'], 30)
 				self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['spot'], 10)
 				self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['spot'], 20)
@@ -302,14 +300,15 @@ class Stock(object):
 				print "error in loading historic prices for " + self.mnemo
 			sqlConn.conn.close()
 		
-	def saveQuote(self, dDate, quote):
-		sqlConn = sqlConnector()
-		c = sqlConn.conn.cursor()
-		try: 
-			c.execute("INSERT INTO spot(BBG, date, spot, flag) VALUES(%s,%s,%s,%s)",(self.mnemo, dDate, quote, self.flag))
-			c.commit()
-		except: print "error in saving historic prices for " + self.mnemo
-		sqlConn.conn.close()
+#	def saveQuote(self, dDate, quote):
+#		sqlConn = sqlConnector()
+#		c = sqlConn.conn.cursor()
+#		try: 
+#			c.execute("INSERT INTO spot(BBG, date, spot, flag) VALUES(%s,%s,%s,%s)",(self.mnemo, dDate, quote, self.flag))
+#			c.commit()
+#		except: print "error in saving historic prices for " + self.mnemo
+#		sqlConn.conn.close()
+
 	def __hash__(self): return hash(str(self))
 	def __cmp__(self, other): return cmp(str(self), str(other))
 	def __str__(self): return self.mnemo

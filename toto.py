@@ -3,7 +3,7 @@ import sys
 import datetime
 from module_one.code_python import Portfolio
 from module_one.code_python import vTradingDates
-from module_one.code_python import doRequestData_pandas
+from module_one.code_python import doRequestData
 #from module_one.code_python import doRequestData
 from module_one.universe import Universe
 
@@ -19,9 +19,9 @@ from timeit import Timer
 #print t.repeat(3, 5)
 
 x = Universe()
-#for i in range(0, len(x.listUniverse)):
-	#doRequestData(x.listUniverse.BBG[i], x.listUniverse.CDR[i], stDate, endDate)
-doRequestData_pandas("^FCHI", "FR", stDate, endDate)
+for i in range(0, len(x.listUniverse)):
+	doRequestData(x.listUniverse.BBG[i], x.listUniverse.CDR[i], stDate, endDate)
+#doRequestData("^FCHI", "FR", stDate, endDate)
 
 portfolio = Portfolio()
 portfolio.mDeposit(10000)
