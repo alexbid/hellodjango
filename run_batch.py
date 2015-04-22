@@ -32,5 +32,5 @@ if __name__=='__main__':
 			print result1
 			result1.to_excel('module_one/results/result_batch_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
 			result1['BBG'] = x.listUniverse.BBG[i]
-			#result1.to_sql('signals', engine, if_exists='append')
-			result1.to_sql('signals', engine, if_exists='replace')
+			result1.to_sql('signals', engine, if_exists='append')
+			#result1.to_sql('signals', engine, if_exists='replace')
