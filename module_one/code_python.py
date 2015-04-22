@@ -177,7 +177,7 @@ def doRequestData(BBG, CAL, startD, endD):
 	#flag = 'close'	
 	from datetime import date
 	endD = getLastTrDay(endD)
-	print endD #.strftime("%Y-%m-%d")
+	print BBG, endD #.strftime("%Y-%m-%d")
 #############################################################################################################################
 	dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B'), CAL)
 	sqlConn = sqlConnector()
@@ -190,13 +190,13 @@ def doRequestData(BBG, CAL, startD, endD):
 	toto = np.array(pds.to_datetime(fromdb.index))
 	#print "toto: ", toto
 	tempAlex = np.setdiff1d(dates, toto)
-	print "missing spots in DB for: ", BBG, tempAlex, len(tempAlex)
+	#print "missing spots in DB for: ", BBG, tempAlex, len(tempAlex)
 ### optimisation du nombre de requete Yahoo #################################################################################
 	toRequest = []
 	if len(tempAlex) > 0:
 		toRequest.append(pds.to_datetime(tempAlex[0]).date())
 		for i in range(1, len(tempAlex)):
-			print i, tempAlex[i - 1], tempAlex[i], np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()), len(tempAlex)
+			#print i, tempAlex[i - 1], tempAlex[i], np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()), len(tempAlex)
 			if i == len(tempAlex)-1: 
 				toRequest.append(pds.to_datetime(tempAlex[i]).date())
 			elif np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()) > 1:
@@ -287,14 +287,14 @@ class Stock(object):
 			try:
 				#self.spots = pds.read_sql(("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s ORDER BY date ASC"), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
 				self.spots = pds.read_sql(("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
-				self.spots['mavg_30'] = pds.stats.moments.rolling_mean(self.spots['spot'], 30)
-				self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['spot'], 10)
-				self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['spot'], 20)
-				self.spots['ewma_50'] = pds.stats.moments.ewma(self.spots['spot'], 50)
-				self.spots['ewma_100'] = pds.stats.moments.ewma(self.spots['spot'], 100)
+				self.spots['mavg_30'] = pds.stats.moments.rolling_mean(self.spots['Close'], 30)
+				self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['Close'], 10)
+				self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['Close'], 20)
+				self.spots['ewma_50'] = pds.stats.moments.ewma(self.spots['Close'], 50)
+				self.spots['ewma_100'] = pds.stats.moments.ewma(self.spots['Close'], 100)
 				#self.spots['var'] = self.spots[['ewma_20','ewma_50','ewma_100']].var(axis=1)
-				self.spots['var'] = self.spots[['spot','ewma_20','ewma_50','ewma_100']].var(axis=1)
-				self.spots['mean'] = self.spots[['spot', 'ewma_20','ewma_50','ewma_100']].mean(axis=1)
+				self.spots['var'] = self.spots[['Close','ewma_20','ewma_50','ewma_100']].var(axis=1)
+				self.spots['mean'] = self.spots[['Close', 'ewma_20','ewma_50','ewma_100']].mean(axis=1)
 				self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
 			except:
 				print "error in loading historic prices for " + self.mnemo
