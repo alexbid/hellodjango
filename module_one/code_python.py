@@ -8,6 +8,7 @@ from datetime import datetime
 
 import pandas.io.data as web
 import pandas.io.sql as pd
+from sqlalchemy import create_engine
 import pandas as pds
 
 class sqlConnector:
@@ -15,6 +16,8 @@ class sqlConnector:
 	conn = 0
 	portfolioDB = ''
 	output = ''
+	engine = 0
+	 #create_engine('postgresql://scott:tiger@localhost:5432/mydatabase')
 
 	def __init__(self):
 		#if self.bSqlite3: 
@@ -26,25 +29,26 @@ class sqlConnector:
 		#		self.output += "/"
 		#	#conn = sqlite3.connect(portfolioDB)
 		#	self.conn = sqlite3.connect(self.portfolioDB, detect_types=sqlite3.PARSE_DECLTYPES)
-		if self.bPostgre: 
-			import psycopg2
-			import urlparse
-			urlparse.uses_netloc.append("postgres")
-			if not os.environ.has_key('DATABASE_URL'):
-##				os.environ['DATABASE_URL'] = 'postgres://wcmikblybrgqbz:ZycOXg48gWJlRGR3MVFA9qGxvB@ec2-23-23-210-37.compute-1.amazonaws.com:5432/d3ibjjmjb9fqrm'
-##				os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb'
-				os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=config/ca/rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
-##				os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
-				#heroku config:add DATABASE_URL='postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=config/ca/rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
-			url = urlparse.urlparse(os.environ["DATABASE_URL"])
-			#
-			self.conn = psycopg2.connect(
-				database=url.path[1:],
-				user=url.username,
-				password=url.password,
-				host=url.hostname,
-				port=url.port
-			)
+		#if self.bPostgre: 
+		import psycopg2
+		import urlparse
+		urlparse.uses_netloc.append("postgres")
+		if not os.environ.has_key('DATABASE_URL'):
+##			os.environ['DATABASE_URL'] = 'postgres://wcmikblybrgqbz:ZycOXg48gWJlRGR3MVFA9qGxvB@ec2-23-23-210-37.compute-1.amazonaws.com:5432/d3ibjjmjb9fqrm'
+##			os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb'	
+			os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=config/ca/rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
+			self.engine = create_engine('postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb')
+##			os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
+			#heroku config:add DATABASE_URL='postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=config/ca/rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
+		url = urlparse.urlparse(os.environ["DATABASE_URL"])
+		#
+		self.conn = psycopg2.connect(
+			database=url.path[1:],
+			user=url.username,
+			password=url.password,
+			host=url.hostname,
+			port=url.port
+		)
 		
 calendar.setfirstweekday(calendar.MONDAY)
 
@@ -169,30 +173,46 @@ def doRequestData(BBG, CAL, startD, endD):
 	sqlConn.conn.close()
 
 def doRequestData_pandas(BBG, CAL, startD, endD):
-	
-	flag = 'close'	
+	#flag = 'close'	
 	from datetime import date
 	if endD > date.today(): endD = date.today()
-	
-	dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B'), CAL)	
+#############################################################################################################################
+	dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B'), CAL)
 	sqlConn = sqlConnector()
+	c = sqlConn.conn.cursor()
+#############################################################################################################################	
+	flag = 'Close'
+	#fromdb = pds.read_sql("SELECT DISTINCT Date, %s FROM spots WHERE BBG=%s AND (Date BETWEEN %s AND %s) AND flag=%s ORDER BY Date ASC", sqlConn.conn, index_col='Date', params=(flag, BBG, startD, endD, flag), parse_dates=True)
+	fromdb = pds.read_sql("""SELECT * FROM spots WHERE BBG=%s AND (Date BETWEEN %s AND %s)""", sqlConn.conn, params=(BBG, startD, endD), parse_dates=True)
+	#toto = pd.DataFrame(fromdb['Date'], index=pds.to_datetime(fromdb.index))
+	#toto = pd.DataFrame(fromdb['Close'], index=pds.to_datetime(fromdb['Date']))
+	#toto.index.name = 'Date'
 	
-	fromdb = pds.read_sql("SELECT DISTINCT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s ORDER BY date ASC", sqlConn.conn, index_col='date', params=(BBG, startD, endD, flag), parse_dates=True)
+	#print "Date: ", fromdb['Date']
+	toto = np.array(fromdb['Date'])
+	print "toto: ", toto
+	#tempAlex = np.setdiff1d(dates, toto.index)
+	tempAlex = np.setdiff1d(dates, toto)
 
-	toto = pd.DataFrame(fromdb, index=pds.to_datetime(fromdb.index))
-	toto.index.name = 'Date'
-	print "toto: ", toto.tail()
-
-	fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=dates[0], end=dates[-1])
-	titi = pd.DataFrame(fromyahoo['Close'], index=pds.to_datetime(fromyahoo.index))
-	titi.index = pds.to_datetime(fromyahoo.index)
-	print "titi: ", titi.tail()
+### optimisation du nombre de requete Yahoo #################################################################################
+	toRequest = []
+	toRequest.append(pds.to_datetime(tempAlex[0]).date())
+	for i in range(1, len(tempAlex)):
+		print i, tempAlex[i - 1], tempAlex[i], np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()), len(tempAlex)
+		if i == len(tempAlex)-1: 
+			#print "icicici Paris!"	
+			toRequest.append(pds.to_datetime(tempAlex[i]).date())
+		elif np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()) > 1:
+			toRequest.append(pds.to_datetime(tempAlex[i]).date())
+	toRequest.sort()
 	
-	result = np.setdiff1d(titi.index, toto.index)
-	resultf = pd.DataFrame(fromyahoo, index=result)
-	print "resultf", resultf
-	sqlConn.conn.commit()
-	sqlConn.conn.close()
+	print "Period To Request for Stock: ", BBG, toRequest, len(toRequest)
+	engine = create_engine('postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb')
+	for row in range(1, len(toRequest)):
+		fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=toRequest[row-1], end=toRequest[row])
+		fromyahoo['bbg'] = BBG
+		#print fromyahoo
+		fromyahoo.to_sql('spots', engine, if_exists='append') # To investigate with the function to_sql 
 
 def cTurbo(Fwd, strike, barrier, quot, margin):
 	if Fwd > strike: return (Fwd - strike)/quot + margin
