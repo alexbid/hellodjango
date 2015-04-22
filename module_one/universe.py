@@ -14,11 +14,11 @@ class Universe(object):
 		
 	def __init__(self):
 		import pandas as pds
-		try:
-			sqlConn = sqlConnector()			
-			self.listUniverse = pds.read_sql("SELECT * FROM batch_run", sqlConn.conn)
-		except:
-			print "error in loading Universe!"
+		#try:
+		sqlConn = sqlConnector()			
+		self.listUniverse = pds.read_sql("SELECT * FROM batch_run", sqlConn.conn)
+		#except:
+		#	print "error in loading Universe!"
 #		sqlConn.conn.close()
 	
 	#def getUniverse(self):
