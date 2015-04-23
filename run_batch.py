@@ -22,6 +22,14 @@ if __name__=='__main__':
 	windDate = endDate + relativedelta(days=-5)
 
 	engine = create_engine('postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb')
+	
+	try: 
+		sqlConn = sqlConnector()
+		c = sqlConn.conn.cursor()
+		c.execute("DELETE FROM signals")
+		sqlConn.conn.commit()
+		sqlConn.conn.close()
+	except: print "Signals is not Empty..."
 
 	x = Universe()
 	for i in range(0, len(x.listUniverse)):
