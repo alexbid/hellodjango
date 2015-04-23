@@ -283,21 +283,21 @@ class Stock(object):
 					self.spot = c.fetchone()[0]
 				except:
 					print "error in loading Stock!"
-			try:
+			#try:
 				#self.spots = pds.read_sql(("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s ORDER BY date ASC"), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
-				self.spots = pds.read_sql(("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), sqlConn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))					
-				#print "self.spots.tail(): ", self.spots.tail()
-				self.spots['mavg_30'] = pds.stats.moments.rolling_mean(self.spots['Close'], 30)
-				self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['Close'], 10)
-				self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['Close'], 20)
-				self.spots['ewma_50'] = pds.stats.moments.ewma(self.spots['Close'], 50)
-				self.spots['ewma_100'] = pds.stats.moments.ewma(self.spots['Close'], 100)
-				#self.spots['var'] = self.spots[['ewma_20','ewma_50','ewma_100']].var(axis=1)
-				self.spots['var'] = self.spots[['Close','ewma_20','ewma_50','ewma_100']].var(axis=1)
-				self.spots['mean'] = self.spots[['Close', 'ewma_20','ewma_50','ewma_100']].mean(axis=1)
-				self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
-			except:
-				print "error in loading historic prices for " + self.mnemo
+			self.spots = pds.read_sql(("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), sqlConn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))					
+			print "self.spots.tail(): ", self.spots.tail()
+			self.spots['mavg_30'] = pds.stats.moments.rolling_mean(self.spots['Close'], 30)
+			self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['Close'], 10)
+			self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['Close'], 20)
+			self.spots['ewma_50'] = pds.stats.moments.ewma(self.spots['Close'], 50)
+			self.spots['ewma_100'] = pds.stats.moments.ewma(self.spots['Close'], 100)
+			#self.spots['var'] = self.spots[['ewma_20','ewma_50','ewma_100']].var(axis=1)
+			self.spots['var'] = self.spots[['Close','ewma_20','ewma_50','ewma_100']].var(axis=1)
+			self.spots['mean'] = self.spots[['Close', 'ewma_20','ewma_50','ewma_100']].mean(axis=1)
+			self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
+			#except:
+			#	print "error in loading historic prices for " + self.mnemo
 			sqlConn.conn.close()
 		
 #	def saveQuote(self, dDate, quote):
@@ -329,7 +329,6 @@ class Stock(object):
 		from pandas import DataFrame
 		
 		toPlot = self.spots[(self.spots.index > stDate)]	
-		print toPlot.head()	
 		lines = plt.plot(toPlot.index, toPlot['Close'])
 
 		plt.plot(toPlot.index, toPlot['ewma_10'])
@@ -342,21 +341,27 @@ class Stock(object):
 		
 		plt.show()
 		
-	def draw2(self, stDate, endDate):
+	def draw3(self, stDate, endDate):
 		import matplotlib.pyplot as plt 
 		from pandas import DataFrame
 		import pandas as pd
 		toPlot = pd.DataFrame(self.spots[(self.spots.index > stDate)])
+		#print "stDate: ", stDate
+		#print "toPlot: ", toPlot
+		#print "self.spots: ", self.spots	
 		df = DataFrame(toPlot[['Close', 'ewma_10', 'ewma_20', 'ewma_50', 'ewma_100']], index=toPlot.index)
 #		df.title = self.mnemo
 		df.plot(title = self.mnemo);
 		plt.show()	
 	
-	def draw3(self, stDate, endDate):
+	def draw2(self, stDate, endDate):
 		import math
 		import pandas as pd		
 		import matplotlib.pyplot as plt 
+		
+		#print self.spots, stDate
 		toPlot = pd.DataFrame(self.spots[(self.spots.index > stDate)])
+		print toPlot.tail()
 		toPlot['Return'] = np.log(toPlot['Close'] / toPlot['Close']. shift( 1))
 		toPlot['Mov_Vol'] = pd.rolling_std(toPlot['Return'], window = 20) * math.sqrt(252)
 		toPlot[['Close', 'Mov_Vol', 'Return']].plot(subplots = True, style ='b', figsize =(8, 7), title = self.mnemo)

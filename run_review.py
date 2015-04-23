@@ -1,4 +1,4 @@
-import datetime
+"""import datetime
 import numpy as np
 import pandas as pd
 from module_one.code_python import Stock
@@ -12,12 +12,9 @@ class graphy():
 	
 	def __init__(self, BBG):
 		x = Stock(BBG)
-		
-		print type(stDate), type(endDate)
-		
-		x.load_pandas(stDate, endDate, 'Close')
+		x.load_pandas(stDate, endDate, 'close')
 		x.draw3(windDate, endDate)
-		#x.draw2(windDate, endDate)
+		x.draw2(windDate, endDate)
 	
 	def toto(self):
 		return "toto"
@@ -28,8 +25,16 @@ if __name__=='__main__':
 #	windDate = endDate + relativedelta(days=-90)
 #	stDate = endDate + relativedelta(months=-11)
 #	#print windDate
-	x = graphy('TES.PA')
+	x = graphy('FP.PA')
 #	x.load_pandas(stDate, endDate, 'close')
 #	x.draw(windDate, endDate)
 
 #sp500[[' Close', '42d', '252d']]. plot( grid = True, figsize =( 8, 5))
+"""
+
+from module_one.universe import Signals
+
+if __name__=='__main__':
+	
+	y = Signals()
+	y.graph_signals()
