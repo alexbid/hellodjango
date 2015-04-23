@@ -33,6 +33,7 @@ class Signals(object):
 	def __init__(self):
 		sqlConn = sqlConnector()			
 		self.listSignals = pds.read_sql("""SELECT DISTINCT "BBG" FROM signals ORDER BY "BBG" ASC""", sqlConn.conn)
+		#self.listSignals = pds.read_sql("""SELECT DISTINCT "BBG", "CDR" FROM batch_run WHERE "isWorking"=True ORDER BY "BBG" ASC""", sqlConn.conn)
 	
 	def graph_signals(self):
 	
