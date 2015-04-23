@@ -17,7 +17,7 @@ class Universe(object):
 	def __init__(self):
 		#try:
 		sqlConn = sqlConnector()			
-		self.listUniverse = pds.read_sql("SELECT * FROM batch_run", sqlConn.conn)
+		self.listUniverse = pds.read_sql("""SELECT DISTINCT "BBG", "CDR" FROM batch_run WHERE "isWorking"=True ORDER BY "BBG" ASC""", sqlConn.conn)
 		#except:
 		#	print "error in loading Universe!"
 #		sqlConn.conn.close()
