@@ -201,7 +201,9 @@ def doRequestData(BBG, CAL, startD, endD):
 ### save to DB ##############################################################################################################
 		print "Period To Request for Stock: ", BBG, toRequest, len(toRequest)
 		engine = create_engine('postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb')
+		if len(toRequest) == 1: toRequest.append(toRequest[0])
 		for row in range(1, len(toRequest)):
+			#print "icicici", toRequest[row-1], toRequest[row]
 			try: 
 				fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=toRequest[row-1], end=toRequest[row])
 				fromyahoo['bbg'] = BBG
