@@ -280,17 +280,16 @@ class Stock(object):
 			if self.spot == 0:
 				try:
 					sqlConn = sqlConnector()
-					c = sqlConn.conn.cursor()
-					c.execute("""SELECT "Close", "Volume" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG=%s) AND BBG = %s)""", (self.mnemo, self.mnemo))
-					self.spot = c.fetchone()[0]
-					self.lvolume = c.fetchone()[1]
+					resultss = pds.read_sql(("""SELECT "Close", "Volume" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG=%s) AND BBG = %s)"""), sqlConn.conn, params=(self.mnemo, self.mnemo))					
+					self.spot = resultss.iloc[0]['Close']
+					self.lvolume = resultss.iloc[0]['Volume']
 				except:
 					print "error in loading Stock!"
 			try:
 				#self.spots = pds.read_sql(("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s ORDER BY date ASC"), sqlConn.conn, params=(self.mnemo, stDate, endDate, flag))				
-				self.spots = pds.read_sql(("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), sqlConn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))					
+				self.spots = pds.read_sql(("""SELECT "Date", "Close", "Volume" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), sqlConn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))					
 				#print "self.spots.tail(): ", self.spots.tail()
-				self.spots['volume'] = pds.stats.moments.rolling_mean(self.spots['Volume'], 20)
+				self.spots['volume_20'] = pds.stats.moments.rolling_mean(self.spots['Volume'], 20)
 				self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['Close'], 10)
 				self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['Close'], 20)
 				self.spots['ewma_50'] = pds.stats.moments.ewma(self.spots['Close'], 50)
