@@ -36,7 +36,7 @@ if __name__=='__main__':
 		y = Share(x.listUniverse.BBG[i])
 		y.load_pandas(stDate, endDate, flag)
 		result1 = y.spots[(y.spots.index > windDate) & (y.spots.cv < 0.60/100 )]
-		result2 = y.spots[(y.spots.index > windDate) & (y.spots.volume 2 * y.lvolume )]
+		result2 = y.spots[(y.spots.index > windDate) & (2 * y.spots.volume < y.lvolume )]
 		if len(result1.index) > 0: 
 			print result1
 			#result1.to_excel('module_one/results/result_batch_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
