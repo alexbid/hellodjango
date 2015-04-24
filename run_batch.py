@@ -38,13 +38,13 @@ if __name__=='__main__':
 		result1 = y.spots[(y.spots.index > windDate) & (y.spots.cv < 0.60/100 )]
 		result1 = result1.drop('volume_20', 1)
 		result1 = result1.drop('Volume', 1)
-		#vol = y.lvolume
-		#print "Volume!! ", vol
 		result2 = y.spots[(y.spots.index > windDate) & (y.spots.volume_20 < y.lvolume )]
+		if len(result2.index) > 0: 
+			#result1.to_excel('module_one/results/result_batch_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
+			result2.to_excel('module_one/results/result_batch_volume_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
 		if len(result1.index) > 0: 
 			print result1
 			#result1.to_excel('module_one/results/result_batch_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
-			result2.to_excel('module_one/results/result_batch_volume_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
 			result1['BBG'] = x.listUniverse.BBG[i]
 			result1.to_sql('signals', engine, if_exists='append')
 			#result1.to_sql('signals', engine, if_exists='replace')
