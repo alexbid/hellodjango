@@ -36,9 +36,11 @@ if __name__=='__main__':
 		y = Share(x.listUniverse.BBG[i])
 		y.load_pandas(stDate, endDate, flag)
 		result1 = y.spots[(y.spots.index > windDate) & (y.spots.cv < 0.60/100 )]
+		result2 = y.spots[(y.spots.index > windDate) & (y.spots.volume 2 * y.lvolume )]
 		if len(result1.index) > 0: 
 			print result1
-			result1.to_excel('module_one/results/result_batch_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
+			#result1.to_excel('module_one/results/result_batch_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
+			result2.to_excel('module_one/results/result_batch_volume_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
 			result1['BBG'] = x.listUniverse.BBG[i]
 			result1.to_sql('signals', engine, if_exists='append')
 			#result1.to_sql('signals', engine, if_exists='replace')
