@@ -121,13 +121,14 @@ def getLastTrDay(endD):
 	from datetime import date
 	import numpy as np
 	import pandas as pds
-	
-	print "hour: ", datetime.utcnow().hour
-	
-	
 	if endD >= date.today(): 
-		if datetime.utcnow().hour > 8: lstTDR = np.busday_offset(date.today(), -1, roll='backward')
-		else: lstTDR = np.busday_offset(endD, -2, roll='backward')
+		#print "hour: ", datetime.utcnow().hour, np.busday_offset(date.today(), 0, roll='backward'), np.is_busday(date.today())
+		if np.is_busday(date.today()):
+			if datetime.utcnow().hour > 8: lstTDR = np.busday_offset(date.today(), -1, roll='backward')
+			else: lstTDR = np.busday_offset(endD, -2, roll='backward')
+		else:
+			if datetime.utcnow().hour > 8: lstTDR = np.busday_offset(date.today(), 0, roll='backward')
+			else: lstTDR = np.busday_offset(endD, -2, roll='backward')
 	lstTDR = pds.to_datetime(lstTDR)
 	return lstTDR
 
