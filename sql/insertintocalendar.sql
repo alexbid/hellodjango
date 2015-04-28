@@ -1,0 +1,2 @@
+﻿INSERT INTO calendar VALUES
+('2014-12-24', 'BR');
