@@ -82,11 +82,11 @@ def isTradingDay(tDate):
 			return False
 
 def calendar_clean(theDates, CAL):
-	theDates = theDates.to_datetime()
+	theDates = np.array(theDates.to_datetime())
 	sqlConn = sqlConnector()
 	c = sqlConn.conn.cursor()
-	holi = pds.read_sql("SELECT date FROM calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s) ORDER BY date ASC", sqlConn.conn, params=(CAL, theDates[0], theDates[-1]))
-	holi = pds.to_datetime(holi['date'])
+	holi = pds.read_sql("SELECT date FROM calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s) ORDER BY date ASC", sqlConn.conn, index_col='date', params=(CAL, pd.to_datetime(theDates[0]).strftime('%Y-%m-%d'), pd.to_datetime(theDates[-1]).strftime('%Y-%m-%d')))
+	holi = np.array(pds.to_datetime(holi.index))
 	return np.setdiff1d(theDates, holi)
 
 def vTradingDates(stDate, endDate, cdr):
@@ -183,7 +183,7 @@ def doRequestData(BBG, CAL, startD, endD):
 	endD = getLastTrDay(endD)
 	print BBG, endD
 #############################################################################################################################
-	dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B'), CAL)
+	dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B').to_datetime(), CAL)
 	sqlConn = sqlConnector()
 	c = sqlConn.conn.cursor()
 #############################################################################################################################	
