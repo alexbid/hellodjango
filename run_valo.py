@@ -12,16 +12,16 @@ from dateutil.relativedelta import relativedelta
 endDate = datetime.date.today()
 stDate = endDate + relativedelta(months=-11)
 #evalDate = datetime.date(2015, 3, 31)
-evalDate = endDate
+evalDate = endDate+ relativedelta(days=-1)
 #windDate = endDate + relativedelta(days=-90)
 
 from timeit import Timer
 #t = Timer(lambda: vTradingDates(stDate, endDate, 'FR'))
 #print t.repeat(3, 5)
 
-x = Universe()
-for i in range(0, len(x.listUniverse)):
-	doRequestData(x.listUniverse.BBG[i], x.listUniverse.CDR[i], stDate, endDate)
+#x = Universe()
+#for i in range(0, len(x.listUniverse)):
+#	doRequestData(x.listUniverse.BBG[i], x.listUniverse.CDR[i], stDate, endDate)
 #doRequestData("^FCHI", "FR", stDate, endDate)
 
 portfolio = Portfolio()
