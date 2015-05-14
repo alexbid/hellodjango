@@ -86,6 +86,7 @@ def index(request):
 	r = str(getLastClose())
 	return HttpResponse('<pre>' + r + '</pre>')
 	"""
+	#signals = Signals.objects.all() 
 	signals = Signals.objects.all() 
 	return render_to_response('home.html', {'signals': signals})
 	#return render_to_response('home.html')
