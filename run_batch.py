@@ -26,7 +26,7 @@ if __name__=='__main__':
 	try: 
 		sqlConn = sqlConnector()
 		c = sqlConn.conn.cursor()
-		c.execute("DELETE FROM signals")
+		c.execute("DELETE FROM hellodjango_signals")
 		sqlConn.conn.commit()
 		sqlConn.conn.close()
 	except: print "Signals is not Empty..."
@@ -47,5 +47,5 @@ if __name__=='__main__':
 			print result1
 			#result1.to_excel('module_one/results/result_batch_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
 			result1['BBG'] = x.listUniverse.BBG[i]
-			result1.to_sql('signals', engine, if_exists='append')
+			result1.to_sql('hellodjango_signals', engine, if_exists='append')
 			#result1.to_sql('signals', engine, if_exists='replace')

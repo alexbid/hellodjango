@@ -3,6 +3,7 @@ import sqlite3
 
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import render_to_response 
 
 # from .models import Greeting
 # from hellodjango.module_one 
@@ -69,22 +70,26 @@ def getLastClose():
 		return "Ops!! Connection to DB failed!!" 
 
 # Create your views here.
-def index(request):
+#def home(request):
+#	return HttpResponse("Hello, world.")
 
+from hellodjango.models import Signals 
+
+def index(request):
+	"""
 	from rq import Queue
 	from worker import conn
 	q = Queue(connection=conn)
-	
-	# And enqueue the function call
 	from utils import count_words_at_url
 	from utils import update
 	result = q.enqueue(update)
-	#result = q.enqueue(count_words_at_url, 'http://heroku.com')
-	#result = q.enqueue(return "toto")
-
 	r = str(getLastClose())
-	#print r
 	return HttpResponse('<pre>' + r + '</pre>')
+	"""
+	signals = Signals.objects.all() 
+	return render_to_response('home.html', {'signals': signals})
+	#return render_to_response('home.html')
+	
 	
 def db(request):
     greeting = Greeting()
