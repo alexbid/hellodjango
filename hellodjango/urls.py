@@ -10,7 +10,7 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.index, name='index'),
-	url(r'^static/(?P.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT})
+	url(r'^static/(.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT})
 	#url(r'^$', 'hellodjango.myapp.views.home', name='home'),
 	
 )
