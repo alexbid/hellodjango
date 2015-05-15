@@ -87,7 +87,7 @@ def index(request):
 	return HttpResponse('<pre>' + r + '</pre>')
 	"""
 	#signals = Signals.objects.all() 
-	signals = Signals.objects.all() 
+	signals = Signals.objects.distinct('BBG').order_by('BBG')
 	return render_to_response('home.html', {'signals': signals})
 	#return render_to_response('home.html')
 	
