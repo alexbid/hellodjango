@@ -2,7 +2,7 @@
 
 import sys
 import datetime
-from module_one.code_python import Portfolio
+#from module_one.code_python import Portfolio
 from module_one.code_python import vTradingDates
 from module_one.code_python import doRequestData
 from module_one.code_python import Stock
@@ -47,6 +47,7 @@ if __name__=='__main__':
 		result1 = y.spots[(y.spots.index > windDate) & (y.spots.cv < 0.60/100 )]
 		result1 = result1.drop('volume_20', 1)
 		result1 = result1.drop('Volume', 1)
+		result1['lastUpdate'] = datetime.datetime.utcnow()
 		result2 = y.spots[(y.spots.index > windDate) & (y.spots.volume_20 * 5 < y.spots.Volume)]
 		if len(result2.index) > 0: 
 			print result2

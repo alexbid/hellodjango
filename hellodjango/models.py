@@ -14,9 +14,17 @@ class Signals(models.Model):
 	mean = models.FloatField() #(decimal_places=2)
 	cv = models.FloatField() #(decimal_places=2)
 	BBG = models.CharField(max_length=12)
+	lastUpdate = models.DateTimeField()
 	
 	#libelle = models.CharField(max_length=200) 
 	#status =  models.IntegerField() 
 		
 	def __unicode__(self): 
 		return self.BBG
+		
+	def getLastUpdate(self):
+		
+		
+		
+		
+		return 2
