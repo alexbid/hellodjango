@@ -6,7 +6,7 @@ git init
 git pull https://github.com/alexbid/hellodjango.git
 sudo apt-get update
 sudo apt-get install -y libcurl4-gnutls-dev libexpat1-dev gettext \ libz-dev libssl-dev
-sudo apt-get install -y build-essential
+#sudo apt-get install -y build-essential
 
 #Install Python
 sudo apt-get install -y build-essential
@@ -20,8 +20,12 @@ make
 sudo make install
 sudo cp ./Python-2.7.10/setup.py /usr/local/bin/python
 
+#sudo apt-get install libpq-dev python-dev
+
 cd /home/ubuntu/hellodjango
-sudo apt-get install -y python-pip python-dev build-essential 
+sudo apt-get install -y python-pip libpq-dev python-dev build-essential 
+python setup.py build
+sudo python setup.py install
 sudo pip install --upgrade setuptools
 
 sudo pip install -r requirements.txt
