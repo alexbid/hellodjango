@@ -18,9 +18,11 @@ cd /home/ubuntu/downloads/Python-2.7.10
 ./configure
 make
 sudo make install
+sudo cp ./Python-2.7.10/setup.py /usr/local/bin/python
 
+cd /home/ubuntu/hellodjango
+sudo apt-get install -y python-pip python-dev build-essential 
+sudo pip install --upgrade setuptools
 
-sudo apt-get install python-pip python-dev build-essential 
-#sudo apt-get install python 2.7.10
 sudo pip install -r requirements.txt
 
