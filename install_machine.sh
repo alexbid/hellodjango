@@ -23,10 +23,11 @@ sudo cp ./Python-2.7.10/setup.py /usr/local/bin/python
 #sudo apt-get install libpq-dev python-dev
 
 cd /home/ubuntu/hellodjango
-sudo apt-get install -y python-pip libpq-dev python-dev build-essential 
+sudo apt-get install -y python-pip libpq-dev python-dev libevent-dev libevent-devel python-devel build-essential 
 python setup.py build
 sudo python setup.py install
 sudo pip install --upgrade setuptools
+sudo pip install uwsgi
 
 sudo pip install -r requirements.txt
 
