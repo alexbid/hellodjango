@@ -19,6 +19,8 @@ cd /home/ubuntu/downloads/Python-2.7.10
 make
 sudo make install
 
+
+sudo apt-get install python-pip python-dev build-essential 
 #sudo apt-get install python 2.7.10
 sudo pip install -r requirements.txt
 
