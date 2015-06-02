@@ -226,7 +226,8 @@ def pTurbo(Fwd, strike, barrier, quot, margin):
 class Stock(object):
 	spot = 0.0
 	lvolume = 0.0
-	spots = 0
+	#spots = 0
+	spots = {}
 	#mavg30 = 0
 	mnemo = ""
 	flag = "close"
