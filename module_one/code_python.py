@@ -129,8 +129,8 @@ def getLastTrDay(endD):
 		else:
 			if datetime.utcnow().hour > 6: lstTDR = np.busday_offset(date.today(), 0, roll='backward')
 			else: lstTDR = np.busday_offset(endD, -2, roll='backward')
-	lstTDR = pds.to_datetime(lstTDR)
-	return lstTDR
+	buff = pds.to_datetime(lstTDR)
+	return buff
 
 """def doRequestData(BBG, CAL, startD, endD):
 	from datetime import date
