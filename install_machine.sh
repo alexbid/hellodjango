@@ -22,6 +22,8 @@ sudo python setup.py build
 sudo python setup.py install
 #PATH=${PATH}:/usr/local/lib/python2.7
 export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python2.7"
+export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python2.7/dist-packages"
+
 
 sudo apt-get install -y python-pip
 sudo apt-get install -y python-dev
