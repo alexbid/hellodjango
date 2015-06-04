@@ -20,7 +20,8 @@ sudo cp /home/ubuntu/downloads/Python-2.7.10/setup.py /usr/local/lib/python2.7
 cd /home/ubuntu/hellodjango
 sudo python setup.py build
 sudo python setup.py install
-PATH=${PATH}:/usr/local/bin 
+#PATH=${PATH}:/usr/local/lib/python2.7
+export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python2.7"
 
 sudo apt-get install -y python-pip
 sudo apt-get install -y python-dev

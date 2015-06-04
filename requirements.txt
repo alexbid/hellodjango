@@ -30,4 +30,3 @@ times==0.7
 tornado==4.1
 virtualenv==12.0.5
 xlwt==0.7.5
-matplotlib==1.4.3
