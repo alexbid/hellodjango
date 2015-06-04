@@ -11,14 +11,16 @@ cd /home/ubuntu/downloads
 wget https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz
 tar -xvf Python-2.7.10.tgz
 cd /home/ubuntu/downloads/Python-2.7.10
-./configure
-make
+sudo ./configure
+sudo make
 sudo make install
-sudo cp ./Python-2.7.10/setup.py /usr/local/bin/python
+sudo cp /home/ubuntu/downloads/Python-2.7.10/setup.py /usr/local/bin/
+sudo cp /home/ubuntu/downloads/Python-2.7.10/setup.py /usr/local/lib/python2.7
 
 cd /home/ubuntu/hellodjango
-python setup.py build
+sudo python setup.py build
 sudo python setup.py install
+PATH=${PATH}:/usr/local/bin 
 
 sudo apt-get install -y python-pip
 sudo apt-get install -y python-dev
