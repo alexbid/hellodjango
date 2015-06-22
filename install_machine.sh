@@ -30,6 +30,10 @@ sudo apt-get install -y python-dev
 sudo apt-get install -y python-devel
 sudo apt-get install -y libpq-dev
 
+#web scrapping requirement
+sudo apt-get install libxml2-dev libxslt-dev python-dev
+sudo pip install lxml
+
 #sudo apt-get install -y libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 #sudo apt-get install -y libpq-dev python-dev libevent-dev libevent-devel python-devel build-essential 
 #sudo apt-get install -y libcurl4-gnutls-dev libexpat1-dev gettext \ libz-dev libssl-dev
@@ -42,3 +46,4 @@ sudo pip install -r requirements.txt
 
 crontab < <(crontab -l ; echo "MAILTO=bidault@hotmail.fr")
 crontab < <(crontab -l ; echo "@reboot python /home/ubuntu/hellodjango/run_all.py")
+crontab < <(crontab -l ; echo "* * * * *  python /home/ubuntu/hellodjango/run_realtime.py")
