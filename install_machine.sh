@@ -47,3 +47,4 @@ sudo pip install -r requirements.txt
 crontab < <(crontab -l ; echo "MAILTO=bidault@hotmail.fr")
 crontab < <(crontab -l ; echo "@reboot python /home/ubuntu/hellodjango/run_all.py")
 crontab < <(crontab -l ; echo "* * * * *  python /home/ubuntu/hellodjango/run_realtime.py")
+crontab < <(crontab -l ; echo "0 16 * * *  python /home/ubuntu/hellodjango/run_eod.py")
