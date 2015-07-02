@@ -1,31 +1,50 @@
-import urllib
-import re
-import json
-import datetime
+
 from datetime import timedelta
+from datetime import *
 import psycopg2
 from module_one.code_python import sqlConnector
+from sqlalchemy import create_engine
 
-#htmltext = urllib.urlopen("http://www.bloomberg.com/markets/chart/data/1D/AAPL:US")
-htmltext = urllib.urlopen("http://www.bloomberg.com/markets/chart/data/1D/CAC:IND")
+import pandas as pd
+import numpy as np
 
-data = json.load(htmltext)
-datapoints = data['data_values']
+df = pd.read_json("http://www.bloomberg.com/markets/chart/data/1D/CAC:IND")['data_values']
+df = np.array(df)
 
 sqlConn = sqlConnector()
 c = sqlConn.conn.cursor()
+dateArray = []
+spotArray = []
 
-for points in datapoints:
-    tdate = datetime.datetime.fromtimestamp(points[0]/1000) + timedelta(hours=4)
-    try:
-		c.execute("""INSERT INTO intraday("bbg", "Last", "Date") VALUES(%s,%s,%s)""", ('^FCHI', float(points[1]), tdate) )
+for points in df:
+    tdate = datetime.fromtimestamp(points[0]/1000) + timedelta(hours=4)
+    dateArray.append(tdate)
+    spotArray.append(float(points[1]))
+   
+s = pd.DataFrame(spotArray, index = dateArray, columns=['Last'])
+s.index.name = 'Date'
+s['bbg'] = '^FCHI'
 
-    except psycopg2.IntegrityError: print "quote already in DB Funds"
-		
-sqlConn.conn.commit()		
-sqlConn.conn.close()
+minDate = s.index.min()
+maxDate = s.index.max()
 
-print len(datapoints)
-#print datapoints
+db = pd.read_sql("""SELECT "Date", "Last","bbg" FROM intraday WHERE ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC""", sqlConn.conn, index_col="Date", parse_dates=True, params=(minDate.strftime("%Y-%m-%d %H:%M:%S"), maxDate.strftime("%Y-%m-%d %H:%M:%S")))
+#toto = (db.index).astype(datetime)
 
-#print datapoints[len(datapoints)-1][1]
+toto = np.array(pd.to_datetime(db.index))
+tutu = np.array(pd.to_datetime(s.index))
+#print type(toto[1]), type(tutu[1])
+
+missingDates = np.setdiff1d(tutu, toto)
+
+print 'missingDates: ', missingDates
+toDB = pd.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
+toDB.index.name = 'Date'
+
+engine = create_engine('postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb')
+try:
+    toDB.to_sql('intraday', engine, if_exists='append') 
+except psycopg2.IntegrityError:
+
+	print "quote already in DB Funds"
+print '....done'

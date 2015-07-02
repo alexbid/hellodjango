@@ -20,6 +20,8 @@ print 'ask: ', ask
 
 tdate = tree.xpath('//span[@id="domhandler:10.consumer:VALUE-2CCLASS.comp:ZERO.gt:ZERO.eq:ZERO.lt:ZERO.resetLt:ZERO.resetGt:ZERO.resetEq:ZERO.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:DATE_BID.resetComp:ZERO.valueFilter:formatDateBidLong"]/text()')[0].replace('\n', '').strip() + " " + tree.xpath('//span[@id="domhandler:11.consumer:VALUE-2CCLASS.comp:ZERO.gt:ZERO.eq:ZERO.lt:ZERO.resetLt:ZERO.resetGt:ZERO.resetEq:ZERO.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:TIME_BID.resetComp:ZERO.valueFilter:formatTimeBidLong"]/text()')[0].replace('\n', '').strip()
 tdate = datetime.strptime(tdate, '%d.%m.%Y %H:%M:%S')
+#tdate = datetime.strptime(tdate, '%Y-%m-%d %H:%M:%S')
+
 print 'date: ', tdate
 
 sqlConn = sqlConnector()
