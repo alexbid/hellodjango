@@ -17,14 +17,10 @@ sqlConn = sqlConnector()
 c = sqlConn.conn.cursor()
 dateArray = []
 spotArray = []
-shift = 4
 
 for points in df:
-<<<<<<< HEAD
-    tdate = datetime.fromtimestamp(points[0]/1000) + timedelta(hours=shift)
-=======
+#    tdate = datetime.fromtimestamp(points[0]/1000) + timedelta(hours=shift)
     tdate = datetime.utcfromtimestamp(points[0]/1000) + timedelta(hours=shift)
->>>>>>> 2e23cfcc1efc024851129ba40ee8bfaeeab53459
     dateArray.append(tdate)
     spotArray.append(float(points[1]))
    
