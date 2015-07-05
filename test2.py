@@ -1,5 +1,3 @@
-
-
 from module_one.code_python import sqlConnector
 
 from pandas import *
@@ -15,4 +13,3 @@ print df['exch_open_time'][0]+ timedelta(hours=shift), df['exch_close_time'][0] 
 for points in df['data_values']:
 	tdate = datetime.utcfromtimestamp(points[0]/1000) + timedelta(hours=shift)
 	print tdate, float(points[1])
-	
