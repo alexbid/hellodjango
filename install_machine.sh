@@ -1,3 +1,5 @@
+#!/bin/bash -x
+
 mkdir /home/ubuntu/hellodjango
 mkdir /home/ubuntu/downloads
 cd hellodjango
@@ -49,3 +51,4 @@ crontab < <(crontab -l ; echo "@reboot python /home/ubuntu/hellodjango/run_all.p
 crontab < <(crontab -l ; echo "* * * * *  python /home/ubuntu/hellodjango/run_realtime.py")
 crontab < <(crontab -l ; echo "0 16 * * *  python /home/ubuntu/hellodjango/run_eod.py")
 crontab < <(crontab -l ; echo "0 13 * * *  python /home/ubuntu/hellodjango/run_eod.py")
+crontab < <(crontab -l ; echo "45 6 * * *  python /home/ubuntu/hellodjango/run_nav.py")

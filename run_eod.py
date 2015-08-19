@@ -5,6 +5,7 @@ import psycopg2
 from module_one.code_python import sqlConnector
 from sqlalchemy import create_engine
 
+from dateutil import tz
 import pandas as pd
 import numpy as np
 
@@ -40,7 +41,15 @@ def bloombergScrap(mnemo, ric):
 	tutu = np.array(pd.to_datetime(s.index))
 	missingDates = np.setdiff1d(tutu, toto)
 
+	#from_zone = tz.tzutc()
+	#to_zone = tz.tzlocal()
+	#utc = utc.replace(tzinfo=from_zone)
+	#missingDates = missingDates.replace(tzinfo=from_zone)
+	#central = missingDates.astimezone(to_zone)
+
 	print 'missingDates for ' + mnemo + ': ', missingDates
+	
+	#raw_input()
 	toDB = pd.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
 	toDB.index.name = 'Date'
 

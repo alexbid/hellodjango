@@ -21,7 +21,10 @@ class Universe(object):
 		#except:
 		#	print "error in loading Universe!"
 #		sqlConn.conn.close()
-
+	def load_fund_nav(self):
+		sqlConn = sqlConnector()			
+		listFundsNAV = pds.read_sql("""SELECT DISTINCT "ISIN", "CCY", "wkn" FROM funds_static WHERE "isUpdate"=True ORDER BY "ISIN" ASC""", sqlConn.conn)
+		return listFundsNAV
 
 class Signals(object):
 	
