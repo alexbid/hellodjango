@@ -1,5 +1,5 @@
 
-from hellodjango.module_one.code_python import sqlConnector
+from module_one.code_python import sqlConnector
 import datetime
 from datetime import time
 import pandas as pds
