@@ -1,5 +1,6 @@
 
 from module_one.code_python import sqlConnector
+from module_one.universe import Universe
 import datetime
 from datetime import time
 import pandas as pds
@@ -10,8 +11,13 @@ from sqlalchemy import create_engine
 from dateutil.relativedelta import relativedelta
 from operator import itemgetter
 
-wkn_list = ['847101', '988562'] 
-wkn = '847101'
+x = Universe()
+univers = x.load_fund_nav()
+
+for idx in range(len(univers)):
+	wkn = str(univers['wkn'].ix[idx])
+	print wkn
+#wkn = wkn_list
 engine = create_engine('postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb')
 
 class optimization():
@@ -37,7 +43,9 @@ class optimization():
 
 	def load_data(self):
 		#time_ref = datetime.timedelta(hours=8, minutes=0)
-		symbols = ['^STOXX50E', '^FCHI', '^GSPC', '^FTSE', '^BVSP', '^RUT', '^GDAXI', '^SSMI', '^IBEX']
+		#symbols = ['^STOXX50E', '^FCHI', '^GSPC', '^FTSE', '^BVSP', '^RUT', '^GDAXI', '^SSMI', '^IBEX']
+		symbols = ['^FTSE', '^RUT', '^GDAXI']
+
 		"""
 		^AEX
 		1       ATX:IND        ^ATX

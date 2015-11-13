@@ -41,6 +41,8 @@ sudo pip install lxml
 #sudo apt-get install -y libcurl4-gnutls-dev libexpat1-dev gettext \ libz-dev libssl-dev
 
 sudo pip install -y setuptools
+sudo apt-get install python-scipy
+
 #sudo pip install uwsgi
 sudo pip install -r requirements.txt
 
