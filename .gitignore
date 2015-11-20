@@ -10,6 +10,15 @@ __pycache__/
 venv
 *.pyc
 *.py~
+# Les ligne commençant par '#' sont des commentaires.
+# Ignorer tous les fichiers nommés foo.txt
+sqlconnector.py
+# Ignorer tous les fichiers html
+*.html
+# à l'exception de foo.html qui est maintenu à la main
+!sqlconnector.pyc
+# Ignorer les objets et les archives
+*.[oa]
 staticfiles
 env/
 build/
