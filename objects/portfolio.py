@@ -1,15 +1,14 @@
 from sqlconnector import *
 import stock
+import datetime
 
 class Portfolio:
-    
     def __init__(self):
-
         self.cash = 0
         self.equity = {}
         self.flag = 'close'
         self.fees = 0.0
-
+    
     def mDeposit(self, amount): self.cash += amount
     def mWithdraw(self, amount): self.cash -= amount
     def getFees(self): return self.fees
@@ -26,8 +25,6 @@ class Portfolio:
         return self.cash + stockValue
     
     def load(self, stDate, endDate):
-
-        from datetime import date
         c = conn.cursor()
         c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s);', (stDate, endDate))
         holidays = []
@@ -44,19 +41,10 @@ class Portfolio:
         c.close()
 
 if __name__=='__main__':
-
-    import datetime
-
+    
     stDate = datetime.date(1990, 03, 01)
     endDate = datetime.date(2015, 12, 30)
     
     p = Portfolio()
     p.load(stDate, endDate)
     p.getValue(stDate, 'close')
-
-
-
-
-
-
-
