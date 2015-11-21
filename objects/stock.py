@@ -1,5 +1,4 @@
 from sqlconnector import *
-import matplotlib.pyplot as plt
 import pandas as pds
 import math
 
@@ -86,6 +85,7 @@ class Stock(object):
     def getSpot(self): return self.spot
     def setSpot(self, spot): self.spot = spot
     def draw(self, stDate, endDate):
+        import matplotlib.pyplot as plt
         toPlot = self.spots[(self.spots.index > stDate)]
         lines = plt.plot(toPlot.index, toPlot['Close'])
         plt.plot(toPlot.index, toPlot['ewma_10'])
@@ -97,12 +97,14 @@ class Stock(object):
         plt.show()
 
     def draw3(self, stDate, endDate):
+        import matplotlib.pyplot as plt
         toPlot = pds.DataFrame(self.spots[(self.spots.index > stDate)])
         df = pds.DataFrame(toPlot[['Close', 'ewma_10', 'ewma_20', 'ewma_50', 'ewma_100']], index=toPlot.index)
         df.plot(title = self.mnemo);
         plt.show()
 
     def draw2(self, stDate, endDate):
+        import matplotlib.pyplot as plt
         toPlot = pds.DataFrame(self.spots[(self.spots.index > stDate)])
         print toPlot.tail()
         toPlot['Return'] = np.log(toPlot['Close'] / toPlot['Close']. shift( 1))
