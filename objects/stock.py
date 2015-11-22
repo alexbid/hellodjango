@@ -1,12 +1,16 @@
-from sqlconnector import *
+
+import common as cmn
+import numpy as np
 import pandas as pds
+
 import math
+from common import *
 
 class Stock(object):
     def __init__(self, mnemo):
         self.spot = 0.0
         self.lvolume = 0.0
-        self.spots = {}
+        self.spots = pds.DataFrame()
         self.mnemo = mnemo
         flag = "close"
         self.loaded = False
@@ -50,18 +54,18 @@ class Stock(object):
             c.close()
     
     def load_pandas(self, stDate, endDate, flag):
-        endDate = getLastTrDay(endDate)
+        endDate = cmn.getLastTrDay(endDate)
         if self.loaded == False:
             print "loading Stock... " + self.mnemo, stDate, endDate, flag
             if self.spot == 0:
                 try:
-                    resultss = pds.read_sql(("""SELECT "Close", "Volume" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG=%s) AND BBG = %s)"""), conn, params=(self.mnemo, self.mnemo))
+                    resultss = pds.read_sql(("""SELECT "Close", "Volume" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG=%s) AND BBG = %s)"""), cmn.conn, params=(self.mnemo, self.mnemo))
                     self.spot = resultss.iloc[0]['Close']
                     self.lvolume = resultss.iloc[0]['Volume']
                 except:
                     print "error in loading Stock!"
             try:
-                self.spots = pds.read_sql(("""SELECT "Date", "Close", "Volume" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), conn, index_col="Date", params=(self.mnemo, stDate, endDate))
+                self.spots = pds.read_sql(("""SELECT "Date", "Close", "Volume" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), cmn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))
                 self.spots['volume_20'] = pds.stats.moments.rolling_mean(self.spots['Volume'], 20)
                 self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['Close'], 10)
                 self.spots['ewma_20'] = pds.stats.moments.ewma(self.spots['Close'], 20)
@@ -72,7 +76,6 @@ class Stock(object):
                 self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
             except:
                 print "error in loading historic prices for " + self.mnemo
-            c.close()
 
     def __hash__(self): return hash(str(self))
     def __cmp__(self, other): return cmp(str(self), str(other))

@@ -1,11 +1,10 @@
+import sys
+sys.path.insert(0, 'objects')
 
 import sys
 import datetime
 
-from module_one.code_python import Portfolio
-from module_one.code_python import vTradingDates
-from module_one.code_python import doRequestData
-from module_one.universe import Universe
+import universe, portfolio
 from dateutil.relativedelta import relativedelta
 
 endDate = datetime.date.today()
@@ -21,11 +20,11 @@ evalDate = endDate+ relativedelta(days=-1)
 #	doRequestData(x.listUniverse.BBG[i], x.listUniverse.CDR[i], stDate, endDate)
 #doRequestData("^FCHI", "FR", stDate, endDate)
 
-portfolio = Portfolio()
-portfolio.mDeposit(10000)
-portfolio.load(stDate, evalDate)
-print "portfolio values:", portfolio.getValue(evalDate,'close')
-print "total fees:", portfolio.getFees()
+portf = portfolio.Portfolio()
+portf.mDeposit(10000)
+portf.load(stDate, evalDate)
+print "portfolio values:", portf.getValue(evalDate,'close')
+print "total fees:", portf.getFees()
 print ""
 
 

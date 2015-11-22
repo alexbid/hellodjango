@@ -1,46 +1,37 @@
-from module_one.code_python import Stock
-from module_one.code_python import sqlConnector
-from module_one.code_python import vTradingDates
-import datetime
+import sys
+sys.path.insert(0, 'objects')
+
 import numpy as np
 import pandas as pds
-from module_one.universe import Universe
-from pandas import DataFrame
-from pandas import concat
-from sqlalchemy import create_engine
 
-class Share(Stock):
-	
-	def toto(self):
-		return "toto"
+from common import *
+from dateutil.relativedelta import relativedelta
+
+import stock, universe
 		
 if __name__=='__main__':
 	flag = 'close'
 	endDate = datetime.date.today()
-	from dateutil.relativedelta import relativedelta
+
 	stDate = endDate + relativedelta(months=-11)
 	windDate = endDate + relativedelta(days=-5)
-
-	engine = create_engine('postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb')
 	
-	try: 
-		sqlConn = sqlConnector()
-		c = sqlConn.conn.cursor()
+	try:
+		c = conn.cursor()
 		c.execute("DELETE FROM hellodjango_signals")
-		sqlConn.conn.commit()
-		sqlConn.conn.close()
+		conn.commit()
+#		conn.close()
 	except: print "Signals is not Empty..."
 
-	x = Universe()
+	x = universe.Universe()
 	for i in range(0, len(x.listUniverse)):
-		y = Share(x.listUniverse.BBG[i])
+		y = stock.Stock(x.listUniverse.BBG[i])
 		y.load_pandas(stDate, endDate, flag)
 		result1 = y.spots[(y.spots.index > windDate) & (y.spots.cv < 0.60/100 )]
 		result1 = result1.drop('volume_20', 1)
 		result1 = result1.drop('Volume', 1)
 		result1['lastUpdate'] = datetime.datetime.utcnow()
 		result2 = y.spots[(y.spots.index > windDate) & (y.spots.volume_20 * 5 < y.spots.Volume)]
-		#print "dsdsd", y.spots.volume_20.irow(-1) * 3
 		if len(result2.index) > 0: 
 			print result2
 ########	result2.to_excel('module_one/results/result_batch_volume_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')

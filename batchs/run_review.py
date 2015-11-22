@@ -31,10 +31,12 @@ if __name__=='__main__':
 
 #sp500[[' Close', '42d', '252d']]. plot( grid = True, figsize =( 8, 5))
 """
+import sys
+sys.path.insert(0, 'objects')
 
-from module_one.universe import Signals
+import universe
 
 if __name__=='__main__':
 	
-	y = Signals()
+	y = universe.Signals()
 	y.graph_signals()

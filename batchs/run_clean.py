@@ -1,17 +1,18 @@
 
+import sys
+sys.path.insert(0, 'objects')
 
-from hellodjango.module_one.code_python import sqlConnector
+from common import *
+#from hellodjango.module_one.code_python import sqlConnector
 
 import datetime
 import pandas as pds
-from sqlalchemy import create_engine
+#from sqlalchemy import create_engine
 
 stDate = datetime.datetime(2015, 7, 1, 0,0,0)
 endDate = datetime.datetime(2015, 7, 1, 23,0,0)
 
-sqlConn = sqlConnector()
-
-resultss = pds.read_sql("""(SELECT * FROM intraday WHERE ("Date" BETWEEN %s AND %s) ORDER BY "Date")""", sqlConn.conn, index_col="Date", params=(stDate.strftime('%Y-%m-%d %H:%M:%S'), endDate.strftime('%Y-%m-%d %H:%M:%S')))
+resultss = pds.read_sql("""(SELECT * FROM intraday WHERE ("Date" BETWEEN %s AND %s) ORDER BY "Date")""", conn, index_col="Date", params=(stDate.strftime('%Y-%m-%d %H:%M:%S'), endDate.strftime('%Y-%m-%d %H:%M:%S')))
 
 print resultss
 
