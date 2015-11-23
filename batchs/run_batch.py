@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, 'objects')
+sys.path.insert(0, 'hellodjango/objects')
 
 import numpy as np
 import pandas as pds

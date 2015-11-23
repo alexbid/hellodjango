@@ -53,3 +53,8 @@ crontab < <(crontab -l ; echo "@reboot python /home/ubuntu/hellodjango/batchs/ru
 crontab < <(crontab -l ; echo "* * * * *  python /home/ubuntu/hellodjango/batchs/run_realtime.py")
 crontab < <(crontab -l ; echo "0 13-16 * * *  python /home/ubuntu/hellodjango/batchs/run_eod.py")
 crontab < <(crontab -l ; echo "45 6 * * 1-5  python /home/ubuntu/hellodjango/batchs/run_nav.py")
+crontab < <(crontab -l ; echo "45 7 * * 1-5  python /home/ubuntu/hellodjango/batchs/run_all.py")
+
+
+
+

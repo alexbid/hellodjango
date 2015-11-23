@@ -1,5 +1,6 @@
 import sys
-sys.path.insert(0, 'objects')
+#sys.path.insert(0, 'objects')
+sys.path.insert(0, 'hellodjango/objects')
 
 from common import *
 import requests, datetime
