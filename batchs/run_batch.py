@@ -43,4 +43,4 @@ if __name__=='__main__':
 			#result1.to_excel('module_one/results/result_batch_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')
 			result1['BBG'] = x.listUniverse.BBG[i]
 			try: result1.to_sql('hellodjango_signals', engine, if_exists='append')
-            except AttributeError: print "Not Save TO DB / run_batch.py" #result1.to_sql('signals', engine, if_exists='replace')
+			except AttributeError: print "Not Save TO DB / run_batch.py"
