@@ -42,6 +42,7 @@ sudo pip install lxml
 
 sudo pip install -y setuptools
 sudo apt-get install python-scipy
+sudo apt-get install python-pandas
 
 #sudo pip install uwsgi
 sudo pip install -r requirements.txt

@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pds
 
 from common import *
+from sqlconnector import *
+
 from dateutil.relativedelta import relativedelta
 
 import stock, universe
