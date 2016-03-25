@@ -1,6 +1,8 @@
 
-import sys
-sys.path.insert(0, 'hellodjango/objects')
+import sys, os
+addPath = os.path.realpath(__file__).replace('batchs/run_all.py','objects')
+sys.path.append(addPath)
+#sys.path.insert(0, 'hellodjango/objects')
 
 import datetime
 import numpy as np

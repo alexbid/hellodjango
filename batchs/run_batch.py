@@ -1,5 +1,6 @@
-import sys
-sys.path.insert(0, 'hellodjango/objects')
+import sys, os
+addPath = os.path.realpath(__file__).replace('batchs/run_batch.py','objects')
+sys.path.append(addPath)
 
 import numpy as np
 import pandas as pds

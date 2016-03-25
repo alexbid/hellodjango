@@ -31,8 +31,10 @@ if __name__=='__main__':
 
 #sp500[[' Close', '42d', '252d']]. plot( grid = True, figsize =( 8, 5))
 """
-import sys
-sys.path.insert(0, 'objects')
+
+import sys, os
+addPath = os.path.realpath(__file__).replace('batchs/run_review.py','objects')
+sys.path.append(addPath)
 
 import universe
 

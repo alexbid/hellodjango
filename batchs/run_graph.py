@@ -1,7 +1,7 @@
 
-import sys
-#sys.path.insert(0, 'objects')
-sys.path.insert(0, 'hellodjango/objects')
+import sys, os
+addPath = os.path.realpath(__file__).replace('batchs/run_graph.py','objects')
+sys.path.append(addPath)
 
 import datetime
 import numpy as np

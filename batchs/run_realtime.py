@@ -1,6 +1,7 @@
-import sys
-#sys.path.insert(0, 'objects')
-sys.path.insert(0, 'hellodjango/objects')
+
+import sys, os
+addPath = os.path.realpath(__file__).replace('batchs/run_realtime.py','objects')
+sys.path.append(addPath)
 
 from common import *
 import requests, datetime
