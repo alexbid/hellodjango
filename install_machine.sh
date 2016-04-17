@@ -40,6 +40,7 @@ sudo pip install lxml
 #sudo apt-get install -y libpq-dev python-dev libevent-dev libevent-devel python-devel build-essential 
 #sudo apt-get install -y libcurl4-gnutls-dev libexpat1-dev gettext \ libz-dev libssl-dev
 
+sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran
 sudo pip install -y setuptools
 #sudo pip install uwsgi
 sudo pip install -r requirements.txt
@@ -48,7 +49,9 @@ sudo pip install -r requirements.txt
 
 crontab < <(crontab -l ; echo "MAILTO=bidault@hotmail.fr")
 crontab < <(crontab -l ; echo "@reboot python /home/ubuntu/hellodjango/run_all.py")
-crontab < <(crontab -l ; echo "* * * * *  python /home/ubuntu/hellodjango/run_realtime.py")
-crontab < <(crontab -l ; echo "0 16 * * *  python /home/ubuntu/hellodjango/run_eod.py")
-crontab < <(crontab -l ; echo "0 13 * * *  python /home/ubuntu/hellodjango/run_eod.py")
+crontab < <(crontab -l ; echo "* * * * 1-5  python /home/ubuntu/hellodjango/run_realtime.py")
+crontab < <(crontab -l ; echo "15 12,16,18,20,21 * * 1-5  python /home/ubuntu/hellodjango/run_eod.py")
 crontab < <(crontab -l ; echo "45 6 * * 1-5  python /home/ubuntu/hellodjango/run_nav.py")
+crontab < <(crontab -l ; echo "45 6 * * 1-5 python /home/ubuntu/hellodjango/run_all.py")
+
+
