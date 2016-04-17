@@ -1,1 +1,2 @@
 https://github.com/alexbid/hellodjango.git
+expand -t 4 script.py > fixed_script.py

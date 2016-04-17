@@ -32,9 +32,13 @@ if __name__=='__main__':
 #sp500[[' Close', '42d', '252d']]. plot( grid = True, figsize =( 8, 5))
 """
 
-from module_one.universe import Signals
+import sys, os
+addPath = os.path.realpath(__file__).replace('batchs/run_review.py','objects')
+sys.path.append(addPath)
+
+import universe
 
 if __name__=='__main__':
 	
-	y = Signals()
+	y = universe.Signals()
 	y.graph_signals()

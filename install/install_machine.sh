@@ -42,16 +42,29 @@ sudo pip install lxml
 
 sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran
 sudo pip install -y setuptools
+sudo apt-get install python-scipy
+sudo apt-get install python-pandas
+
 #sudo pip install uwsgi
 sudo pip install -r requirements.txt
 
 #sudo rm -r /home/ubuntu/downloads
 
 crontab < <(crontab -l ; echo "MAILTO=bidault@hotmail.fr")
+<<<<<<< HEAD:install_machine.sh
 crontab < <(crontab -l ; echo "@reboot python /home/ubuntu/hellodjango/run_all.py")
 crontab < <(crontab -l ; echo "* * * * 1-5  python /home/ubuntu/hellodjango/run_realtime.py")
 crontab < <(crontab -l ; echo "15 12,16,18,20,21 * * 1-5  python /home/ubuntu/hellodjango/run_eod.py")
 crontab < <(crontab -l ; echo "45 6 * * 1-5  python /home/ubuntu/hellodjango/run_nav.py")
 crontab < <(crontab -l ; echo "45 6 * * 1-5 python /home/ubuntu/hellodjango/run_all.py")
+=======
+crontab < <(crontab -l ; echo "@reboot python /home/ubuntu/hellodjango/batchs/run_all.py")
+crontab < <(crontab -l ; echo "* * * * *  python /home/ubuntu/hellodjango/batchs/run_realtime.py")
+crontab < <(crontab -l ; echo "0 13-16 * * *  python /home/ubuntu/hellodjango/batchs/run_eod.py")
+crontab < <(crontab -l ; echo "45 6 * * 1-5  python /home/ubuntu/hellodjango/batchs/run_nav.py")
+crontab < <(crontab -l ; echo "45 7 * * 1-5  python /home/ubuntu/hellodjango/batchs/run_all.py")
+
+
+>>>>>>> 5905fc4c205993fe4d6f68bc408da96af093ecb7:install/install_machine.sh
 
 
