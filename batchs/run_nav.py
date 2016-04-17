@@ -1,4 +1,3 @@
-
 import sys, os
 addPath = os.path.realpath(__file__).replace('batchs/run_nav.py','objects')
 sys.path.append(addPath)
@@ -40,7 +39,8 @@ for idx in range(len(univers)):
 
 
 	for item in dateList:
-		npdateList.append(datetime.datetime.strptime(str(item.text_content())+ ' 2015', '%B %d %Y'))
+#		print datetime.datetime.strptime(str(item.text_content()+ ' 2016'), '%B %d %Y')
+		npdateList.append(datetime.datetime.strptime(str(item.text_content())+ ' 2016', '%B %d %Y'))
 	
 	npdateList = np.array(npdateList)
 	nppriceList = np.array(nppriceList)
