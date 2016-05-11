@@ -37,11 +37,17 @@ for idx in range(len(univers)):
 	for item in priceList:
 		nppriceList.append(item.text_content())
 
+	print dateList[0].text_content()
+	print dateList[-1].text_content()
+	print len(dateList)
+	raw_input()
 
 	for item in dateList:
-#		print datetime.datetime.strptime(str(item.text_content()+ ' 2016'), '%B %d %Y')
+		print item.text_content()
+#		raw_input()
+		print datetime.datetime.strptime(str(item.text_content()+ ' 2016'), '%B %d %Y')
 		npdateList.append(datetime.datetime.strptime(str(item.text_content())+ ' 2016', '%B %d %Y'))
-	
+	raw_input()
 	npdateList = np.array(npdateList)
 	nppriceList = np.array(nppriceList)
 	

@@ -1,25 +1,28 @@
 #!/bin/bash -x
 
-mkdir /home/ubuntu/hellodjango
-mkdir /home/ubuntu/downloads
-cd hellodjango
+rootDir=$1
+rootDir=/home/pi
+
+mkdir $rootDir/hellodjango
+mkdir $rootDir/downloads
+cd $rootDir/hellodjango
 sudo apt-get update
 sudo apt-get install -y git
 git init
 git pull https://github.com/alexbid/hellodjango.git
 
 #Install Python
-cd /home/ubuntu/downloads
+cd $rootDir/downloads
 wget https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz
 tar -xvf Python-2.7.10.tgz
-cd /home/ubuntu/downloads/Python-2.7.10
+cd $rootDir/downloads/Python-2.7.10
 sudo ./configure
 sudo make
 sudo make install
-sudo cp /home/ubuntu/downloads/Python-2.7.10/setup.py /usr/local/bin/
-sudo cp /home/ubuntu/downloads/Python-2.7.10/setup.py /usr/local/lib/python2.7
+sudo cp $rootDir/downloads/Python-2.7.10/setup.py /usr/local/bin/
+sudo cp $rootDir/downloads/Python-2.7.10/setup.py /usr/local/lib/python2.7
 
-cd /home/ubuntu/hellodjango
+cd $rootDir/hellodjango
 sudo python setup.py build
 sudo python setup.py install
 #PATH=${PATH}:/usr/local/lib/python2.7
@@ -50,11 +53,11 @@ sudo pip install -r requirements.txt
 #sudo rm -r /home/ubuntu/downloads
 
 crontab < <(crontab -l ; echo "MAILTO=bidault@hotmail.fr")
-crontab < <(crontab -l ; echo "@reboot python /home/ubuntu/hellodjango/batchs/run_all.py")
-crontab < <(crontab -l ; echo "* * * * *  python /home/ubuntu/hellodjango/batchs/run_realtime.py")
-crontab < <(crontab -l ; echo "0 13-16 * * *  python /home/ubuntu/hellodjango/batchs/run_eod.py")
-crontab < <(crontab -l ; echo "45 6 * * 1-5  python /home/ubuntu/hellodjango/batchs/run_nav.py")
-crontab < <(crontab -l ; echo "45 7 * * 1-5  python /home/ubuntu/hellodjango/batchs/run_all.py")
+crontab < <(crontab -l ; echo "@reboot python "$rootDir"/hellodjango/batchs/run_all.py")
+crontab < <(crontab -l ; echo "* * * * *  python "$rootDir"/hellodjango/batchs/run_realtime.py")
+crontab < <(crontab -l ; echo "0 13-16 * * *  python "$rootDir"/hellodjango/batchs/run_eod.py")
+crontab < <(crontab -l ; echo "45 6 * * 1-5  python "$rootDir"/hellodjango/batchs/run_nav.py")
+crontab < <(crontab -l ; echo "45 7 * * 1-5  python "$rootDir"/hellodjango/batchs/run_all.py")
 
 
 
