@@ -13,23 +13,22 @@ page2 = requests.get('https://www.boerse-stuttgart.de/de/boersenportal/wertpapie
 tree = html.fromstring(page2.text)
 
 bid = tree.xpath('//span[@id="domhandler:4.consumer:VALUE-2CCLASS.comp:PREV.gt:push-2Dup.eq:.lt:push-2Ddown.resetLt:.resetGt:.resetEq:.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:BID.resetComp:PREV"]/text()')[0].replace('\n', '').strip()
-bid = float(bid.replace(',', '.'))
-print 'bid: ', bid
-
 ask = tree.xpath('//span[@id="domhandler:5.consumer:VALUE-2CCLASS.comp:PREV.gt:push-2Dup.eq:.lt:push-2Ddown.resetLt:.resetGt:.resetEq:.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:ASK.resetComp:PREV"]/text()')[0].replace('\n', '').strip()
-ask = float(ask.replace(',', '.'))
-print 'ask: ', ask
-
 tdate = tree.xpath('//span[@id="domhandler:10.consumer:VALUE-2CCLASS.comp:ZERO.gt:ZERO.eq:ZERO.lt:ZERO.resetLt:ZERO.resetGt:ZERO.resetEq:ZERO.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:DATE_BID.resetComp:ZERO.valueFilter:formatDateBidLong"]/text()')[0].replace('\n', '').strip() + " " + tree.xpath('//span[@id="domhandler:11.consumer:VALUE-2CCLASS.comp:ZERO.gt:ZERO.eq:ZERO.lt:ZERO.resetLt:ZERO.resetGt:ZERO.resetEq:ZERO.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:TIME_BID.resetComp:ZERO.valueFilter:formatTimeBidLong"]/text()')[0].replace('\n', '').strip()
-tdate = datetime.datetime.strptime(tdate, '%d.%m.%Y %H:%M:%S')
 
-print 'date: ', tdate
+if ('-' not in bid) and ('-' not in ask):
+    bid = float(bid.replace(',', '.'))
+    print 'bid: ', bid
+    ask = float(ask.replace(',', '.'))
+    print 'ask: ', ask
+    tdate = datetime.datetime.strptime(tdate, '%d.%m.%Y %H:%M:%S')
+    print 'date: ', tdate
 
-c = conn.cursor()
-try: 
-	c.execute("""INSERT INTO funds("wkn", "Bid", "Ask", "Date") VALUES(%s,%s,%s,%s)""",("847101", float(bid), float(ask), tdate))
-	conn.commit()
-except psycopg2.IntegrityError: 
-	print "quote already in DB Funds"
+    c = conn.cursor()
+    try:
+        c.execute("""INSERT INTO funds("wkn", "Bid", "Ask", "Date") VALUES(%s,%s,%s,%s)""",("847101", float(bid), float(ask), tdate))
+        conn.commit()
+    except psycopg2.IntegrityError: 
+        print "quote already in DB Funds"
 
-conn.close()
+    conn.close()
