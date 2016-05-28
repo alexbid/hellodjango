@@ -1,4 +1,11 @@
 
+#$1 can take:
+#CRITICAL
+#ERROR
+#WARNING
+#INFO
+#DEBUG
+
 import sys, os
 addPath = os.path.realpath(__file__).replace('batchs/run_realtime.py','objects')
 sys.path.append(addPath)
@@ -6,6 +13,10 @@ sys.path.append(addPath)
 from common import *
 import requests, datetime
 from lxml import html
+
+import logging
+logging.basicConfig(level=sys.argv[1], format='%(asctime)s - %(levelname)s - %(message)s')
+#logging.basicConfig(filename='logs_realtime.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit 537.36 (KHTML, like Gecko) Chrome", "Accept":"text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,*/*;q=0.8"}
 
@@ -18,17 +29,18 @@ tdate = tree.xpath('//span[@id="domhandler:10.consumer:VALUE-2CCLASS.comp:ZERO.g
 
 if ('-' not in bid) and ('-' not in ask):
     bid = float(bid.replace(',', '.'))
-    print 'bid: ', bid
     ask = float(ask.replace(',', '.'))
-    print 'ask: ', ask
     tdate = datetime.datetime.strptime(tdate, '%d.%m.%Y %H:%M:%S')
-    print 'date: ', tdate
+
+    logging.debug('bid %s', bid)
+    logging.debug('ask %s', ask)
+    logging.debug('date %s', tdate)
 
     c = conn.cursor()
     try:
         c.execute("""INSERT INTO funds("wkn", "Bid", "Ask", "Date") VALUES(%s,%s,%s,%s)""",("847101", float(bid), float(ask), tdate))
         conn.commit()
-    except psycopg2.IntegrityError: 
-        print "quote already in DB Funds"
+    except psycopg2.IntegrityError:
+        logging.info('quote already in DB Funds %s %s %s', bid, ask, tdate)
 
     conn.close()
