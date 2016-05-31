@@ -1,7 +1,17 @@
 
+#$1 can take:
+#CRITICAL
+#ERROR
+#WARNING
+#INFO
+#DEBUG
+
 import sys, os
 addPath = os.path.realpath(__file__).replace('batchs/run_eod.py','objects')
 sys.path.append(addPath)
+
+import logging
+logging.basicConfig(level=sys.argv[1], format='%(asctime)s - %(levelname)s - %(message)s')
 
 import datetime
 import psycopg2
@@ -49,16 +59,18 @@ def bloombergScrap(mnemo, ric):
 	#missingDates = missingDates.replace(tzinfo=from_zone)
 	#central = missingDates.astimezone(to_zone)
 
-	print 'missingDates for ' + mnemo + ': ', missingDates
+    #print 'missingDates for ' + mnemo + ': ', missingDates
+	logging.debug('missingDates for %s: %s', mnemo, missingDates)
 
 	toDB = pds.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
 	toDB.index.name = 'Date'
 	try:
-		toDB.to_sql('intraday', engine, if_exists='append') 
+		toDB.to_sql('intraday', engine, if_exists='append')
+		logging.info('%s ....done', mnemo)
 	except psycopg2.IntegrityError:
-		print "quote already in DB Funds"
-	print mnemo + '....done'
-	
+        #print "quote already in DB Funds"
+		logging.info('quote already in DB Funds')
+
 mnemoList = pds.read_sql("""SELECT DISTINCT "mnemo", "BBG" FROM batch_run WHERE "mnemo" IS NOT NULL ORDER BY "mnemo" ASC""", conn)
 
 for index, row in mnemoList.iterrows():

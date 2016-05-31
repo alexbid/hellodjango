@@ -61,7 +61,7 @@ sudo easy_install cython
 
 #crontab < <(crontab -l ; echo "MAILTO=bidault@hotmail.fr")
 #crontab < <(crontab -l ; echo "@reboot python /home/ubuntu/hellodjango/run_all.py")
-#crontab < <(crontab -l ; echo "* 6-20 * * 1-5  python /home/ubuntu/hellodjango/run_realtime.py")
+#crontab < <(crontab -l ; echo "* 6-20 * * 1-5  python /home/ubuntu/hellodjango/run_realtime.py ERROR")
 #crontab < <(crontab -l ; echo "0 13,17,21 * * 1-5  python /home/ubuntu/hellodjango/run_eod.py")
 #crontab < <(crontab -l ; echo "45 5 * * 1-5  python /home/ubuntu/hellodjango/run_nav.py")
 #crontab < <(crontab -l ; echo "45 6 * * 1-5  python /home/ubuntu/hellodjango/run_all.py")
