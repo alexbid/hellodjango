@@ -3,6 +3,9 @@ import common as cmn
 import numpy as np
 import pandas as pds
 
+import logging
+logging.basicConfig(level='ERROR', format='%(asctime)s - %(levelname)s - %(message)s')
+
 import math
 from common import *
 
@@ -56,14 +59,16 @@ class Stock(object):
     def load_pandas(self, stDate, endDate, flag):
         endDate = cmn.getLastTrDay(endDate)
         if self.loaded == False:
-            print "loading Stock... " + self.mnemo, stDate, endDate, flag
+#            print "loading Stock... " + self.mnemo, stDate, endDate, flag
+            logging.info('loading Stock... %s %s %s %s', self.mnemo, stDate, endDate, flag)
             if self.spot == 0:
                 try:
                     resultss = pds.read_sql(("""SELECT "Close", "Volume" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG=%s) AND BBG = %s)"""), cmn.conn, params=(self.mnemo, self.mnemo))
                     self.spot = resultss.iloc[0]['Close']
                     self.lvolume = resultss.iloc[0]['Volume']
                 except:
-                    print "error in loading Stock!"
+#                    print "error in loading Stock!"
+                    logging.error('error in loading Stock!')
             try:
                 self.spots = pds.read_sql(("""SELECT "Date", "Close", "Volume" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), cmn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))
                 self.spots['volume_20'] = pds.stats.moments.rolling_mean(self.spots['Volume'], 20)
@@ -75,7 +80,8 @@ class Stock(object):
                 self.spots['mean'] = self.spots[['Close', 'ewma_20','ewma_50','ewma_100']].mean(axis=1)
                 self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
             except:
-                print "error in loading historic prices for " + self.mnemo
+                logging.error('error in loading historic prices for %s', self.mnemo)
+#                print "error in loading historic prices for " + self.mnemo
 
     def __hash__(self): return hash(str(self))
     def __cmp__(self, other): return cmp(str(self), str(other))

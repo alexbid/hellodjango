@@ -6,6 +6,8 @@ import os
 import pandas as pds
 import numpy as np
 import pandas.io.data as web
+import logging
+logging.basicConfig(level='ERROR' , format='%(asctime)s - %(levelname)s - %(message)s')
 
 from sqlconnector import *
 calendar.setfirstweekday(calendar.MONDAY)
@@ -90,7 +92,8 @@ def getLastTrDay(endD):
 def doRequestData(BBG, CAL, startD, endD):
     from datetime import date
     endD = getLastTrDay(endD)
-    print BBG, endD
+    logging.info('%s %s', BBG, endD)
+#    print BBG, endD
 #############################################################################################################################
     dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B').to_datetime(), CAL)
     c = conn.cursor()
@@ -110,14 +113,17 @@ def doRequestData(BBG, CAL, startD, endD):
                 toRequest.append(pds.to_datetime(tempAlex[i]).date())
         toRequest.sort()
 ### save to DB ##############################################################################################################
-        print "Period To Request for Stock: ", BBG, toRequest, len(toRequest)
+#        print "Period To Request for Stock: ", BBG, toRequest, len(toRequest)
+        logging.info('Period To Request for Stock: %s %s %s', BBG, toRequest, len(toRequest))
         if len(toRequest) == 1: toRequest.append(toRequest[0])
         for row in range(1, len(toRequest)):
             try:
                 fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=toRequest[row-1], end=toRequest[row])
                 fromyahoo['bbg'] = BBG
                 fromyahoo.to_sql('spots', engine, if_exists='append')
-            except: print "yahoo request failed! ", BBG
+            except:
+#                print "yahoo request failed! ", BBG
+                logging.error('yahoo request failed! %s', BBG)
 
 def cTurbo(Fwd, strike, barrier, quot, margin):
     if Fwd > strike: return (Fwd - strike)/quot + margin
