@@ -3,8 +3,8 @@ import common as cmn
 import numpy as np
 import pandas as pds
 
-import logging
-logging.basicConfig(level='ERROR', format='%(asctime)s - %(levelname)s - %(message)s')
+#import logging
+#logging.basicConfig(level='ERROR', format='%(asctime)s - %(levelname)s - %(message)s')
 
 import math
 from common import *

@@ -15,9 +15,6 @@ import datetime
 import numpy as np
 import pandas as pds
 
-import logging
-logging.basicConfig(level=sys.argv[1], format='%(asctime)s - %(levelname)s - %(message)s')
-
 from common import *
 import universe, stock
 
@@ -44,7 +41,6 @@ if __name__=='__main__':
         result1['lastUpdate'] = datetime.datetime.utcnow()
         result2 = y.spots[(y.spots.index > windDate) & (y.spots.volume_20 * 5 < y.spots.Volume)]
         if len(result2.index) > 0:
-#                print result2
                 logging.info(result2)
 
         #result2.to_excel('module_one/results/result_batch_volume_' + datetime.date.today().strftime("%Y-%m-%d") + "_"+ x.listUniverse.BBG[i] + '.xls')

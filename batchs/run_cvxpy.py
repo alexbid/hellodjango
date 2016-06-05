@@ -18,7 +18,7 @@ class optimization():
         self.endDate = datetime.date.today()
         self.stDate = self.endDate + relativedelta(weeks=-60)
         self.loadDate = self.stDate
-        print self.stDate, self.endDate
+        logging.debug('%s %s', self.stDate, self.endDate)
         self.noa = 0
         
         self.quarter = pds.DataFrame()
@@ -30,7 +30,7 @@ class optimization():
         
         self.nav = pds.read_sql("""SELECT "Date", "NAV", "wkn" FROM funds_nav WHERE (("Date" BETWEEN %s AND %s)) ORDER BY "Date" ASC;""", conn, index_col="Date", params=(self.loadDate, self.endDate))        
         for i in range(57): self.time_ref_list.append(datetime.timedelta(hours=8+ i//4, minutes=i%4*15)) 
-        print 'loading optimization...'
+        logging.info('loading optimization...')
 
     def load_data(self):
         #time_ref = datetime.timedelta(hours=8, minutes=0)
@@ -63,7 +63,7 @@ class optimization():
         data = pds.DataFrame()
         df1 = pds.DataFrame()
         for sym in symbols:
-            print 'loading ' + sym
+            logging.info('loading %s', sym)
             data = pds.read_sql("""SELECT "Date", "Last" FROM intraday WHERE (("Date" BETWEEN %s AND %s) and ("bbg" = %s)) ORDER BY "Date" ASC;""", conn, index_col="Date", params=(self.loadDate, self.endDate, sym))
             data.columns = [sym,]
             df1 = pds.merge(data, df1,  left_index=True, right_index=True, how='outer')
@@ -77,7 +77,7 @@ class optimization():
         data = pds.DataFrame()
         df1 = pds.DataFrame()
         data = pds.read_sql("""SELECT "Date", "Last", "bbg" FROM intraday WHERE (("Date" BETWEEN %s AND %s)) ORDER BY "Date" ASC;""", self.sqlConn.conn, index_col="Date", params=(self.loadDate, self.endDate))
-        print data
+        logging.debug('%s', data)
         self.quarter = df1.resample(rule='15min', how='last', closed = 'right', label='left', loffset='15min', fill_method='ffill') 
         
     def statistics(self, weights):
@@ -92,9 +92,7 @@ class optimization():
         pvol : float expected portfolio volatility 
         pret / pvol : float Sharpe ratio for rf = 0
         """
-        
         weights = np.array(weights)
-        #print 'rets.mean(): ', self.rets
         pret = np.sum(self.rets.mean() * weights) * 252
         pvol = np.sqrt( np.dot( weights.T, np.dot( self.rets.cov() * 252, weights))) 
         return np.array([ pret, pvol, pret / pvol])
@@ -120,22 +118,22 @@ class optimization():
         weight_init =  self.noa * [1. / (self.noa-1),]
         weight_init[0] = -1
 
-        #print 'bnds: ', bnds
-        #print 'weight_init:', weight_init
-        #print (weight_init)
+        logging.info('bnds: %s', bnds)
+        logging.info('weight_init: %s', weight_init)
+        logging.info('%s', weight_init)
         opts = sco.minimize(self.min_func_var, weight_init, method ='SLSQP', bounds = bnds, constraints = cons)
-        #print opts
-        #print symbols
-        #print 'optimized weights: ',opts['x'].round(3)
-        #print 'equiweighted: ', self.statistics(weight_init).round(3)
-        #print 'optimised: ', self.statistics(opts['x']).round(3)
+        logging.info('%s', opts)
+        logging.info('%s', symbols)
+        logging.info('optimized weights: %s', opts['x'].round(3))
+        logging.info('equiweighted: %s', self.statistics(weight_init).round(3))
+        logging.info('optimised: %s', self.statistics(opts['x']).round(3))
         return (opts['x']).round(3)
         
     def optimizeDate(self):
         result_List = []
         for i in range(6, 24): 
             result_List.append(self.optimizeTime(i))
-        print min(result_List, key=itemgetter(1))
+        logging.info('%s', min(result_List, key=itemgetter(1)))
 
     def optimizeTime(self, nb_weeks):
         covar_ref_list = []
@@ -150,12 +148,12 @@ class optimization():
         results = pds.DataFrame(covar_ref_list, index=self.time_ref_list, columns = ['VAR'])
         results['weights'] = weights_list
         
-        print "NAV Time: ", results['VAR'].idxmin(), results['VAR'].min()
-        #print "Weights: ", results[results['VAR'].idxmin()]
+        logging.info('NAV Time: %s %s', results['VAR'].idxmin(), results['VAR'].min())
+        logging.info('Weights: ', results[results['VAR'].idxmin()])
 
-        print "NAV Time", results.ix[results['VAR'].idxmin()]
-        #print X.idx 
-        #print 'ty', results.ix[results['VAR'].idxmin()][1]
+        logging.info('NAV Time', results.ix[results['VAR'].idxmin()])
+        #logging.info('%s', X.idx)
+        #logging.info('ty %s', results.ix[results['VAR'].idxmin()][1])
         resultss = pds.DataFrame(results.ix[results['VAR'].idxmin()][1],index=X.idx, columns = ['wght'])
         resultss.index.name = 'bbg'
         #resultss['updated'] = datetime.date(datetime.utcnow())
@@ -167,11 +165,11 @@ class optimization():
         return [resultss, results['VAR'].min()]
         
 #resultss.to_sql('tracking_baskets', engine, if_exists='append') 
-        #print list(X.df.columns.values)
+        #logging.info('%s', list(X.df.columns.values))
         #Y = optimization()
         #Y.load_data()
-        #print time_ref, Y.getWeights(datetime.timedelta(hours=22, minutes=0))
-        #print getWeights(datetime.timedelta(hours=16, minutes=0))
+        #logging.info('%s %s', time_ref, Y.getWeights(datetime.timedelta(hours=22, minutes=0)))
+        #logging.info('%s', getWeights(datetime.timedelta(hours=16, minutes=0)))
 
 
 if __name__=='__main__':
@@ -180,12 +178,12 @@ if __name__=='__main__':
 
     for idx in range(len(univers)):
         wkn = str(univers['wkn'].ix[idx])
-        print wkn
+        logging.info('%s', wkn)
 
     X = optimization()
     X.load_data()
-    #print X.optimizeTime(6)
-    print X.optimizeDate()
+    logging.info('%s', X.optimizeTime(6))
+    logging.info('%s', X.optimizeDate())
     
     
 

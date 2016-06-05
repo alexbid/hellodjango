@@ -14,8 +14,8 @@ from common import *
 import requests, datetime
 from lxml import html
 
-import logging
-logging.basicConfig(level=sys.argv[1], format='%(asctime)s - %(levelname)s - %(message)s')
+#import logging
+#logging.basicConfig(level=sys.argv[1], format='%(asctime)s - %(levelname)s - %(message)s')
 #logging.basicConfig(filename='logs_realtime.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit 537.36 (KHTML, like Gecko) Chrome", "Accept":"text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,*/*;q=0.8"}

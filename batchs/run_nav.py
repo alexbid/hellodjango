@@ -5,9 +5,6 @@ sys.path.append(addPath)
 import psycopg2
 import requests
 
-#from module_one.code_python import sqlConnector
-#from sqlalchemy import create_engine
-#from module_one.universe import Universe
 from datetime import time
 import datetime
 from common import *
@@ -23,7 +20,6 @@ x = universe.Universe()
 univers = x.load_fund_nav()
 
 for idx in range(len(univers)):
-	#print univers['ISIN'].ix[idx] #, univ2, wkn
 	wkn = str(univers['wkn'].ix[idx])
 	page2 = requests.get('http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
 	tree = html.fromstring(page2.text)
@@ -37,15 +33,14 @@ for idx in range(len(univers)):
 	for item in priceList:
 		nppriceList.append(item.text_content())
 
-	print dateList[0].text_content()
-	print dateList[-1].text_content()
-	print len(dateList)
+    logging.debug('%s', dateList[0].text_content())
+    logging.debug('%s', dateList[-1].text_content())
+    logging.debug('%s', len(dateList))
 	raw_input()
 
 	for item in dateList:
-		print item.text_content()
-#		raw_input()
-		print datetime.datetime.strptime(str(item.text_content()+ ' 2016'), '%B %d %Y')
+        logging.info('%s', item.text_content())
+		logging.info('%s', datetime.datetime.strptime(str(item.text_content()+ ' 2016'), '%B %d %Y'))
 		npdateList.append(datetime.datetime.strptime(str(item.text_content())+ ' 2016', '%B %d %Y'))
 	raw_input()
 	npdateList = np.array(npdateList)
@@ -65,7 +60,7 @@ for idx in range(len(univers)):
 	tutu = np.array(pds.to_datetime(s.index))
 	missingDates = np.setdiff1d(tutu, toto)
 
-	print 'missingDates for ' + wkn + ': ', missingDates
+    logging.info('missingDates for %s: %s', wkn, missingDates)
 
 	toDB = pds.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
 	toDB.index.name = 'Date'
@@ -73,7 +68,7 @@ for idx in range(len(univers)):
 	try:
 		toDB.to_sql('funds_nav', engine, if_exists='append') 
 	except psycopg2.IntegrityError:
-		print "quote already in DB Funds"
-	print wkn + '....done'
+        logging.error('quote already in DB Funds')
+    logging.info('%s ......done', wkn)
 
 

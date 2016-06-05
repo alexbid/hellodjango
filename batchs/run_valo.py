@@ -4,6 +4,7 @@ addPath = os.path.realpath(__file__).replace('batchs/run_valo.py','objects')
 sys.path.append(addPath)
 
 import datetime
+from common import *
 
 import universe, portfolio
 from dateutil.relativedelta import relativedelta
@@ -14,7 +15,8 @@ evalDate = endDate+ relativedelta(days=-1)
 
 #from timeit import Timer
 #t = Timer(lambda: vTradingDates(stDate, endDate, 'FR'))
-#print t.repeat(3, 5)
+logging.info('%s', t.repeat(3, 5))
+
 
 #x = Universe()
 #for i in range(0, len(x.listUniverse)):
@@ -24,11 +26,6 @@ evalDate = endDate+ relativedelta(days=-1)
 portf = portfolio.Portfolio()
 portf.mDeposit(10000)
 portf.load(stDate, evalDate)
-print "portfolio values:", portf.getValue(evalDate,'close')
-print "total fees:", portf.getFees()
-print ""
 
-
-	
-
-
+logging.info('portfolio values: %s', portf.getValue(evalDate,'close'))
+logging.info('total fees: %s', portf.getFees())

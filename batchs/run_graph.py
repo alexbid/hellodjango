@@ -6,6 +6,7 @@ sys.path.append(addPath)
 import datetime
 import numpy as np
 import pandas as pds
+from common import *
 
 from dateutil.relativedelta import relativedelta
 
@@ -18,9 +19,8 @@ class graphy():
 	
 	def __init__(self, BBG):
 		x = stock.Stock(BBG)
-		
-		print type(stDate), type(endDate)
-		
+        logging.debug('%s: %s', type(stDate), type(endDate))
+
 		x.load_pandas(stDate, endDate, 'Close')
 		x.draw3(windDate, endDate)
 		#x.draw2(windDate, endDate)
@@ -30,7 +30,6 @@ if __name__=='__main__':
 #	endDate = datetime.date.today()
 #	windDate = endDate + relativedelta(days=-90)
 #	stDate = endDate + relativedelta(months=-11)
-#	#print windDate
 	x = graphy('TES.PA')
 #	x.load_pandas(stDate, endDate, 'close')
 #	x.draw(windDate, endDate)

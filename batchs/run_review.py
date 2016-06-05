@@ -24,7 +24,6 @@ if __name__=='__main__':
 #	endDate = datetime.date.today()
 #	windDate = endDate + relativedelta(days=-90)
 #	stDate = endDate + relativedelta(months=-11)
-#	#print windDate
 	x = graphy('FP.PA')
 #	x.load_pandas(stDate, endDate, 'close')
 #	x.draw(windDate, endDate)
