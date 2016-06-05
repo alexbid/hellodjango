@@ -52,8 +52,7 @@ def bloombergScrap(mnemo, ric):
 	#missingDates = missingDates.replace(tzinfo=from_zone)
 	#central = missingDates.astimezone(to_zone)
 
-	logging.debug('missingDates for %s: %s', mnemo, missingDates)
-
+	logging.info('missingDates for %s: %s', mnemo, missingDates)
 	toDB = pds.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
 	toDB.index.name = 'Date'
 	try:

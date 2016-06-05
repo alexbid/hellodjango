@@ -30,19 +30,17 @@ for idx in range(len(univers)):
 	npdateList = []
 	nppriceList = []
 	
-	for item in priceList:
-		nppriceList.append(item.text_content())
+	for item in priceList: nppriceList.append(item.text_content())
 
-    logging.debug('%s', dateList[0].text_content())
-    logging.debug('%s', dateList[-1].text_content())
-    logging.debug('%s', len(dateList))
-	raw_input()
+	logging.debug('%s', dateList[0].text_content())
+	logging.debug('%s', dateList[-1].text_content())
+	logging.debug('%s', len(dateList))
 
 	for item in dateList:
-        logging.info('%s', item.text_content())
+		logging.info('%s', item.text_content())
 		logging.info('%s', datetime.datetime.strptime(str(item.text_content()+ ' 2016'), '%B %d %Y'))
 		npdateList.append(datetime.datetime.strptime(str(item.text_content())+ ' 2016', '%B %d %Y'))
-	raw_input()
+
 	npdateList = np.array(npdateList)
 	nppriceList = np.array(nppriceList)
 	
@@ -60,7 +58,7 @@ for idx in range(len(univers)):
 	tutu = np.array(pds.to_datetime(s.index))
 	missingDates = np.setdiff1d(tutu, toto)
 
-    logging.info('missingDates for %s: %s', wkn, missingDates)
+	logging.info('missingDates for %s: %s', wkn, missingDates)
 
 	toDB = pds.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
 	toDB.index.name = 'Date'
@@ -68,7 +66,7 @@ for idx in range(len(univers)):
 	try:
 		toDB.to_sql('funds_nav', engine, if_exists='append') 
 	except psycopg2.IntegrityError:
-        logging.error('quote already in DB Funds')
-    logging.info('%s ......done', wkn)
+		logging.error('quote already in DB Funds')
+	logging.info('%s ......done', wkn)
 
 
