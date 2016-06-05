@@ -57,9 +57,10 @@ def bloombergScrap(mnemo, ric):
 	toDB.index.name = 'Date'
 	try:
 		toDB.to_sql('intraday', engine, if_exists='append')
-		logging.info('%s ....done', mnemo)
 	except psycopg2.IntegrityError:
 		logging.info('quote already in DB Funds')
+	except:
+		logging.info('error in saving quote %s', toDB)
 
 mnemoList = pds.read_sql("""SELECT DISTINCT "mnemo", "BBG" FROM batch_run WHERE "mnemo" IS NOT NULL ORDER BY "mnemo" ASC""", conn)
 
