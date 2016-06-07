@@ -60,7 +60,7 @@ def bloombergScrap(mnemo, ric):
 	except psycopg2.IntegrityError:
 		logging.info('quote already in DB Funds')
 	except:
-		logging.error('error in saving quote %s', toDB)
+		logging.error('error in saving quote %s %s %s', mnemo, ric, toDB)
 
 mnemoList = pds.read_sql("""SELECT DISTINCT "mnemo", "BBG" FROM batch_run WHERE "mnemo" IS NOT NULL ORDER BY "mnemo" ASC""", conn)
 
