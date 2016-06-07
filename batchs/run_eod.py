@@ -52,15 +52,21 @@ def bloombergScrap(mnemo, ric):
 	#missingDates = missingDates.replace(tzinfo=from_zone)
 	#central = missingDates.astimezone(to_zone)
 
-	logging.info('missingDates for %s: %s', mnemo, missingDates)
+	logging.debug('missingDates for %s: %s', mnemo, missingDates)
 	toDB = pds.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
 	toDB.index.name = 'Date'
-	try:
-		toDB.to_sql('intraday', engine, if_exists='append')
-	except psycopg2.IntegrityError:
-		logging.info('quote already in DB Funds')
-	except:
-		logging.error('error in saving quote %s %s %s', mnemo, ric, toDB)
+#	logging.info('number of data to be saved: %s ', len(toDB.index))
+
+	if len(toDB.index) > 0:
+		try:
+			toDB.to_sql('intraday', engine, if_exists='append')
+		except psycopg2.IntegrityError:
+			logging.info('quote already in DB Funds')
+		except:
+			logging.error('error in saving quote %s %s %s', mnemo, ric, toDB)
+	else:
+		logging.info('no data to be saved for quote %s %s ', mnemo, ric)
+
 
 mnemoList = pds.read_sql("""SELECT DISTINCT "mnemo", "BBG" FROM batch_run WHERE "mnemo" IS NOT NULL ORDER BY "mnemo" ASC""", conn)
 
