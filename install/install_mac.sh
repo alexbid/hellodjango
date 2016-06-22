@@ -39,7 +39,7 @@ export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python2.7/dist-packages"
 sudo easy_install pip
 sudo easy_install lxml #apres avoir installe command line tool
 
-#sudo apt-get install -y python-dev
+sudo apt-get install -y python-dev
 #sudo apt-get install -y python-devel
 #sudo apt-get install -y libpq-dev
 
