@@ -107,7 +107,9 @@ DATABASES = {
             # The following settings are not used with sqlite3:
             'USER': 'awsuser',
             'PASSWORD': 'Newyork2012',
-            'HOST': 'awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com',                      # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
+#            'HOST': 'awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com',                      # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
+            'HOST': '52.37.59.37',                      # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
+
             'PORT': '5432',                      # Set to empty string for default.
         }
     }

@@ -7,36 +7,36 @@ import os
 import psycopg2
 import urlparse
 from hellodjango.models import Signals 
-
-def getLastClose():
-	BBG = '^FCHI'
-	flag = 'close'
-
-	try: 
-		urlparse.uses_netloc.append("postgres")
-		if not os.environ.has_key('DATABASE_URL'):
-			os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=config/ca/rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
-			
-		url = urlparse.urlparse(os.environ["DATABASE_URL"])
-		conn = psycopg2.connect(
-			database='marketdb',
-			user='awsuser',
-			password='Newyork2012',
-			host='awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com',
-			port=5432
-		)
-		c = conn.cursor()
-		c.execute("""SELECT "Close" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG = %s) AND BBG = %s)""", (BBG, BBG))
-		
-		data = c.fetchone()[0]
-		if data == 0:
-			conn.close()
-			return 'check your data, no spot available'
-		else: 
-			conn.close()
-			return data
-	except ValueError: 
-		return "Ops!! Connection to DB failed!!" 
+#
+#def getLastClose():
+#	BBG = '^FCHI'
+#	flag = 'close'
+#
+#	try: 
+#		urlparse.uses_netloc.append("postgres")
+#		if not os.environ.has_key('DATABASE_URL'):
+#			os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb?sslca=config/ca/rds-ssl-ca-cert.pem&sslmode=require&encrypt=true'
+#			
+#		url = urlparse.urlparse(os.environ["DATABASE_URL"])
+#		conn = psycopg2.connect(
+#			database='marketdb',
+#			user='awsuser',
+#			password='Newyork2012',
+#			host='awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com',
+#			port=5432
+#		)
+#		c = conn.cursor()
+#		c.execute("""SELECT "Close" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG = %s) AND BBG = %s)""", (BBG, BBG))
+#		
+#		data = c.fetchone()[0]
+#		if data == 0:
+#			conn.close()
+#			return 'check your data, no spot available'
+#		else: 
+#			conn.close()
+#			return data
+#	except ValueError: 
+#		return "Ops!! Connection to DB failed!!" 
 
 def index(request):
 	signals = Signals.objects.distinct('BBG').order_by('BBG')
