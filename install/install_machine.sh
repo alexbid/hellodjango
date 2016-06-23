@@ -16,6 +16,7 @@ if [ $2 = "Python" ]; then
   sudo apt-get install -y git
   git init
   git pull https://github.com/alexbid/hellodjango.git
+  sudo chmod -R 755 $rootDir/hellodjango
 
   #Install Python
   cd $rootDir/downloads
