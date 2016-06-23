@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 
 import os, sys
 sys.path.append('/home/pi/hellodjango')
+sys.path.append('/home/pi/')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hellodjango.settings")
 
 import django.core.handlers.wsgi
