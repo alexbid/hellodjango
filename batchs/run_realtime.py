@@ -32,7 +32,7 @@ if len(bid0) > 0: bid = bid0[0].replace('\n', '').strip()
 else: bid = '-'
 if len(ask0) > 0: ask = ask0[0].replace('\n', '').strip()
 else:  ask = '-'
-if (len(tdate0) > 0) and (len(tdate1) > 0): tdate = tdate0[0].replace('\n', '').strip() + " " + tdate0[0].replace('\n', '').strip()
+if (len(tdate0) > 0) and (len(tdate1) > 0): tdate = tdate0[0].replace('\n', '').strip() + " " + tdate1[0].replace('\n', '').strip()
 else: tdate = '-'
 
 #bid = tree.xpath('//span[@id="domhandler:4.consumer:VALUE-2CCLASS.comp:PREV.gt:push-2Dup.eq:.lt:push-2Ddown.resetLt:.resetGt:.resetEq:.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:BID.resetComp:PREV"]/text()')[0].replace('\n', '').strip()
