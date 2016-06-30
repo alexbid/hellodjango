@@ -7,7 +7,7 @@ import pandas as pds
 import numpy as np
 import pandas.io.data as web
 import logging
-logging.basicConfig(level='ERROR' , format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level='DEBUG' , format='%(asctime)s - %(levelname)s - %(message)s')
 
 from sqlconnector import *
 calendar.setfirstweekday(calendar.MONDAY)
@@ -124,6 +124,7 @@ def doRequestData(BBG, CAL, startD, endD):
             except:
 #                print "yahoo request failed! ", BBG
                 logging.error('yahoo request failed! %s', BBG)
+                logging.error('period request for Stock: %s %s %s', BBG, toRequest, len(toRequest))
 
 def cTurbo(Fwd, strike, barrier, quot, margin):
     if Fwd > strike: return (Fwd - strike)/quot + margin
