@@ -25,13 +25,14 @@ tree = html.fromstring(page2.text)
 
 bid0 = tree.xpath('//span[@id="domhandler:4.consumer:VALUE-2CCLASS.comp:PREV.gt:push-2Dup.eq:.lt:push-2Ddown.resetLt:.resetGt:.resetEq:.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:BID.resetComp:PREV"]/text()')
 ask0 = tree.xpath('//span[@id="domhandler:5.consumer:VALUE-2CCLASS.comp:PREV.gt:push-2Dup.eq:.lt:push-2Ddown.resetLt:.resetGt:.resetEq:.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:ASK.resetComp:PREV"]/text()')
-tdate0 = tree.xpath('//span[@id="domhandler:10.consumer:VALUE-2CCLASS.comp:ZERO.gt:ZERO.eq:ZERO.lt:ZERO.resetLt:ZERO.resetGt:ZERO.resetEq:ZERO.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:DATE_BID.resetComp:ZERO.valueFilter:formatDateBidLong"]/text()')[0].replace('\n', '').strip() + " " + tree.xpath('//span[@id="domhandler:11.consumer:VALUE-2CCLASS.comp:ZERO.gt:ZERO.eq:ZERO.lt:ZERO.resetLt:ZERO.resetGt:ZERO.resetEq:ZERO.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:TIME_BID.resetComp:ZERO.valueFilter:formatTimeBidLong"]/text()')
+tdate0 = tree.xpath('//span[@id="domhandler:10.consumer:VALUE-2CCLASS.comp:ZERO.gt:ZERO.eq:ZERO.lt:ZERO.resetLt:ZERO.resetGt:ZERO.resetEq:ZERO.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:DATE_BID.resetComp:ZERO.valueFilter:formatDateBidLong"]/text()')
+tdate1 = tree.xpath('//span[@id="domhandler:11.consumer:VALUE-2CCLASS.comp:ZERO.gt:ZERO.eq:ZERO.lt:ZERO.resetLt:ZERO.resetGt:ZERO.resetEq:ZERO.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:TIME_BID.resetComp:ZERO.valueFilter:formatTimeBidLong"]/text()')
 
 if len(bid0) > 0: bid = bid0[0].replace('\n', '').strip()
 else: bid = '-'
 if len(ask0) > 0: ask = ask0[0].replace('\n', '').strip()
 else:  ask = '-'
-if len(tdate0) > 0: tdate = tdate0[0].replace('\n', '').strip()
+if (len(tdate0) > 0) and (len(tdate1) > 0): tdate = tdate0[0].replace('\n', '').strip() + " " + tdate0[0].replace('\n', '').strip()
 else: tdate = '-'
 
 #bid = tree.xpath('//span[@id="domhandler:4.consumer:VALUE-2CCLASS.comp:PREV.gt:push-2Dup.eq:.lt:push-2Ddown.resetLt:.resetGt:.resetEq:.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:BID.resetComp:PREV"]/text()')[0].replace('\n', '').strip()
