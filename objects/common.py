@@ -124,7 +124,7 @@ def doRequestData(BBG, CAL, startD, endD):
             except:
 #                print "yahoo request failed! ", BBG
 #                logging.error('yahoo request failed! %s', BBG)
-                logging.error('yahoo request failed! Period request for Stock: %s %s %s', BBG, toRequest, len(toRequest))
+                logging.error('yahoo failed! %s %s %s', BBG, toRequest, len(toRequest))
 
 def cTurbo(Fwd, strike, barrier, quot, margin):
     if Fwd > strike: return (Fwd - strike)/quot + margin
