@@ -15,6 +15,9 @@ class Universe(object):
 	def __init__(self):
 #		try:
             self.listUniverse = pds.read_sql("""SELECT DISTINCT "BBG", "CDR" FROM batch_run WHERE "isWorking"=True ORDER BY "BBG" ASC""", conn)
+            logging.info('universe.py >> self.listUniverse %s ', self.listUniverse)
+
+#            self.listUniverse = list(sorted(set(self.listUniverse)))
 #		except: print "error in loading Universe!"
 
 	def load_fund_nav(self):
