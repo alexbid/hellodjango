@@ -95,12 +95,15 @@ def doRequestData(BBG, CAL, startD, endD):
     logging.info('%s %s', BBG, endD)
 #    print BBG, endD
 #############################################################################################################################
+    # remove holidays from dates in input
     dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B').to_datetime(), CAL)
     c = conn.cursor()
 #############################################################################################################################   
+    # get dates already in the DB
     flag = 'Close'
     fromdb = pds.read_sql("""SELECT "Date", "Close" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s)""", conn, index_col="Date", params=(BBG, startD, endD), parse_dates=True)
     toto = np.array(pds.to_datetime(fromdb.index))
+    # get list of dates to retrieve
     tempAlex = np.setdiff1d(dates, toto)
 ### optimisation du nombre de requete Yahoo #################################################################################
     toRequest = []
