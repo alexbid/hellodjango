@@ -92,12 +92,15 @@ def getLastTrDay(endD):
 def getRequestDateList(tempAlex):
     toRequest = []
     if len(tempAlex) > 0:
-        toRequest.append(pds.to_datetime(tempAlex[0]).date())
-        for i in range(1, len(tempAlex)):
-            if i == len(tempAlex)-1: 
-                toRequest.append(pds.to_datetime(tempAlex[i]).date())
-            elif np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()) > 1:
-                toRequest.append(pds.to_datetime(tempAlex[i]).date())
+        #toRequest.append(pds.to_datetime(tempAlex[0]).date())
+        row = [pds.to_datetime(tempAlex[0]).date(), pds.to_datetime(tempAlex[-1]).date()]
+        toRequest.append(row)
+        #for i in range(1, len(tempAlex)):
+        #    if i == len(tempAlex)-1: 
+        #        toRequest.append(pds.to_datetime(tempAlex[i]).date())
+        #    elif np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()) > 1:
+        #        toRequest.append(pds.to_datetime(tempAlex[i]).date())
+    #if  len(tempAlex) == 1: 
     return toRequest.sort()
 
 def doRequestData(BBG, CAL, startD, endD):
