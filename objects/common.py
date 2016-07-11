@@ -89,6 +89,17 @@ def getLastTrDay(endD):
     buff = pds.to_datetime(lstTDR)
     return buff
 
+def getRequestDateList(tempAlex):
+    toRequest = []
+    if len(tempAlex) > 0:
+        toRequest.append(pds.to_datetime(tempAlex[0]).date())
+        for i in range(1, len(tempAlex)):
+            if i == len(tempAlex)-1: 
+                toRequest.append(pds.to_datetime(tempAlex[i]).date())
+            elif np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()) > 1:
+                toRequest.append(pds.to_datetime(tempAlex[i]).date())
+    return toRequest.sort()
+
 def doRequestData(BBG, CAL, startD, endD):
     from datetime import date
     endD = getLastTrDay(endD)
@@ -106,27 +117,15 @@ def doRequestData(BBG, CAL, startD, endD):
     # get list of dates to retrieve
     tempAlex = np.setdiff1d(dates, toto)
 ### optimisation du nombre de requete Yahoo #################################################################################
-    toRequest = []
-    if len(tempAlex) > 0:
-        toRequest.append(pds.to_datetime(tempAlex[0]).date())
-        for i in range(1, len(tempAlex)):
-            if i == len(tempAlex)-1: 
-                toRequest.append(pds.to_datetime(tempAlex[i]).date())
-            elif np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()) > 1:
-                toRequest.append(pds.to_datetime(tempAlex[i]).date())
-        toRequest.sort()
+    toRequest = getRequestDateList(tempAlex):
 ### save to DB ##############################################################################################################
-#        print "Period To Request for Stock: ", BBG, toRequest, len(toRequest)
         logging.info('Period To Request for Stock: %s %s %s', BBG, toRequest, len(toRequest))
-        if len(toRequest) == 1: toRequest.append(toRequest[0])
-        for row in range(1, len(toRequest)):
+        for row in toRequest:
             try:
-                fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=toRequest[row-1], end=toRequest[row])
+                fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=row[0], end=row[1])
                 fromyahoo['bbg'] = BBG
                 fromyahoo.to_sql('spots', engine, if_exists='append')
             except:
-#                print "yahoo request failed! ", BBG
-#                logging.error('yahoo request failed! %s', BBG)
                 logging.error('yahoo failed! %s %s %s', BBG, toRequest, len(toRequest))
 
 def cTurbo(Fwd, strike, barrier, quot, margin):
