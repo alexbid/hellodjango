@@ -7,7 +7,7 @@ import pandas as pds
 import numpy as np
 import pandas.io.data as web
 import logging
-logging.basicConfig(level='ERROR' , format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level='DEBUG' , format='%(asctime)s - %(levelname)s - %(message)s')
 
 from sqlconnector import *
 calendar.setfirstweekday(calendar.MONDAY)
@@ -100,7 +100,8 @@ def getRequestDateList(tempAlex):
         #        toRequest.append(pds.to_datetime(tempAlex[i]).date())
         #    elif np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()) > 1:
         #        toRequest.append(pds.to_datetime(tempAlex[i]).date())
-    #if  len(tempAlex) == 1: 
+    #if  len(tempAlex) == 1:
+    else: return None
     return toRequest.sort()
 
 def doRequestData(BBG, CAL, startD, endD):
@@ -120,8 +121,9 @@ def doRequestData(BBG, CAL, startD, endD):
     # get list of dates to retrieve
     tempAlex = np.setdiff1d(dates, toto)
 ### optimisation du nombre de requete Yahoo #################################################################################
-    toRequest = getRequestDateList(tempAlex):
+    toRequest = getRequestDateList(tempAlex)
 ### save to DB ##############################################################################################################
+    if toRequest:
         logging.info('Period To Request for Stock: %s %s %s', BBG, toRequest, len(toRequest))
         for row in toRequest:
             try:
