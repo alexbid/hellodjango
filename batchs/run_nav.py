@@ -24,9 +24,9 @@ for idx in range(len(univers)):
 	page2 = requests.get('http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
 	tree = html.fromstring(page2.text)
 
-	dateList  = (tree.xpath("//tbody/tr/td[2]"))  #.replace('\n', '').strip()
+	dateList  = (tree.xpath("//tbody/tr/td/span[1]"))  #.replace('\n', '').strip()
 	priceList = (tree.xpath("//tbody/tr/td[3]")) #last update
-		
+        
 	npdateList = []
 	nppriceList = []
 	
@@ -37,13 +37,19 @@ for idx in range(len(univers)):
 	logging.debug('%s', len(dateList))
 
 	for item in dateList:
-		logging.info('%s', item.text_content())
-		logging.info('%s', datetime.datetime.strptime(str(item.text_content()+ ' 2016'), '%B %d %Y'))
-		npdateList.append(datetime.datetime.strptime(str(item.text_content())+ ' 2016', '%B %d %Y'))
+		try:
+			logging.info('dateList item %s', item.text_content())
+			logging.info('dateList strptime item %s', datetime.datetime.strptime(str(item.text_content()), '%A, %B %d, %Y'))
+			npdateList.append(datetime.datetime.strptime(str(item.text_content()), '%A, %B %d, %Y'))
+		except:
+			print "error: ", item.text_content()
 
 	npdateList = np.array(npdateList)
 	nppriceList = np.array(nppriceList)
-	
+
+#	print npdateList, len(npdateList)
+#	print nppriceList, len(nppriceList)
+
 	s = pds.DataFrame(nppriceList, index=npdateList, columns=['NAV'])
 	s.index.name = 'Date'
 	s['wkn'] = wkn

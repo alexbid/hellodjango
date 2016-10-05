@@ -5,7 +5,7 @@ import os
 
 import pandas as pds
 import numpy as np
-import pandas.io.data as web
+#import pandas.io.data as web
 import logging
 logging.basicConfig(level='DEBUG' , format='%(asctime)s - %(levelname)s - %(message)s')
 

@@ -123,7 +123,7 @@ class optimization():
         logging.info('%s', weight_init)
         opts = sco.minimize(self.min_func_var, weight_init, method ='SLSQP', bounds = bnds, constraints = cons)
         logging.info('%s', opts)
-        logging.info('%s', symbols)
+#        logging.info('%s', symbols)
         logging.info('optimized weights: %s', opts['x'].round(3))
         logging.info('equiweighted: %s', self.statistics(weight_init).round(3))
         logging.info('optimised: %s', self.statistics(opts['x']).round(3))
@@ -149,14 +149,12 @@ class optimization():
         results['weights'] = weights_list
         
         logging.info('NAV Time: %s %s', results['VAR'].idxmin(), results['VAR'].min())
-        logging.info('Weights: ', results[results['VAR'].idxmin()])
-
-        logging.info('NAV Time', results.ix[results['VAR'].idxmin()])
+#        logging.info('Weights: ', results[results['VAR'].idxmin()])
+#        logging.info('NAV Time', results.ix[results['VAR'].idxmin()])
         #logging.info('%s', X.idx)
         #logging.info('ty %s', results.ix[results['VAR'].idxmin()][1])
         resultss = pds.DataFrame(results.ix[results['VAR'].idxmin()][1],index=X.idx, columns = ['wght'])
         resultss.index.name = 'bbg'
-        #resultss['updated'] = datetime.date(datetime.utcnow())
         resultss['updated'] = datetime.datetime.utcnow()
         resultss['basket_id'] = datetime.datetime.utcnow().strftime("%s")
         resultss['wkn'] = wkn
@@ -178,12 +176,13 @@ if __name__=='__main__':
 
     for idx in range(len(univers)):
         wkn = str(univers['wkn'].ix[idx])
-        logging.info('%s', wkn)
+        logging.info('wkn %s', wkn)
+
 
     X = optimization()
     X.load_data()
     logging.info('%s', X.optimizeTime(6))
-    logging.info('%s', X.optimizeDate())
-    
+#    logging.info('%s', X.optimizeDate())
+
     
 
