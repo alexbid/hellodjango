@@ -21,7 +21,9 @@ univers = x.load_fund_nav()
 
 for idx in range(len(univers)):
 	wkn = str(univers['wkn'].ix[idx])
-	page2 = requests.get('http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
+#    66.150.29.208
+#	page2 = requests.get('http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
+	page2 = requests.get('http://66.150.29.208/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
 	tree = html.fromstring(page2.text)
 
 	dateList  = (tree.xpath("//tbody/tr/td/span[1]"))  #.replace('\n', '').strip()
