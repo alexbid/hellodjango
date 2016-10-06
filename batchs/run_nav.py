@@ -26,59 +26,58 @@ for idx in range(len(univers)):
 
 	url = 'http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx]
 
-	try: page2 = session.get(url, headers = headers)
+	try:
+		page2 = session.get(url, headers = headers)
+		tree = html.fromstring(page2.text)
+
+		dateList  = (tree.xpath("//tbody/tr/td/span[1]"))  #.replace('\n', '').strip()
+		priceList = (tree.xpath("//tbody/tr/td[3]")) #last update
+        
+		npdateList = []
+		nppriceList = []
+        
+		for item in priceList: nppriceList.append(item.text_content())
+        
+		logging.debug('%s', dateList[0].text_content())
+		logging.debug('%s', len(dateList))
+        
+		for item in dateList:
+			try:
+				logging.info('dateList strptime item %s', datetime.datetime.strptime(str(item.text_content()), '%A, %B %d, %Y'))
+				npdateList.append(datetime.datetime.strptime(str(item.text_content()), '%A, %B %d, %Y'))
+			except:
+				pass
+
+		npdateList = np.array(npdateList)
+		nppriceList = np.array(nppriceList)
+        
+		s = pds.DataFrame(nppriceList, index=npdateList, columns=['NAV'])
+		s.index.name = 'Date'
+		s['wkn'] = wkn
+        
+		c = conn.cursor()
+
+		minDate = s.index.min()
+		maxDate = s.index.max()
+        
+		db = pds.read_sql("""SELECT DISTINCT "Date", "NAV", "wkn" FROM funds_nav WHERE "wkn"=%s ORDER BY "Date" ASC""", conn, index_col="Date", parse_dates=True, params=(wkn, ))
+		toto = np.array(pds.to_datetime(db.index))
+		tutu = np.array(pds.to_datetime(s.index))
+		missingDates = np.setdiff1d(tutu, toto)
+        
+		logging.info('missingDates for %s: %s', wkn, missingDates)
+        
+		toDB = pds.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
+		toDB.index.name = 'Date'
+        
+		try: toDB.to_sql('funds_nav', engine, if_exists='append')
+		except psycopg2.IntegrityError:
+			logging.error('quote already in DB Funds')
+		logging.info('%s ......done', wkn)
+
 	except requests.exceptions.ConnectionError:
 		logging.error('Connection refused')
 		pass
 
-	tree = html.fromstring(page2.text)
-
-	dateList  = (tree.xpath("//tbody/tr/td/span[1]"))  #.replace('\n', '').strip()
-	priceList = (tree.xpath("//tbody/tr/td[3]")) #last update
-        
-	npdateList = []
-	nppriceList = []
-	
-	for item in priceList: nppriceList.append(item.text_content())
-
-	logging.debug('%s', dateList[0].text_content())
-	logging.debug('%s', dateList[-1].text_content())
-	logging.debug('%s', len(dateList))
-
-	for item in dateList:
-		try:
-			logging.info('dateList item %s', item.text_content())
-			logging.info('dateList strptime item %s', datetime.datetime.strptime(str(item.text_content()), '%A, %B %d, %Y'))
-			npdateList.append(datetime.datetime.strptime(str(item.text_content()), '%A, %B %d, %Y'))
-		except:
-			logging.error('error: %s', item.text_content())
-
-	npdateList = np.array(npdateList)
-	nppriceList = np.array(nppriceList)
-
-	s = pds.DataFrame(nppriceList, index=npdateList, columns=['NAV'])
-	s.index.name = 'Date'
-	s['wkn'] = wkn
-
-	c = conn.cursor()
-   
-	minDate = s.index.min()
-	maxDate = s.index.max()
-
-	db = pds.read_sql("""SELECT DISTINCT "Date", "NAV", "wkn" FROM funds_nav WHERE "wkn"=%s ORDER BY "Date" ASC""", conn, index_col="Date", parse_dates=True, params=(wkn, ))
-	toto = np.array(pds.to_datetime(db.index))
-	tutu = np.array(pds.to_datetime(s.index))
-	missingDates = np.setdiff1d(tutu, toto)
-
-	logging.info('missingDates for %s: %s', wkn, missingDates)
-
-	toDB = pds.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
-	toDB.index.name = 'Date'
-
-	try:
-		toDB.to_sql('funds_nav', engine, if_exists='append') 
-	except psycopg2.IntegrityError:
-		logging.error('quote already in DB Funds')
-	logging.info('%s ......done', wkn)
 
 
