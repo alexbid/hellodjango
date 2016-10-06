@@ -4,6 +4,7 @@ sys.path.append(addPath)
 
 import psycopg2
 import requests
+#from bs4 import BeautifulSoup
 
 from datetime import time
 import datetime
@@ -21,9 +22,20 @@ univers = x.load_fund_nav()
 
 for idx in range(len(univers)):
 	wkn = str(univers['wkn'].ix[idx])
-#    66.150.29.208
-#	page2 = requests.get('http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
-	page2 = requests.get('http://66.150.29.208/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
+	try:
+		page2 = requests.get('http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
+	except requests.exceptions.ConnectionError:
+		logging.error('Connection refused')
+
+	session = requests.Session()
+	headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit 537.36 (KHTML, like Gecko) Chrome", "Accept":"text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,*/*;q=0.8"}
+	url = 'http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx]
+	page2 = session.get(url, headers = headers)
+	print page2.text
+#	print(bsObj.find("table",{" class":" table-striped"}).
+	raw_input()
+
+#	page2 = requests.get('http://66.150.29.208/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
 	tree = html.fromstring(page2.text)
 
 	dateList  = (tree.xpath("//tbody/tr/td/span[1]"))  #.replace('\n', '').strip()
