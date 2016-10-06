@@ -29,6 +29,7 @@ for idx in range(len(univers)):
 	try: page2 = session.get(url, headers = headers)
 	except requests.exceptions.ConnectionError:
 		logging.error('Connection refused')
+		pass
 
 	tree = html.fromstring(page2.text)
 
