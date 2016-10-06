@@ -22,20 +22,15 @@ univers = x.load_fund_nav()
 
 for idx in range(len(univers)):
 	wkn = str(univers['wkn'].ix[idx])
-	try:
-		page2 = requests.get('http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
-	except requests.exceptions.ConnectionError:
-		logging.error('Connection refused')
 
 	session = requests.Session()
 	headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit 537.36 (KHTML, like Gecko) Chrome", "Accept":"text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,*/*;q=0.8"}
 	url = 'http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx]
-	page2 = session.get(url, headers = headers)
-	print page2.text
-#	print(bsObj.find("table",{" class":" table-striped"}).
-	raw_input()
 
-#	page2 = requests.get('http://66.150.29.208/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx])
+	try: page2 = session.get(url, headers = headers)
+	except requests.exceptions.ConnectionError:
+		logging.error('Connection refused')
+
 	tree = html.fromstring(page2.text)
 
 	dateList  = (tree.xpath("//tbody/tr/td/span[1]"))  #.replace('\n', '').strip()
@@ -56,7 +51,7 @@ for idx in range(len(univers)):
 			logging.info('dateList strptime item %s', datetime.datetime.strptime(str(item.text_content()), '%A, %B %d, %Y'))
 			npdateList.append(datetime.datetime.strptime(str(item.text_content()), '%A, %B %d, %Y'))
 		except:
-			print "error: ", item.text_content()
+			logging.error('error: %s', item.text_content())
 
 	npdateList = np.array(npdateList)
 	nppriceList = np.array(nppriceList)
