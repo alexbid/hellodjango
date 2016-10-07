@@ -40,7 +40,6 @@ for idx in range(len(univers)):
 		for item in priceList: nppriceList.append(item.text_content())
         
 		logging.debug('%s', dateList[0].text_content())
-		logging.debug('%s', len(dateList))
         
 		for item in dateList:
 			try:
@@ -51,30 +50,33 @@ for idx in range(len(univers)):
 
 		npdateList = np.array(npdateList)
 		nppriceList = np.array(nppriceList)
-        
-		s = pds.DataFrame(nppriceList, index=npdateList, columns=['NAV'])
-		s.index.name = 'Date'
-		s['wkn'] = wkn
-        
-		c = conn.cursor()
 
-		minDate = s.index.min()
-		maxDate = s.index.max()
+		logging.debug('%s %s ', len(npdateList) , len(npdateList))
+
+		if len(npdateList) == len(npdateList):
+        		s = pds.DataFrame(nppriceList, index=npdateList, columns=['NAV'])
+        		s.index.name = 'Date'
+        		s['wkn'] = wkn
+
+        		c = conn.cursor()
+
+        		minDate = s.index.min()
+        		maxDate = s.index.max()
         
-		db = pds.read_sql("""SELECT DISTINCT "Date", "NAV", "wkn" FROM funds_nav WHERE "wkn"=%s ORDER BY "Date" ASC""", conn, index_col="Date", parse_dates=True, params=(wkn, ))
-		toto = np.array(pds.to_datetime(db.index))
-		tutu = np.array(pds.to_datetime(s.index))
-		missingDates = np.setdiff1d(tutu, toto)
+        		db = pds.read_sql("""SELECT DISTINCT "Date", "NAV", "wkn" FROM funds_nav WHERE "wkn"=%s ORDER BY "Date" ASC""", conn, index_col="Date", parse_dates=True, params=(wkn, ))
+        		toto = np.array(pds.to_datetime(db.index))
+        		tutu = np.array(pds.to_datetime(s.index))
+        		missingDates = np.setdiff1d(tutu, toto)
         
-		logging.info('missingDates for %s: %s', wkn, missingDates)
+        		logging.info('missingDates for %s: %s', wkn, missingDates)
         
-		toDB = pds.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
-		toDB.index.name = 'Date'
+        		toDB = pds.DataFrame(s, index=missingDates)# , how='outer') #, lsuffix='_left', rsuffix='_right')
+        		toDB.index.name = 'Date'
         
-		try: toDB.to_sql('funds_nav', engine, if_exists='append')
-		except psycopg2.IntegrityError:
-			logging.error('quote already in DB Funds')
-		logging.info('%s ......done', wkn)
+        		try: toDB.to_sql('funds_nav', engine, if_exists='append')
+        		except psycopg2.IntegrityError: logging.error('quote already in DB Funds')
+        		logging.info('%s ......done', wkn)
+		else: logging.error('error with %s, nb of dates and prices do not match!!', wkn)
 
 	except requests.exceptions.ConnectionError:
 		logging.error('Connection refused')
