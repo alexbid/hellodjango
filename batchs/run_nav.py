@@ -25,13 +25,13 @@ headers = {"User-Agent":"Mozilla/ 5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWe
 for idx in range(len(univers)):
 	wkn = str(univers['wkn'].ix[idx])
 
-	url = 'http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx]
+    url = 'http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx]
 
 	try:
-		page2 = session.get(url, headers = headers)
-		tree = html.fromstring(page2.text)
+        page2 = session.get(url, headers = headers)
+        tree = html.fromstring(page2.text)
 
-		dateList  = (tree.xpath("//tbody/tr/td/span[1]"))  #.replace('\n', '').strip()
+        dateList  = (tree.xpath("//tbody/tr/td/span[1]"))  #.replace('\n', '').strip()
 		priceList = (tree.xpath("//tbody/tr/td[3]")) #last update
         
 		npdateList = []
