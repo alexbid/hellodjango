@@ -91,8 +91,7 @@ if __name__=='__main__':
     
     toDo = {'DropboxKate_': '.tar.gz', 'volume1Kate_': '.tar.gz', 'GdriveKate_': '.tar.bz2', 'Dropbox_': '.tar.gz', 'Gdrive_': '.tar.bz2'}
     for root,ext in toDo.iteritems():
-        ac = archiveCleaning(root, ext, '/Volumes/Archives/')
-#        print ac.datesToDelete
+        ac = archiveCleaning(root, ext, '/volume2/Archives/')
         ac.getFilesToDelete()
 
 

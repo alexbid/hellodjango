@@ -67,11 +67,14 @@ def bloombergScrap(mnemo, ric):
 	else:
 		logging.info('no data to be saved for quote %s %s ', mnemo, ric)
 
+if __name__=='__main__':
+    mnemoList = pds.read_sql("""SELECT DISTINCT "mnemo", "BBG" FROM batch_run WHERE "mnemo" IS NOT NULL ORDER BY "mnemo" ASC""", conn)
 
-mnemoList = pds.read_sql("""SELECT DISTINCT "mnemo", "BBG" FROM batch_run WHERE "mnemo" IS NOT NULL ORDER BY "mnemo" ASC""", conn)
-
-for index, row in mnemoList.iterrows():
-	bloombergScrap(row['mnemo'], row['BBG'])
+    for index, row in mnemoList.iterrows():
+        try:
+            bloombergScrap(row['mnemo'], row['BBG'])
+        except:
+            logging.error('error in running script %s %s', row['mnemo'], row['BBG'])
 
 
 
