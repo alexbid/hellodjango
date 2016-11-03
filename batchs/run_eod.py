@@ -20,8 +20,11 @@ import numpy as np
 shift = 6
 
 def bloombergScrap(mnemo, ric):
+    try:
+        df = pds.read_json("http://www.bloomberg.com/markets/chart/data/1D/" + mnemo)['data_values']
+    except:
+        logging.error('error in running script %s %s', mnemo, ric)
 
-	df = pds.read_json("http://www.bloomberg.com/markets/chart/data/1D/" + mnemo)['data_values']
 	df = np.array(df)
 
 	dateArray = []
@@ -71,10 +74,9 @@ if __name__=='__main__':
     mnemoList = pds.read_sql("""SELECT DISTINCT "mnemo", "BBG" FROM batch_run WHERE "mnemo" IS NOT NULL ORDER BY "mnemo" ASC""", conn)
 
     for index, row in mnemoList.iterrows():
-        try:
-            bloombergScrap(row['mnemo'], row['BBG'])
-        except:
-            logging.error('error in running script %s %s', row['mnemo'], row['BBG'])
+        bloombergScrap(row['mnemo'], row['BBG'])
+
+
 
 
 
