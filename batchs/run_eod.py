@@ -25,6 +25,7 @@ def bloombergScrap(mnemo, ric):
         df = np.array(df)
     except:
         logging.error('error in running script %s %s', mnemo, ric)
+        return ''
 
 	dateArray = []
 	spotArray = []
