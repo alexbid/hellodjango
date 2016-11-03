@@ -22,10 +22,9 @@ shift = 6
 def bloombergScrap(mnemo, ric):
     try:
         df = pds.read_json("http://www.bloomberg.com/markets/chart/data/1D/" + mnemo)['data_values']
+        df = np.array(df)
     except:
         logging.error('error in running script %s %s', mnemo, ric)
-
-	df = np.array(df)
 
 	dateArray = []
 	spotArray = []
