@@ -24,7 +24,7 @@ def bloombergScrap(mnemo, ric):
         df = pds.read_json("http://www.bloomberg.com/markets/chart/data/1D/" + mnemo)['data_values']
         df = np.array(df)
     except:
-        logging.error('error in running script %s %s', mnemo, ric)
+        logging.error('cannot connect to webpage http://www.bloomberg.com/markets/chart/data/1D/%s => %s', mnemo, ric)
         return ''
 
 	dateArray = []
