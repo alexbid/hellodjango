@@ -9,10 +9,11 @@
     <tr>
         <td>{{ n.BBG }}</td>
         <td>{{n.Close}}</td>
-        <td>{{n.lastUpdate}}</td>
+<!--        <td>{{n.lastUpdate}}</td>-->
         <td><a href="https://fr.finance.yahoo.com/echarts?s={{ n.BBG }}#symbol={{ n.BBG }};range=1d" target="_blank"> Chart</a></td>
     </tr>
-{% endfor %} 
+{% endfor %}
+{% getLastClose %}
 </table>
 </div>
 

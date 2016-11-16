@@ -41,7 +41,14 @@ from hellodjango.models import Signals
 def index(request):
 	signals = Signals.objects.distinct('BBG').order_by('BBG')
 	return render_to_response('home.html', {'signals': signals})
-	
+
+from datetime import datetime
+#from django.shortcuts import render_to_response
+
+def my_date_view(request, ws_date_as_datetime):
+    the_date = datetime.strftime(ws_date, "%Y-%m-%d %H:%M:%S+0000")
+    return render_to_response('home.html', {'date':the_date})
+
 """def db(request):
     greeting = Greeting()
     greeting.save()
