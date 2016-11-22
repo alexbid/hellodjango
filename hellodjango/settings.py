@@ -26,8 +26,8 @@ STATICFILES_DIRS = (
 SECRET_KEY = 'pres36m7pn(#gc_ho^jz*1ilephs#9gz4fp#2)^a5xcp7*=)lx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-TEMPLATE_DEBUG = True
+#DEBUG = True
+#TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
@@ -107,10 +107,27 @@ DATABASES = {
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 from os.path import join
-TEMPLATE_DIRS = (
-                        #"/Users/alex/hellodjango/hellodjango/templates"
-						join(BASE_DIR,  'templates'),
-                    )
+#TEMPLATE_DIRS = (
+#                        #"/Users/alex/hellodjango/hellodjango/templates"
+#						join(BASE_DIR,  'templates'),
+#                    )
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [ os.path.join(BASE_DIR, 'templates'), ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+#            'debug': DEBUG,
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+     },
+]
+
 
 # try to load local_settings.py if it exists
 try:

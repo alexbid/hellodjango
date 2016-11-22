@@ -45,4 +45,5 @@ if __name__=='__main__':
 			result1['BBG'] = x.listUniverse.BBG[i]
 			try: result1.to_sql('hellodjango_signals', engine, if_exists='append')
 			except AttributeError: logging.info('Not Save TO DB / run_batch.py')
+		else: logging.info('nothing to save in DB')
 
