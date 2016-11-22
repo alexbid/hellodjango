@@ -20,7 +20,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 STATICFILES_DIRS = (
-    os.path.join(SITE_ROOT, 'static/'),
+    os.path.join(SITE_ROOT, 'static'),
+    '/var/www/static/',
 #    os.path.join(BASE_DIR, '/staticfiles'),
 )
 
@@ -133,7 +134,6 @@ TEMPLATES = [
         },
      },
 ]
-
 
 ## try to load local_settings.py if it exists
 #try:
