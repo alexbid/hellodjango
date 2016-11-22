@@ -84,7 +84,6 @@ class Stock(object):
                 self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
             except:
                 logging.error('error in loading historic prices for %s', self.mnemo)
-#                print "error in loading historic prices for " + self.mnemo
 
     def __hash__(self): return hash(str(self))
     def __cmp__(self, other): return cmp(str(self), str(other))

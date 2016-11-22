@@ -6,6 +6,10 @@ import os
 import pandas as pds
 import numpy as np
 #import pandas.io.data as web
+#from pandas_datareader import data, wb
+#.data as web
+import pandas_datareader.data as web
+
 import logging
 logging.basicConfig(level='DEBUG' , format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -92,23 +96,16 @@ def getLastTrDay(endD):
 def getRequestDateList(tempAlex):
     toRequest = []
     if len(tempAlex) > 0:
-        #toRequest.append(pds.to_datetime(tempAlex[0]).date())
         row = [pds.to_datetime(tempAlex[0]).date(), pds.to_datetime(tempAlex[-1]).date()]
         toRequest.append(row)
-        #for i in range(1, len(tempAlex)):
-        #    if i == len(tempAlex)-1: 
-        #        toRequest.append(pds.to_datetime(tempAlex[i]).date())
-        #    elif np.busday_count(pds.to_datetime(tempAlex[i - 1]).date(), pds.to_datetime(tempAlex[i]).date()) > 1:
-        #        toRequest.append(pds.to_datetime(tempAlex[i]).date())
-    #if  len(tempAlex) == 1:
     else: return None
-    return toRequest.sort()
+
+    return toRequest
 
 def doRequestData(BBG, CAL, startD, endD):
     from datetime import date
     endD = getLastTrDay(endD)
-    logging.info('%s %s', BBG, endD)
-#    print BBG, endD
+    logging.info('doRequestData %s %s', BBG, endD)
 #############################################################################################################################
     # remove holidays from dates in input
     dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B').to_datetime(), CAL)
@@ -127,6 +124,7 @@ def doRequestData(BBG, CAL, startD, endD):
         logging.info('Period To Request for Stock: %s %s %s', BBG, toRequest, len(toRequest))
         for row in toRequest:
             try:
+#            if True:
                 fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=row[0], end=row[1])
                 fromyahoo['bbg'] = BBG
                 fromyahoo.to_sql('spots', engine, if_exists='append')
