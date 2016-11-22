@@ -135,8 +135,8 @@ TEMPLATES = [
 ]
 
 
-# try to load local_settings.py if it exists
-try:
-  from local_settings import *
-except Exception as e:
-  pass
+## try to load local_settings.py if it exists
+#try:
+#  from local_settings import *
+#except Exception as e:
+#  pass
