@@ -55,6 +55,7 @@ sudo apt-get install -y libblas-dev liblapack-dev libatlas-base-dev gfortran
 sudo pip install setuptools
 sudo apt-get install -y python-scipy
 sudo apt-get install -y python-pandas
+sudo apt-get install -y pandas-datareader
 
 #sudo pip install
 sudo pip install -r requirements.txt

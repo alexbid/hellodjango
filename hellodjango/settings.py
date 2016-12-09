@@ -17,13 +17,15 @@ SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
     '/var/www/static/',
 #    os.path.join(BASE_DIR, '/staticfiles'),
 )
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -32,9 +34,12 @@ STATICFILES_DIRS = (
 SECRET_KEY = 'pres36m7pn(#gc_ho^jz*1ilephs#9gz4fp#2)^a5xcp7*=)lx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
+DEBUG = False
 #TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
+
+print STATIC_ROOT, STATICFILES_FINDERS
+print STATICFILES_DIRS
 
 # Application definition
 
@@ -61,7 +66,6 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'hellodjango.urls'
 
 WSGI_APPLICATION = 'hellodjango.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -127,6 +131,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.core.context_processors.static',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
