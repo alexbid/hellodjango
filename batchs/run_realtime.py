@@ -23,10 +23,13 @@ headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWeb
 page2 = requests.get('https://www.boerse-stuttgart.de/de/boersenportal/wertpapiere-und-maerkte/fonds/factsheet/?ID_NOTATION=15314068', headers = headers)
 tree = html.fromstring(page2.text)
 
+#print page2.text
+
 bid0 = tree.xpath('//span[@id="domhandler:4.consumer:VALUE-2CCLASS.comp:PREV.gt:push-2Dup.eq:.lt:push-2Ddown.resetLt:.resetGt:.resetEq:.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:BID.resetComp:PREV"]/text()')
 ask0 = tree.xpath('//span[@id="domhandler:5.consumer:VALUE-2CCLASS.comp:PREV.gt:push-2Dup.eq:.lt:push-2Ddown.resetLt:.resetGt:.resetEq:.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:ASK.resetComp:PREV"]/text()')
 tdate0 = tree.xpath('//span[@id="domhandler:10.consumer:VALUE-2CCLASS.comp:ZERO.gt:ZERO.eq:ZERO.lt:ZERO.resetLt:ZERO.resetGt:ZERO.resetEq:ZERO.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:DATE_BID.resetComp:ZERO.valueFilter:formatDateBidLong"]/text()')
 tdate1 = tree.xpath('//span[@id="domhandler:11.consumer:VALUE-2CCLASS.comp:ZERO.gt:ZERO.eq:ZERO.lt:ZERO.resetLt:ZERO.resetGt:ZERO.resetEq:ZERO.mdgObj:prices-2Fquote-3FVERSION-3D2-26ID_NOTATION-3D15314068-26ID_QUALITY_PRICE-3D4.attr:TIME_BID.resetComp:ZERO.valueFilter:formatTimeBidLong"]/text()')
+
 
 if len(bid0) > 0: bid = bid0[0].replace('\n', '').strip()
 else: bid = '-'
@@ -56,3 +59,4 @@ if ('-' not in bid) and ('-' not in ask) and ('-' not in tdate):
         logging.info('quote already in DB Funds %s %s %s', bid, ask, tdate)
 
     conn.close()
+else: logging.debug('nothing to save')
