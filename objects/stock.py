@@ -69,6 +69,7 @@ class Stock(object):
                 except:
 #                    print "error in loading Stock!"
                     logging.error('error in loading Stock!')
+                    Return 0		
             try:
                 self.spots = pds.read_sql(("""SELECT "Date", "Close", "Volume" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), cmn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))
 #                self.spots['volume_20'] = pds.stats.moments.rolling_mean(self.spots['Volume'], 20)
@@ -82,8 +83,10 @@ class Stock(object):
                 self.spots['var'] = self.spots[['Close','ewma_20','ewma_50','ewma_100']].var(axis=1)
                 self.spots['mean'] = self.spots[['Close', 'ewma_20','ewma_50','ewma_100']].mean(axis=1)
                 self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
+                Return 1
             except:
                 logging.error('error in loading historic prices for %s', self.mnemo)
+                Return 0                    
 
     def __hash__(self): return hash(str(self))
     def __cmp__(self, other): return cmp(str(self), str(other))
