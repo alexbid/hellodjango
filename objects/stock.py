@@ -72,9 +72,7 @@ class Stock(object):
                     return False		
             try:
                 self.spots = pds.read_sql(("""SELECT "Date", "Close", "Volume" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), cmn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))
-#                self.spots['volume_20'] = pds.stats.moments.rolling_mean(self.spots['Volume'], 20)
                 self.spots['volume_20'] = self.spots['Volume'].rolling(window=20,center=False).mean()
-#                self.spots['ewma_10'] = pds.stats.moments.ewma(self.spots['Close'], 10)
                 self.spots['ewma_10'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=10).mean()
                 self.spots['ewma_20'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=10).mean()
                 self.spots['ewma_50'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=50).mean()

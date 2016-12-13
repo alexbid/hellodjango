@@ -128,8 +128,11 @@ def doRequestData(BBG, CAL, startD, endD):
                 fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=row[0], end=row[1])
                 fromyahoo['bbg'] = BBG
                 fromyahoo.to_sql('spots', engine, if_exists='append')
+                logging.info('yahoo saved to DB! %s', BBG)
             except:
                 logging.error('yahoo failed! %s %s %s', BBG, toRequest, len(toRequest))
+    else:
+        logging.info('nothing to request for %s', BBG)
 
 def cTurbo(Fwd, strike, barrier, quot, margin):
     if Fwd > strike: return (Fwd - strike)/quot + margin
@@ -143,7 +146,7 @@ def pTurbo(Fwd, strike, barrier, quot, margin):
 if __name__=='__main__':
     import sys
     dt = datetime.date(1990, 03, 01)
-    end = datetime.date(2014, 12, 30)
+    end = datetime.date(2016, 12, 30)
 
     from timeit import Timer
 #    t = Timer(lambda: vTradingDates(dt, end, 'FR'))
