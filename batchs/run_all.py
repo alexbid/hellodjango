@@ -35,7 +35,7 @@ if __name__=='__main__':
         doRequestData(x.listUniverse.BBG[i], x.listUniverse.CDR[i], stDate, endDate)
 #        raw_input()
         y = stock.Stock(x.listUniverse.BBG[i])
-            if y.load_pandas(stDate, endDate, flag):
+        if y.load_pandas(stDate, endDate, flag):
             result1 = y.spots[(y.spots.index > windDate) & (y.spots.cv < 0.60/100 )]
     #        result1 = y.spots[(y.spots.index > windDate)]
             result1 = result1.drop('volume_20', 1)
