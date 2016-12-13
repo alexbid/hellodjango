@@ -20,6 +20,7 @@ class Portfolio:
     def getValue(self, gValue, flag):
         #where gValue is evaluation date
         stockValue = 0.0
+#        print self.equity
         for lStock, qty in self.equity.iteritems():
             stockValue += qty * lStock.getClose(gValue)
         return self.cash + stockValue
