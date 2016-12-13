@@ -117,8 +117,8 @@ def doRequestData(BBG, CAL, startD, endD):
     toto = np.array(pds.to_datetime(fromdb.index))
     # get list of dates to retrieve
     tempAlex = np.setdiff1d(dates, toto)
-    print tempAlex
-    raw_input()
+#    print tempAlex
+#    raw_input()
 ### optimisation du nombre de requete Yahoo #################################################################################
     toRequest = getRequestDateList(tempAlex)
 ### save to DB ##############################################################################################################
