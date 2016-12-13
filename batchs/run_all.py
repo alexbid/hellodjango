@@ -33,7 +33,6 @@ if __name__=='__main__':
     
     for i in range(0, len(x.listUniverse)):
         doRequestData(x.listUniverse.BBG[i], x.listUniverse.CDR[i], stDate, endDate)
-#        raw_input()
         y = stock.Stock(x.listUniverse.BBG[i])
         if y.load_pandas(stDate, endDate, flag):
             result1 = y.spots[(y.spots.index > windDate) & (y.spots.cv < 0.60/100 )]
@@ -51,4 +50,4 @@ if __name__=='__main__':
                 logging.info(result1)
                 result1['BBG'] = x.listUniverse.BBG[i]
                 result1.to_sql('hellodjango_signals', engine, if_exists='append')
-                raw_input()
+
