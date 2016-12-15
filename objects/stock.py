@@ -49,11 +49,12 @@ class Stock(object):
                     self.spot = c.fetchone()[0]
 #                except:
 #                    print "error in loading Stock!"
+            if True:
 #            try:
                 c.execute("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s", (self.mnemo, stDate, endDate, flag))
                 self.spots =  np.array(c.fetchall())
                 self.loaded = True
-            if True:
+#            if True:
 #            except:
 #                print "error in loading historic prices for " + self.mnemo
             c.close()
