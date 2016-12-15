@@ -41,7 +41,6 @@ sudo apt-get install -y python-pip
 sudo apt-get install -y python-dev
 sudo apt-get install -y python-devel
 sudo apt-get install -y libpq-dev
-#sudo apt-get install -y libpq-dev
 
 #web scrapping requirement
 sudo apt-get install -y libxml2-dev libxslt-dev python-dev
@@ -53,12 +52,12 @@ sudo pip install lxml
 
 sudo apt-get install -y libblas-dev liblapack-dev libatlas-base-dev gfortran
 sudo pip install setuptools
+sudo pip install pandas-datareader
+sudo pip install psycopg2
 sudo apt-get install -y python-scipy
 sudo apt-get install -y python-pandas
-sudo apt-get install -y pandas-datareader
 
-#sudo pip install
-sudo pip install -r requirements.txt
+#sudo pip install -r requirements.txt
 
 crontab < <(crontab -l ; echo "MAILTO=pi")
 crontab < <(crontab -l ; echo "@reboot python "$rootDir"/hellodjango/batchs/run_all.py")
@@ -66,6 +65,7 @@ crontab < <(crontab -l ; echo "@reboot sleep 40; sudo mount -all")
 crontab < <(crontab -l ; echo "* 6-20 * * 1-5  python "$rootDir"/hellodjango/batchs/run_realtime.py")
 crontab < <(crontab -l ; echo "0 13,17,21 * * 1-5  python "$rootDir"/hellodjango/batchs/run_eod.py")
 crontab < <(crontab -l ; echo "#45 5 * * 1-5  python "$rootDir"/hellodjango/batchs/run_nav.py")
+crontab < <(crontab -l ; echo "#15 10,22 * * 1-5  python "$rootDir"/hellodjango/batchs/run_sqrtrading_signals.py")
 crontab < <(crontab -l ; echo "45 6 * * 1-5  python "$rootDir"/hellodjango/batchs/run_all.py")
 crontab < <(crontab -l ; echo "0 6 * * * find "$rootDir"/Maildir/cur/ -type f -ctime +1 -exec rm -f {} \;")
 crontab < <(crontab -l ; echo "0 6 * * * find "$rootDir"/Maildir/new/ -type f -ctime +1 -exec rm -f {} \;")

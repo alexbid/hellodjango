@@ -26,7 +26,7 @@ class Universe(object):
 
 class Signals(object):
 	def Signals(self): return "Signals"
-	def __init__(self): self.listSignals = pds.read_sql("""SELECT DISTINCT "BBG" FROM hellodjango_signals ORDER BY "BBG" ASC""", conn)
+	def __init__(self): self.listSignals = pds.read_sql("""SELECT DISTINCT "BBG" FROM stockscreener_signals ORDER BY "BBG" ASC""", conn)
 	def graph_signals(self):
 		endDate = datetime.date.today()
 		stDate = endDate + relativedelta(months=-11)

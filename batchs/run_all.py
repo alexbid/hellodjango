@@ -49,5 +49,5 @@ if __name__=='__main__':
             if len(result1.index) > 0:
                 logging.info(result1)
                 result1['BBG'] = x.listUniverse.BBG[i]
-                result1.to_sql('hellodjango_signals', engine, if_exists='append')
+                result1.to_sql('stockscreener_signals', engine, if_exists='append')
 
