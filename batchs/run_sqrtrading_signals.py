@@ -1,5 +1,5 @@
 import sys, os
-addPath = os.path.realpath(__file__).replace('batchs/run_batch.py','objects')
+addPath = os.path.realpath(__file__).replace('batchs/run_sqrtrading_signals.py','objects')
 sys.path.append(addPath)
 
 import numpy as np
