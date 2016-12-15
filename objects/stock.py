@@ -18,49 +18,49 @@ class Stock(object):
         flag = "close"
         self.loaded = False
 
-    def load(self):
-        if self.loaded == False:
-            print "initializing new Stock... " + self.mnemo
-            c = conn.cursor()
-            if True:
-#            try:
-                c.execute("""SELECT "Close" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG = %s) AND BBG = %s)""", (self.mnemo, self.mnemo))
-                self.spot = c.fetchone()[0]
-                c.close()
-                if True:
-#                try:
-                    d = conn.cursor()
-                    d.execute("""SELECT "Date", "Close" FROM spots WHERE BBG=%s""", (self.mnemo, ))
-                    self.spots =  dict(d.fetchall())
-                    d.close()
-                    self.loaded = True
-#                except:
-#                    print "error in loading historic prices for " + self.mnemo
-#            except:
-#                print "error in loading Stock!"
-#                self.spot = 0
-
-    def load_numpy(self, stDate, endDate, flag):
-        if self.loaded == False:
-            print "loading Stock... " + self.mnemo, stDate, endDate, flag
-            if self.spot == 0:
-                if True:
-#                try:
-                    c = conn.cursor()
-                    c.execute("SELECT spot FROM spots WHERE (date=(SELECT MAX(date) FROM spots WHERE BBG = %s AND flag = 'close') AND BBG = %s AND flag = 'close')", (self.mnemo, self.mnemo))
-                    self.spot = c.fetchone()[0]
-#                except:
-#                    print "error in loading Stock!"
-            if True:
-#            try:
-                c.execute("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s", (self.mnemo, stDate, endDate, flag))
-                self.spots =  np.array(c.fetchall())
-                self.loaded = True
+#    def load(self):
+#        if self.loaded == False:
+#            print "initializing new Stock... " + self.mnemo
+#            c = conn.cursor()
 #            if True:
-#            except:
-#                print "error in loading historic prices for " + self.mnemo
-            c.close()
-    
+##            try:
+#                c.execute("""SELECT "Close" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG = %s) AND BBG = %s)""", (self.mnemo, self.mnemo))
+#                self.spot = c.fetchone()[0]
+#                c.close()
+#                if True:
+##                try:
+#                    d = conn.cursor()
+#                    d.execute("""SELECT "Date", "Close" FROM spots WHERE BBG=%s""", (self.mnemo, ))
+#                    self.spots =  dict(d.fetchall())
+#                    d.close()
+#                    self.loaded = True
+##                except:
+##                    print "error in loading historic prices for " + self.mnemo
+##            except:
+##                print "error in loading Stock!"
+##                self.spot = 0
+#
+#    def load_numpy(self, stDate, endDate, flag):
+#        if self.loaded == False:
+#            print "loading Stock... " + self.mnemo, stDate, endDate, flag
+#            if self.spot == 0:
+#                if True:
+##                try:
+#                    c = conn.cursor()
+#                    c.execute("SELECT spot FROM spots WHERE (date=(SELECT MAX(date) FROM spots WHERE BBG = %s AND flag = 'close') AND BBG = %s AND flag = 'close')", (self.mnemo, self.mnemo))
+#                    self.spot = c.fetchone()[0]
+##                except:
+##                    print "error in loading Stock!"
+#            if True:
+##            try:
+#                c.execute("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s", (self.mnemo, stDate, endDate, flag))
+#                self.spots =  np.array(c.fetchall())
+#                self.loaded = True
+##            if True:
+##            except:
+##                print "error in loading historic prices for " + self.mnemo
+#            c.close()
+
     def load_pandas(self, stDate, endDate, flag):
         endDate = cmn.getLastTrDay(endDate)
         if self.loaded == False:
@@ -75,7 +75,8 @@ class Stock(object):
 #                    print "error in loading Stock!"
                     logging.error('error in loading Stock!')
                     return False		
-            try:
+#            try:
+            if True:
                 self.spots = pds.read_sql(("""SELECT "Date", "Close", "Volume" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), cmn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))
                 self.spots['volume_20'] = self.spots['Volume'].rolling(window=20,center=False).mean()
                 self.spots['ewma_10'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=10).mean()
@@ -87,9 +88,9 @@ class Stock(object):
                 self.spots['mean'] = self.spots[['Close', 'ewma_20','ewma_50','ewma_100']].mean(axis=1)
                 self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
                 return True
-            except:
-                logging.error('error in loading historic prices for %s', self.mnemo)
-                return False                   
+#            except:
+#                logging.error('error in loading historic prices for %s', self.mnemo)
+#                return False                   
 
     def __hash__(self): return hash(str(self))
     def __cmp__(self, other): return cmp(str(self), str(other))
