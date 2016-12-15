@@ -42,18 +42,20 @@ class Stock(object):
         if self.loaded == False:
             print "loading Stock... " + self.mnemo, stDate, endDate, flag
             if self.spot == 0:
-                try:
+                if True:
+#                try:
                     c = conn.cursor()
                     c.execute("SELECT spot FROM spots WHERE (date=(SELECT MAX(date) FROM spots WHERE BBG = %s AND flag = 'close') AND BBG = %s AND flag = 'close')", (self.mnemo, self.mnemo))
                     self.spot = c.fetchone()[0]
-                except:
-                    print "error in loading Stock!"
-            try:
+#                except:
+#                    print "error in loading Stock!"
+#            try:
                 c.execute("SELECT date, spot FROM spots WHERE BBG=%s AND (date BETWEEN %s AND %s) AND flag=%s", (self.mnemo, stDate, endDate, flag))
                 self.spots =  np.array(c.fetchall())
                 self.loaded = True
-            except:
-                print "error in loading historic prices for " + self.mnemo
+            if True:
+#            except:
+#                print "error in loading historic prices for " + self.mnemo
             c.close()
     
     def load_pandas(self, stDate, endDate, flag):
