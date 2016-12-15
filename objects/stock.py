@@ -22,22 +22,24 @@ class Stock(object):
         if self.loaded == False:
             print "initializing new Stock... " + self.mnemo
             c = conn.cursor()
-            try:
+            if True:
+#            try:
                 c.execute("""SELECT "Close" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG = %s) AND BBG = %s)""", (self.mnemo, self.mnemo))
                 self.spot = c.fetchone()[0]
                 c.close()
-                try:
+                if True:
+#                try:
                     d = conn.cursor()
                     d.execute("""SELECT "Date", "Close" FROM spots WHERE BBG=%s""", (self.mnemo, ))
                     self.spots =  dict(d.fetchall())
                     d.close()
                     self.loaded = True
-                except:
-                    print "error in loading historic prices for " + self.mnemo
-            except:
-                print "error in loading Stock!"
-                self.spot = 0
-    
+#                except:
+#                    print "error in loading historic prices for " + self.mnemo
+#            except:
+#                print "error in loading Stock!"
+#                self.spot = 0
+
     def load_numpy(self, stDate, endDate, flag):
         if self.loaded == False:
             print "loading Stock... " + self.mnemo, stDate, endDate, flag
