@@ -50,6 +50,9 @@ if __name__=='__main__':
 				except AttributeError:
 					logging.info('Not Save TO DB / run_sqrtrqding_signals.py')
 			elif len(result1.index) > 1:
+				result1['BBG'] = x.listUniverse.BBG[i]
+				print result1.tail(1)
+				result1.to_sql('stockscreener_signals', engine, if_exists='append')
 				logging.error('ERROR in run_sqrtrqding_signals.py // several results inscreenoing for the stock %s', BBG)
 				logging.error('ERROR len(result1) %s %s', len(result1), result1)
 				pass
