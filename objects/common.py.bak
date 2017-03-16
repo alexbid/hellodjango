@@ -14,7 +14,7 @@ import logging
 logging.basicConfig(level='ERROR' , format='%(asctime)s - %(levelname)s - %(message)s')
 
 from sqlconnector import *
-stockscreener_calendar.setfirstweekday(stockscreener_calendar.MONDAY)
+calendar.setfirstweekday(calendar.MONDAY)
 
 import portfolio
 
