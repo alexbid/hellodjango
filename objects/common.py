@@ -14,7 +14,7 @@ import logging
 logging.basicConfig(level='ERROR' , format='%(asctime)s - %(levelname)s - %(message)s')
 
 from sqlconnector import *
-calendar.setfirstweekday(calendar.MONDAY)
+stockscreener_calendar.setfirstweekday(stockscreener_calendar.MONDAY)
 
 import portfolio
 
@@ -33,7 +33,7 @@ def isTradingDay(tDate):
     if isWeekEnd(tDate): return False
     else:
         c = conn.cursor()
-        c.execute('SELECT COUNT(*) FROM calendar WHERE date = %s', (tDate.strftime("%Y-%m-%d"),))
+        c.execute('SELECT COUNT(*) FROM stockscreener_calendar WHERE date = %s', (tDate.strftime("%Y-%m-%d"),))
         data = c.fetchone()[0]
         if data == 0:
             print('this is a trading day ' + tDate.isoformat())
@@ -44,16 +44,16 @@ def isTradingDay(tDate):
             c.close()
             return False
 
-def calendar_clean(theDates, CAL):
+def stockscreener_calendar_clean(theDates, CAL):
     theDates = np.array(theDates.to_datetime())
     c = conn.cursor()
-    holi = pds.read_sql("SELECT date FROM calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s) ORDER BY date ASC", conn, index_col='date', params=(CAL, pds.to_datetime(theDates[0]).strftime('%Y-%m-%d'), pds.to_datetime(theDates[-1]).strftime('%Y-%m-%d')))
+    holi = pds.read_sql("SELECT date FROM stockscreener_calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s) ORDER BY date ASC", conn, index_col='date', params=(CAL, pds.to_datetime(theDates[0]).strftime('%Y-%m-%d'), pds.to_datetime(theDates[-1]).strftime('%Y-%m-%d')))
     holi = np.array(pds.to_datetime(holi.index))
     return np.setdiff1d(theDates, holi)
 
 def vTradingDates(stDate, endDate, cdr):
     c = conn.cursor()
-    c.execute('SELECT * FROM calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s)', (cdr, stDate, endDate)) 
+    c.execute('SELECT * FROM stockscreener_calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s)', (cdr, stDate, endDate)) 
     holidays = []
     for row in list(c): holidays.append(row[0])
     
@@ -108,7 +108,7 @@ def doRequestData(BBG, CAL, startD, endD):
     logging.info('doRequestData %s %s', BBG, endD)
 #############################################################################################################################
     # remove holidays from dates in input
-    dates = calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B').to_datetime(), CAL)
+    dates = stockscreener_calendar_clean(pds.date_range(start=startD, end=endD, freq ='1B').to_datetime(), CAL)
     c = conn.cursor()
 #############################################################################################################################   
     # get dates already in the DB
