@@ -17,6 +17,7 @@ from sqlconnector import *
 calendar.setfirstweekday(calendar.MONDAY)
 
 import portfolio
+import fix_yahoo_finance
 
 ##########################################################
 #import sys
