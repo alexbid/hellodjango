@@ -125,12 +125,13 @@ def doRequestData(BBG, CAL, startD, endD):
     if toRequest:
         logging.info('Period To Request for Stock: %s %s %s', BBG, toRequest, len(toRequest))
         for row in toRequest:
-            try:
-#            if True:
-                fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=row[0], end=row[1])
-            except:
-                logging.error('yahoo failed! %s %s %s', BBG, toRequest, len(toRequest))
-                return False
+            # try:
+            if True:
+                # fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=row[0], end=row[1])
+                fromyahoo = pds.get_data_yahoo(BBG, start=row[0], end=row[1])
+            # except:
+            #     logging.error('yahoo failed! %s %s %s', BBG, toRequest, len(toRequest))
+            #     return False
             fromyahoo['bbg'] = BBG
             fromyahoo.to_sql('spots', engine, if_exists='append')
             logging.info('yahoo saved to DB! %s', BBG)

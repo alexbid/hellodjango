@@ -27,7 +27,7 @@ if [ $2 = "Python" ]; then
   sudo make
   sudo make install
   sudo cp $rootDir/downloads/Python-2.7.10/setup.py /usr/local/bin/
-  sudo cp $rootDir/downloads/Python-2.7.10/setup.py /usr/local/lib/python2.7
+  # sudo cp $rootDir/downloads/Python-2.7.10/setup.py /usr/local/lib/python2.7
   cd $rootDir/hellodjango
   sudo python setup.py build
   sudo python setup.py install

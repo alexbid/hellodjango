@@ -1,0 +1,1 @@
+SELECT * FROM publicnoticeillinois WHERE "PDFContent" LIKE '%FORECLOSURE%' AND "PDFContent" LIKE '%SALE%'
