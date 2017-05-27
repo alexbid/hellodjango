@@ -17,6 +17,8 @@ from sqlconnector import *
 calendar.setfirstweekday(calendar.MONDAY)
 
 import portfolio
+
+from pandas_datareader import data as pdr
 import fix_yahoo_finance
 
 ##########################################################
@@ -129,7 +131,7 @@ def doRequestData(BBG, CAL, startD, endD):
             # try:
             if True:
                 # fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=row[0], end=row[1])
-                fromyahoo = pds.get_data_yahoo(BBG, start=row[0], end=row[1])
+                fromyahoo = pdr.get_data_yahoo(BBG, start=row[0], end=row[1])
             # except:
             #     logging.error('yahoo failed! %s %s %s', BBG, toRequest, len(toRequest))
             #     return False
