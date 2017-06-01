@@ -71,7 +71,7 @@ def bloombergScrap(mnemo, ric):
 		logging.info('no data to be saved for quote %s %s ', mnemo, ric)
 
 if __name__=='__main__':
-    mnemoList = pds.read_sql("""SELECT DISTINCT "mnemo", "BBG" FROM stockscreener_batch_run WHERE (("mnemo" IS NOT NULL) AND ("mnemo" <>"")) ORDER BY "mnemo" ASC""", conn)
+    mnemoList = pds.read_sql("""SELECT DISTINCT "mnemo", "BBG" FROM stockscreener_batch_run WHERE (("mnemo" IS NOT NULL) AND ("mnemo" <>'')) ORDER BY "mnemo" ASC""", conn)
 
     for index, row in mnemoList.iterrows():
         bloombergScrap(row['mnemo'], row['BBG'])
