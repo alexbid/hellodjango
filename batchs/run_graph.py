@@ -16,13 +16,13 @@ windDate = endDate + relativedelta(days=-300)
 stDate = endDate + relativedelta(months=-11)
 
 class graphy():
-	
-	def __init__(self, BBG):
-		x = stock.Stock(BBG)
+
+    def __init__(self, BBG):
+        x = stock.Stock(BBG)
         logging.debug('%s: %s', type(stDate), type(endDate))
 
-		x.load_pandas(stDate, endDate, 'Close')
-		x.draw3(windDate, endDate)
+        x.load_pandas(stDate, endDate, 'Close')
+        x.draw3(windDate, endDate)
 		#x.draw2(windDate, endDate)
 
 if __name__=='__main__':
@@ -30,7 +30,7 @@ if __name__=='__main__':
 #	endDate = datetime.date.today()
 #	windDate = endDate + relativedelta(days=-90)
 #	stDate = endDate + relativedelta(months=-11)
-	x = graphy('TES.PA')
+    x = graphy('^FCHI')
 #	x.load_pandas(stDate, endDate, 'close')
 #	x.draw(windDate, endDate)
 
