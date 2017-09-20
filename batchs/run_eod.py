@@ -41,8 +41,8 @@ def bloombergScrap(mnemo, ric):
     s.index.name = 'Date'
     s['bbg'] = ric
 
-    print s
-    raw_input()
+    # print s
+    # raw_input()
     minDate = s.index.min()
     maxDate = s.index.max()
 
