@@ -187,7 +187,7 @@ if __name__=='__main__':
     dt = datetime.date(1990, 03, 01)
     end = datetime.date(2016, 12, 30)
 
-    print 'icici',  stockscreener_calendar_doclean('FR')
+    # print 'icici',  stockscreener_calendar_doclean('FR')
 
     from timeit import Timer
 #    t = Timer(lambda: vTradingDates(dt, end, 'FR'))
