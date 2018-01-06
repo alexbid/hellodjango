@@ -9,6 +9,7 @@ import numpy as np
 #from pandas_datareader import data, wb
 #.data as web
 import pandas_datareader.data as web
+from pandas.io import sql
 
 import logging
 logging.basicConfig(level='ERROR' , format='%(asctime)s - %(levelname)s - %(message)s')
@@ -52,6 +53,36 @@ def stockscreener_calendar_clean(theDates, CAL):
     holi = pds.read_sql("SELECT date FROM stockscreener_calendar WHERE (CDR=%s) AND (date BETWEEN %s AND %s) ORDER BY date ASC", conn, index_col='date', params=(CAL, pds.to_datetime(theDates[0]).strftime('%Y-%m-%d'), pds.to_datetime(theDates[-1]).strftime('%Y-%m-%d')))
     holi = np.array(pds.to_datetime(holi.index))
     return np.setdiff1d(theDates, holi)
+
+def stockscreener_calendar_doclean(CAL):
+    calToHolidays ={'FR':['14/07', '15/08', '01/05', '26/12'], 'US':['04/07']}
+
+    c = conn.cursor()
+    holi = pds.read_sql("SELECT date FROM stockscreener_calendar WHERE (CDR=%s) ORDER BY date ASC", conn, index_col='date', params=(CAL, ))
+    holi = pds.to_datetime(holi.index)
+
+    #add N0 to N+1 recursive holiday
+    recursiveHolidays = []
+    for iYear in range(min(holi).year, datetime.datetime.utcnow().year + 2):
+    	if calToHolidays.has_key(CAL):
+    		for hol in calToHolidays[CAL]:
+    			iDay = int(hol.split('/')[0])
+    			iMonth = int(hol.split('/')[1])
+    			recursiveHolidays.append(datetime.date(iYear, iMonth, iDay))
+    	recursiveHolidays.append(datetime.date(iYear, 01, 01))
+    	recursiveHolidays.append(datetime.date(iYear, 12, 25))
+    recursiveHolidays = pds.to_datetime(recursiveHolidays)
+    
+    merge = recursiveHolidays.union(holi).drop_duplicates(keep='first')
+    merge = pds.to_datetime(merge)
+    df = pds.DataFrame({'date': merge, 'cdr': CAL})
+    df = df.set_index('date')
+
+    query = '''DELETE FROM stockscreener_calendar WHERE (CDR='%s')''' % CAL
+    sql.execute(query, engine)					
+    df.to_sql('stockscreener_calendar', engine, if_exists='append', index=True)
+    logging.info('stockscreener_calendar cleaned! %s', CAL)
+    c.close()
 
 def vTradingDates(stDate, endDate, cdr):
     c = conn.cursor()
@@ -155,6 +186,8 @@ if __name__=='__main__':
     import sys
     dt = datetime.date(1990, 03, 01)
     end = datetime.date(2016, 12, 30)
+
+    print 'icici',  stockscreener_calendar_doclean('FR')
 
     from timeit import Timer
 #    t = Timer(lambda: vTradingDates(dt, end, 'FR'))
