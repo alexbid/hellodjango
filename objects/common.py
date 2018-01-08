@@ -55,7 +55,7 @@ def stockscreener_calendar_clean(theDates, CAL):
     return np.setdiff1d(theDates, holi)
 
 def stockscreener_calendar_doclean(CAL):
-    calToHolidays ={'FR':['14/07', '15/08', '01/05', '26/12'], 'US':['04/07'], 'JP':['02/01', '03/01', '31/12', '23/12']}
+    calToHolidays ={'FR':['14/07', '15/08', '01/05', '26/12'], 'US':['04/07'], 'UK':['26/12'], 'JP':['02/01', '03/01', '31/12', '23/12']}
 
     c = conn.cursor()
     holi = pds.read_sql("SELECT date FROM stockscreener_calendar WHERE (CDR=%s) ORDER BY date ASC", conn, index_col='date', params=(CAL, ))
