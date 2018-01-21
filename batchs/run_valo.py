@@ -10,12 +10,13 @@ import universe, portfolio
 from dateutil.relativedelta import relativedelta
 
 endDate = datetime.date.today()
+# endDate = datetime.date(2017, 12, 31)
 stDate = endDate + relativedelta(months=-11)
 evalDate = endDate+ relativedelta(days=-1)
 
 #from timeit import Timer
 #t = Timer(lambda: vTradingDates(stDate, endDate, 'FR'))
-logging.info('%s', t.repeat(3, 5))
+# logging.info('%s', t.repeat(3, 5))
 
 
 #x = Universe()
@@ -24,7 +25,7 @@ logging.info('%s', t.repeat(3, 5))
 #doRequestData("^FCHI", "FR", stDate, endDate)
 
 portf = portfolio.Portfolio()
-portf.mDeposit(10000)
+portf.mDeposit(1000)
 portf.load(stDate, evalDate)
 
 logging.info('portfolio values: %s', portf.getValue(evalDate,'close'))

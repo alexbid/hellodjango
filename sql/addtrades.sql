@@ -1,0 +1,4 @@
+INSERT INTO trades VALUES ('BUY', '^FCHI', 0.1, 4478.21,0,'2017-12-17');
+
+DELETE FROM trades WHERE ("bbg"='^FCHI');
+

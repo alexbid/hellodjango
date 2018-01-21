@@ -64,42 +64,32 @@ class Stock(object):
     def load_pandas(self, stDate, endDate, flag):
         endDate = cmn.getLastTrDay(endDate)
         if self.loaded == False:
-#            print "loading Stock... " + self.mnemo, stDate, endDate, flag
-            logging.info('loading Stock... %s %s %s %s', self.mnemo, stDate, endDate, flag)
-            if self.spot == 0:
-                try:
-                    resultss = pds.read_sql(("""SELECT "Close", "Volume" FROM spots WHERE ("Date"=(SELECT MAX("Date") FROM spots WHERE BBG=%s) AND BBG = %s)"""), cmn.conn, params=(self.mnemo, self.mnemo))
-                    self.spot = resultss.iloc[0]['Close']
-                    self.lvolume = resultss.iloc[0]['Volume']
-                except:
-#                    print "error in loading Stock!"
-                    logging.error('error in loading Stock!')
-                    return False		
-#            try:
-            if True:
-                self.spots = pds.read_sql(("""SELECT "Date", "Close", "Volume" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), cmn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))
-                self.spots['volume_20'] = self.spots['Volume'].rolling(window=20,center=False).mean()
-                self.spots['ewma_10'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=10).mean()
-                self.spots['ewma_20'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=10).mean()
-                self.spots['ewma_50'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=50).mean()
-                self.spots['ewma_100'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=50).mean()
-                
-                self.spots['var'] = self.spots[['Close','ewma_20','ewma_50','ewma_100']].var(axis=1)
-                self.spots['mean'] = self.spots[['Close', 'ewma_20','ewma_50','ewma_100']].mean(axis=1)
-                self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
-                return True
-#            except:
-#                logging.error('error in loading historic prices for %s', self.mnemo)
-#                return False                   
+            self.spots = pds.read_sql(("""SELECT DISTINCT "Date", "Close", "Volume" FROM spots WHERE BBG=%s AND ("Date" BETWEEN %s AND %s) ORDER BY "Date" ASC"""), cmn.conn, index_col="Date", params=(self.mnemo, stDate, endDate))
+            self.spots['volume_20'] = self.spots['Volume'].rolling(window=20,center=False).mean()
+            self.spots['ewma_10'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=10).mean()
+            self.spots['ewma_20'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=10).mean()
+            self.spots['ewma_50'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=50).mean()
+            self.spots['ewma_100'] = self.spots['Close'].ewm(ignore_na=False,min_periods=0,adjust=True,com=50).mean()
+            self.spots['var'] = self.spots[['Close','ewma_20','ewma_50','ewma_100']].var(axis=1)
+            self.spots['mean'] = self.spots[['Close', 'ewma_20','ewma_50','ewma_100']].mean(axis=1)
+            self.spots['cv'] = np.divide(np.sqrt(self.spots['var']),self.spots['mean'])
+            
+            self.spot = self.getClose(self.spots.index.max())
+            try: self.lvolume = self.spots["Volume"][self.spots.index.max()]
+            except: self.lvolume = 0
+            self.loaded = True
+            logging.info('loading Stock... %s %s %s %s %s %s', self.mnemo, stDate, endDate, flag, self.spot, self.lvolume)
+            return True                  
 
     def __hash__(self): return hash(str(self))
     def __cmp__(self, other): return cmp(str(self), str(other))
     def __str__(self): return self.mnemo
     def getMnemo(self): return self.mnemo
+    
     def getClose(self, dDate):
-        try : return self.spots[dDate]
-        except : print "no close available for this stock at this date: "+ self.mnemo+" as of "+dDate.strftime("%Y-%m-%d")
-        return 0
+        dDate = self.spots[self.spots['Close'].index <= dDate]['Close'].index.max()
+        return self.spots["Close"][dDate]
+
     def getSpot(self): return self.spot
     def setSpot(self, spot): self.spot = spot
     def draw(self, stDate, endDate):
