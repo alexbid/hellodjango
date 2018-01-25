@@ -160,6 +160,7 @@ def doRequestData(BBG, CAL, startD, endD):
         logging.info('Period To Request for Stock: %s %s %s', BBG, toRequest, len(toRequest))
         for row in toRequest:
             try:
+                print 'toto'
             # if True:
                 # fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=row[0], end=row[1])
                 fromyahoo = web.get_data_yahoo(BBG, start=row[0], end=row[1])
