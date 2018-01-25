@@ -19,7 +19,8 @@ calendar.setfirstweekday(calendar.MONDAY)
 
 import portfolio
 
-import fix_yahoo_finance
+import fix_yahoo_finance as yf
+yf.pdr_override()
 
 ##########################################################
 #import sys

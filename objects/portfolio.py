@@ -26,7 +26,24 @@ class Portfolio:
         for lStock, qty in self.equity.iteritems():
             stockValue += qty * lStock.getClose(evalDate)
         return self.cash + stockValue
-    
+
+    def getDelta(self, mnemo):
+        c = conn.cursor()
+        c.execute('SELECT mnemo, type, udl, call_put, ratio, strike, barrier, maturity FROM products WHERE mnemo=%s;', (mnemo, ))
+        for row in c:
+            logging.info('loading Trades... %s %s %s %s %s %s %s', row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+            
+            ssjacent = row[2]
+            print ssjacent
+            s = stock.Stock(ssjacent)
+            s.load_pandas(datetime.date(1990, 03, 01), datetime.date.today(), "close")
+            
+            print self.equity[ssjacent].spots
+            # self.getValue(datetime.date.today(), 'close')
+
+
+        c.close()
+
     # def getPosition(self, evalDate):
     #     #where evalDate is evaluation date
     #     stockValue = 0.0
@@ -36,17 +53,22 @@ class Portfolio:
 
     def load(self, stDate, endDate):
         c = conn.cursor()
-        c.execute('SELECT date, trans, BBG, qty, price, broker FROM trades WHERE (date BETWEEN %s AND %s);', (stDate, endDate))
+        c.execute('SELECT date, trans, BBG, qty, price, broker, product_type FROM trades WHERE (date BETWEEN %s AND %s);', (stDate, endDate))
         holidays = []
         for row in c:
-            logging.info('loading Trades... %s %s %s %s %s %s', row[0], row[1], row[2], row[3], row[4], row[5])
-            if row[1] == "BUY": self.trade(row[0], stock.Stock(row[2]), row[3], row[4], row[5])
-            elif row[1] == "SELL": self.trade(row[0], stock.Stock(row[2]), -row[3], row[4], row[5])
-            else: print "error in transaction side: ", row[1]
-            toto = 0
-            for lStock, qty in self.equity.iteritems():
-                lStock.load_pandas(stDate, endDate, "close")
-                toto += 1
+            logging.info('loading Trades... %s %s %s %s %s %s %s', row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+            if row[6] == "EQTY":
+                if row[1] == "BUY": self.trade(row[0], stock.Stock(row[2]), row[3], row[4], row[5])
+                elif row[1] == "SELL": self.trade(row[0], stock.Stock(row[2]), -row[3], row[4], row[5])
+                else: print "error in transaction side: ", row[1]
+                toto = 0
+                for lStock, qty in self.equity.iteritems():
+                    lStock.load_pandas(stDate, endDate, "close")
+                    toto += 1
+            else:
+                logging.error('loading Trades... %s %s %s %s %s %s %s', row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+                raw_input()
+
         c.close()
 
     def getVAR_Histo(self, evalDate):
@@ -79,13 +101,16 @@ class Portfolio:
 if __name__=='__main__':
     
     stDate = datetime.date(1990, 03, 01)
-    endDate = datetime.date(2017, 12, 30)
-    
+    # endDate = datetime.date(2017, 12, 30)
+    # endDate = datetime.date(datetime.datetime.utcnow())
+    endDate = datetime.date.today()
+
     p = Portfolio()
     p.mDeposit(1000)
     p.load(stDate, endDate)
     print p.getValue(endDate, 'close')
-    print 'VAR Histo:', p.getVAR_Histo(endDate)
+    # print 'VAR Histo:', p.getVAR_Histo(endDate)
+    print 'Delta:', str(p.getDelta('65U0Z'))
 
 
 
