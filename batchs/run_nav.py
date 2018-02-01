@@ -23,9 +23,9 @@ session = requests.Session()
 headers = {"User-Agent":"Mozilla/ 5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit 537.36 (KHTML, like Gecko) Chrome", "Accept":"text/html, application/xhtml+xml, application/xml; q=0.9, image/webp,*/*;q=0.8"}
 
 for idx in range(len(univers)):
-	wkn = str(univers['wkn'].ix[idx])
+	wkn = str(univers['wkn'].loc[idx])
 
-	url = 'http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].ix[idx] + ':' + univers['CCY'].ix[idx]
+	url = 'http://markets.ft.com/research//Tearsheets/PriceHistoryPopup?symbol=' + univers['ISIN'].loc[idx] + ':' + univers['CCY'].loc[idx]
 
 	try:
 		page2 = session.get(url, headers = headers)

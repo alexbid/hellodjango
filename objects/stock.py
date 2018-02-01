@@ -87,8 +87,11 @@ class Stock(object):
     def getMnemo(self): return self.mnemo
     
     def getClose(self, dDate):
-        dDate = self.spots[self.spots['Close'].index <= dDate]['Close'].index.max()
-        return self.spots["Close"][dDate]
+        try:
+		dDate = self.spots[self.spots['Close'].index <= dDate]['Close'].index.max()
+        	return self.spots["Close"][dDate]
+	except:
+		return 0
 
     def getSpot(self): return self.spot
     def setSpot(self, spot): self.spot = spot
