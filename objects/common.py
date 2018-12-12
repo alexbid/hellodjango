@@ -5,7 +5,7 @@ import os
 
 import pandas as pds
 import numpy as np
-import pandas_datareader.data as web
+#import pandas_datareader.data as web
 from pandas.io import sql
 
 import logging
@@ -16,8 +16,8 @@ calendar.setfirstweekday(calendar.MONDAY)
 
 import portfolio
 
-import fix_yahoo_finance as yf
-yf.pdr_override()
+# import fix_yahoo_finance as yf
+# yf.pdr_override()
 
 ##########################################################
 #import sys
@@ -156,13 +156,15 @@ def doRequestData(BBG, CAL, startD, endD):
     if toRequest:
         logging.info('Period To Request for Stock: %s %s %s', BBG, toRequest, len(toRequest))
         for row in toRequest:
-            try:
-            #if True:
+            # try:
+            if True:
                 # fromyahoo = web.DataReader(name=BBG, data_source ='yahoo', start=row[0], end=row[1])
                 fromyahoo = web.get_data_yahoo(BBG, start=row[0], end=row[1])
-            except:
-                logging.error('yahoo failed! %s %s %s', BBG, toRequest, len(toRequest))
-                return False
+                # print fromyahoo
+                # raw_input()
+            # except:
+            #     logging.error('yahoo failed! %s %s %s', BBG, toRequest, len(toRequest))
+            #     return False
             fromyahoo['bbg'] = BBG
             fromyahoo.to_sql('spots', engine, if_exists='append')
             logging.info('yahoo saved to DB! %s', BBG)
