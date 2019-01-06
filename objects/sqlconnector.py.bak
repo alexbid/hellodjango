@@ -9,7 +9,7 @@ urlparse.uses_netloc.append("postgres")
 if not os.environ.has_key('DATABASE_URL'):
 	# os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@awsdbinstance.c9ydrnvcm8aj.us-west-2.rds.amazonaws.com:5432/marketdb'
 	# os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@192.168.0.24:5432/marketdb'
-	os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@sqrtrading.com:5432/marketdb'
+	os.environ['DATABASE_URL'] = 'postgres://awsuser:Newyork2012@localhost:5432/marketdb'
 
 engine = create_engine(os.environ['DATABASE_URL'])
 
